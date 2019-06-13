@@ -1,5 +1,5 @@
 resource "aws_security_group" "coda_sg" {
-  name        = "${var.region}_${var.rolename}_coda_sg"
+  name        = "${var.region}_${var.rolename}_${var.netname}_coda_sg"
   description = "Allow control access and coda ports open"
 
   ingress {
