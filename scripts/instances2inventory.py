@@ -31,8 +31,9 @@ for region in regions:
   for i in instances:
 
     if filter:
-      if filter not in i.tags['Name']:
-        continue
+      if 'Name' in i.tags:
+        if filter not in i.tags['Name']:
+          continue
 
     if 'running' not in i.state:
       continue
