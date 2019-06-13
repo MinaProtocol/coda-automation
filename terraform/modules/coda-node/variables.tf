@@ -37,7 +37,7 @@ variable "port_ql" {
 variable "public_key" {
   description = "An SSH Public Key used to configure node access, if not set defaults to key_name"
   type        = "string"
-  default     = ""
+  default     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHWTr1IZY2c4+j7KldT59folvsdpJjTGC6ULBDD7IyUqGDYhxv2X4UeO17V1ENeZLvABaiIPtw6R4qRMgoOXEVOZsNljqpPwLMK3cY3JeM/tL9XPQXuZQrpRsFdYUOeNI9OyG34gfdHpbn24SIEGrDjqWg6kKtwJ916fB6f7JNxBDLP5cJQhP7z57Km3V6+YcaRIkshkrfaBGKVKp58aibbNOPn1B4vMWSQcPyC50xlnUT5rnKiRUClT1nP0OTgxL9L6FWADKow83wJ/95RA5evBHjZuE7Qz1U3sVLx0lzWBgZRC40Nz+77W3/kQvceCWe8WCuavArH/q5It5fOzsv testnet"
 }
 
 variable "key_name" {
