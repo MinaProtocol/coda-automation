@@ -13,4 +13,22 @@ elif [ -f ${playbook}.yaml ]; then
     playbook+=".yaml"
 fi
 
-ansible-playbook --vault-password-file=ansible_vault_password -i inventory ${playbook}
+# Workaround until we have a better mechanism for figureing out current testnet
+if [ -z ${TESTNET+x} ];
+    then
+        echo "TESTNET is unset"
+
+        lastcache=`ls -lot ~/.ansible/tmp/ansible-ec2-*.cache | head -n 1 | awk '{print $8}'`
+        echo "Possible Values:"
+        cat ${lastcache} | grep tag_testnet_ | cut -d '_' -f 3 | cut -d '"' -f 1
+
+        exit
+    else
+        echo "TESTNET is set to ${TESTNET}"
+fi
+
+ansible-playbook \
+    --vault-password-file=ansible_vault_password \
+    -i ec2.py \
+    -l tag_testnet_${TESTNET} \
+    ${playbook}
