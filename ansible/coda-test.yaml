@@ -23,5 +23,14 @@
   strategy: free
   gather_facts: no
   tasks:
-    - include: tasks/task-pvdownload.yaml
+    - include: tasks/task-tools.yaml
 
+# Assign a unique ID to each proposer (so proof of stake works)
+- hosts: tag_role_proposer
+  gather_facts: no
+  tasks:
+    - name: Unique ID
+      copy:
+        dest: /etc/coda-proposer_order
+        content: "{{ ansible_play_hosts.index(inventory_hostname) }}"
+      become: true
