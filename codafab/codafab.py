@@ -17,11 +17,11 @@ def read_ansible_inventory(fname):
 
 # existing utility scripts already deployed
 def crashhash(group):
-    cmd = '/home/admin/testing/crashhash.py'
+    cmd = '/home/admin/scripts/crashhash.py'
     return group.run(cmd, hide='both', warn=True)
 
 def status(group):
-    cmd = '/home/admin/testing/status.py'
+    cmd = '/home/admin/scripts/status.py'
     return group.run(cmd, hide='both', warn=True)
 
 
