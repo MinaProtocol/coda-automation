@@ -39,14 +39,17 @@ def print_summary(results):
     summary = defaultdict(Counter)
     for connection, result in results.items():
         if len(result.stdout) > 0:
-            data = json.loads(result.stdout)
-            for key in data:
-                if key == 'propose_pubkeys': continue
-                if key == 'conf_dir': continue
-                try:
-                    summary[key].update([data[key]])
-                except:
-                    print('Error working with', key, data[key])
+            try:
+                data = json.loads(result.stdout)
+                for key in data:
+                    if key == 'propose_pubkeys': continue
+                    if key == 'conf_dir': continue
+                    try:
+                        summary[key].update([data[key]])
+                    except:
+                        print('Error working with', key, data[key])
+            except json.decoder.JSONDecodeError:
+                print('Unable to parse response json from host: {0.host}'.format(connection))
     for key, counts in summary.items():
         print("\t",key)
         for item, count in counts.items():

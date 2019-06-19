@@ -3,7 +3,7 @@ from codafab import *
 
 def main():
     hosts = read_ansible_inventory("../ansible/inventory")
-    print('Host count:', len(hosts))
+    print('Inventory host count:', len(hosts))
     group = ThreadingGroup(*hosts)
     print_summary(status(group))
 
