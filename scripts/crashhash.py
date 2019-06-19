@@ -1,29 +1,57 @@
 #! /usr/bin/env python3
 
-"""Extract and attempt to make a signature of an ocaml traceback"""
-
+""" Extract and attempt to make a signature of an ocaml traceback """
 import glob
 import os
 import subprocess
 import re
 import hashlib
 import sys
+import json
+from dateutil.parser import parse
+import socket
 
-""" Wrap os tail call, doing it by hand was too hard"""
+""" Wrap os tail call, doing it in native python was wasy too difficult """
 def tail(fileName, n):
     p=subprocess.Popen(['tail','-n',str(n), fileName], stdout=subprocess.PIPE)
-    soutput,sinput=p.communicate()
+    soutput,_ =p.communicate()
     return soutput.decode('utf-8')
 
-""" Only care about lines that start with the error condition - start of trace """
+""" Hack way to get current coda version - using dpkg until we have coda --version """
+def coda_version():
+    cmd = 'dpkg -l'
+    p=subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    soutput,_ = p.communicate()
+    output = ''
+    for line in soutput.decode('utf-8').splitlines(True):
+        if 'coda-testnet' in line:
+            output = re.sub(' +', ' ', line).rstrip()
+    return output
+
+""" Collect lines beginning with the error condition - start of trace """
 def find_error(string):
     output = ''
     for line in string.splitlines(True):
-        if 'monitor.ml.Error' in line or len(output) >0:
+        # First line
+        if 'monitor.ml.Error' in line:
             output += line
-    return(output)
+            # parse timestamp from previous line
+            try:
+                data = json.loads(lastline)
+                mytime  = parse(data['timestamp']).timestamp()
+            except:
+                print('Error parsing timestamp from: %s' % lastline)
+                mytime = 0
+        elif len(output) > 0:
+            # continue appending trace output
+            output += line
+        else:
+            # haven't hit error yet, keep looking
+            lastline = line
+    return(output, mytime)
 
-""" Mask out actual line numbers and collumns, generate a sig based on this """
+
+""" Mask out actual line numbers and collumns, generate a signature based on stripped data """
 def error_sig(string):
     output = ''
     for line in string.splitlines(True):
@@ -33,14 +61,19 @@ def error_sig(string):
     sig = hashlib.md5(output.encode('utf-8')).hexdigest()
     return(sig)
 
-logfiles=glob.glob('./test-*/coda.log')
 
-for filename in logfiles:
-    lastfew = tail(filename, 30)
-    if 'monitor.ml.Error' in lastfew:
-        print('Error Detected In File: %s' % filename)
-        s = find_error(lastfew)
-        print(s)
-        sig = error_sig(s)
-        print("Signature:", sig)
-        sys.exit(1)
+if __name__ == '__main__':
+    logfiles=glob.glob('./test-*/coda.log')
+    output = {}
+    for filename in logfiles:
+        tailcontent = tail(filename, 30)
+        if 'monitor.ml.Error' in tailcontent:
+            (myerror, mytime) = find_error(tailcontent)
+            mysig = error_sig(myerror)
+            output['hostname'] = socket.gethostname()
+            output['filename'] = filename
+            output['signature'] = mysig
+            output['crash_timestamp'] = mytime
+            output['full_error'] = myerror
+            output['coda_version'] = coda_version()
+            print(json.dumps(output, indent=4, sort_keys=True))
