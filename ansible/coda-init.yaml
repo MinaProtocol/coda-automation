@@ -32,7 +32,7 @@
     - include: tasks/task-install-metricbeat.yaml
 
 # Assign a unique ID to each proposer (so proof of stake works)
-- hosts: "tag_{{ netname }}_role_proposer"
+- hosts: "tag_role_{{ netname }}_proposer"
   gather_facts: no
   tasks:
     - name: Unique ID
