@@ -5,8 +5,8 @@
     - ec2_metadata_facts:
     - name: Generating coda_start.sh
       vars:
-        seed_ip: "{{ hostvars[groups['tag_role_seed'][0]].ec2_ip_address }}"
-        snark_leader_ip: "{{ hostvars[groups['tag_role_snarker'][0]].ec2_ip_address }}"
+        seed_ip: "{{ hostvars[groups['tag_role_' + netname + '_seed'][0]].ec2_ip_address }}"
+        snark_leader_ip: "{{ hostvars[groups['tag_role_' + netname + '_seed'][0]].ec2_ip_address }}"
       template: "src=coda_start.sh.j2 dest='/home/admin/coda_start.sh' owner=admin group=admin mode=0755"
       tags: coda_start
     - pause:
