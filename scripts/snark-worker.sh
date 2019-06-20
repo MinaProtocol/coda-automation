@@ -15,6 +15,6 @@ NEW_UUID=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'A-Z0-9' | fold -w 8 | head -n 1
 echo ${NEW_UUID}
 mkdir test-snark-worker-${NEW_UUID}
 nohup coda internal snark-worker \
-    -public-key ASjSaik3xeh9v2dI6imveO33Yzo9KuxpH5wluTiOhn+v3JnQJNG9AQAAAQ== \
+    -public-key 8QnLTHMZPbBFezS8j8kDPu6iLiwPsTPyX2vMwcFzjiDZbp6GQDEBEyLbYvzApSdTsE \
     -daemon-address $DAEMON \
     -shutdown-on-disconnect false  2>&1 >> test-snark-worker-${NEW_UUID}/coda.log &
