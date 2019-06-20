@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+from codafab import *
+
+def main():
+    hosts = read_ansible_inventory("../ansible/inventory")
+    group = ThreadingGroup(*hosts)
+    print_results(get_trust_status_all(group))
+
+if __name__ == "__main__":
+    main()

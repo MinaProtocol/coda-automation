@@ -474,11 +474,11 @@ def seconds_to_human(sec):
         out="%s seconds" % sec
     elif sec <= 3600:
         minutes = sec / 60
-        out="%.2f minutes" % minutes
+        out="%.1f minutes" % minutes
     #elif sec <= 86400:
     else:
         hours = sec / 3600
-        out = "%.2f hours" % hours
+        out = "%.1f hours" % hours
     return(out)
 
 """ Print represensntation of current snark tree """

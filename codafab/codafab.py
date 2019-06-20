@@ -25,6 +25,10 @@ def status(group):
     return group.run(cmd, hide='both', warn=True)
 
 
+def get_trust_status_all(group):
+    cmd = 'coda client get-trust-status-all'
+    return group.run(cmd, hide='both', warn=True)
+
 def hostname(group):
     cmd = 'hostname'
     return group.run(cmd, hide='both', warn=True)
