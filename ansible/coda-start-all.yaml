@@ -12,7 +12,7 @@
     - pause:
         seconds: 5
 
-- hosts: "tag_{{ netname }}_role_seed"
+- hosts: "tag_role_{{ netname }}_seed"
   gather_facts: no
   tasks:
     - name: Start Coda
@@ -22,7 +22,7 @@
     - pause:
         seconds: 5
 
-- hosts: "tag_{{ netname }}_role_snarker"
+- hosts: "tag_role_{{ netname }}_snarker"
   gather_facts: no
   tasks:
     - name: Start Coda
@@ -32,7 +32,7 @@
     - pause:
         seconds: 5
 
-- hosts: "tag_{{ netname }}_role_proposer"
+- hosts: "tag_role_{{ netname }}_proposer"
   gather_facts: no
   tasks:
     - name: Start Coda
