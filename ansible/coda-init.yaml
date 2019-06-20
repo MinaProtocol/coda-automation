@@ -3,24 +3,7 @@
   strategy: free
   gather_facts: no
   tasks:
-    - name: "get proving url from secretsmanager"
-      shell: "aws secretsmanager get-secret-value --secret-id 'testnet/proving/s3_url'"
-      register: proving_url
-      delegate_to: 127.0.0.1
-    - name: "get elasticsearch endpoint from secretsmanager"
-      shell: "aws secretsmanager get-secret-value --secret-id {{'testnet/' + netname + '/elasticsearch/endpoint'}}"
-      register: elasticsearch_endpoint
-      delegate_to: 127.0.0.1
-    - name: "get kibana endpoint from secretsmanager"
-      shell: "aws secretsmanager get-secret-value --secret-id {{'testnet/' + netname + '/kibana/endpoint'}}"
-      register: kibana_endpoint
-      delegate_to: 127.0.0.1
-    - set_fact:
-        proving_url: "{{ proving_url.stdout | from_json | json_query('SecretString')  }}"
-    - set_fact:
-        elasticsearch_endpoint: "{{ elasticsearch_endpoint.stdout | from_json | json_query('SecretString')  }}"
-    - set_fact:
-        kibana_endpoint: "{{ kibana_endpoint.stdout | from_json | json_query('SecretString')  }}"
+    - include: tasks/task-secretmanager.yaml
     - include: tasks/task-varlibcoda.yaml
     - include: tasks/task-pvdownload.yaml
     - include: tasks/task-pvextract.yaml
