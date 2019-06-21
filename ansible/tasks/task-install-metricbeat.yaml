@@ -44,10 +44,10 @@
         core.metrics: ["percentages"]  # The other available option is ticks.
         setup.dashboards.enabled: true
         setup.kibana:
-          host: "{{ kibana_endpoint }}"
+          host: "{{ kibana_url }}"
         output.elasticsearch:
           hosts:
-            - "{{ elasticsearch_endpoint }}"
+            - "{{ elastic_url }}"
           protocol: "https"
 
 
