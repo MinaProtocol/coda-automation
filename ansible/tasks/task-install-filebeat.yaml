@@ -43,5 +43,5 @@
 - name: Start filebeat
   become: true
   systemd:
-    state: started
+    state: restarted
     name: filebeat
