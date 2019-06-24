@@ -24,6 +24,8 @@ for region in regions:
   if any (skip_string in region.name for skip_string in skip_region_strings):
     continue
 
+  print('# Querying region:', region)
+
   ec2conn =  boto.connect_ec2(region=region)
   reservations = ec2conn.get_all_instances()
 
