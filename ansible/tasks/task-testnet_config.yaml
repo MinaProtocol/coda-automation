@@ -1,0 +1,12 @@
+
+
+
+- name: Store Testnet Stats
+  become: true
+  copy:
+    dest: /etc/testnet_config.json
+    content: |
+        {
+            'elastic_url': '{{ elastic_url }}',
+            'testnet':     '{{ netname }}'
+        }

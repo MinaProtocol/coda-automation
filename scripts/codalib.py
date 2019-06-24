@@ -192,22 +192,19 @@ def filtered_status(client_port=None):
     output = {}
     # skip overly verbose keys we don't care about here
     skip_list = [
-        'snark_worker_transition_time',
-        'snark_worker_merge_time',
-        'external_transition_latency',
-        'ledger_merkle_root',
-        'ledger_builder_hash',
-        'snark_worker_merge_time',
-        'peers',
         'commit_id',
-        'staged_ledger_hash',
         'consensus_configuration',
-        'histograms',
         'consensus_mechanism',
-        'user_commands_sent',
-        'run_snark_worker',
         'consensus_time_best_tip',
-        'uptime_secs',
+        'external_transition_latency',
+        'histograms',
+        'ledger_builder_hash',
+        'ledger_merkle_root',
+        'run_snark_worker',
+        'snark_worker_merge_time',
+        'snark_worker_merge_time',
+        'snark_worker_transition_time',
+        'staged_ledger_hash',
     ]
     metrics = coda_status(port=client_port)
 
@@ -253,9 +250,6 @@ def cluster_status():
                 stats[stat][result[stat]] += 1
         print(json.dumps(result, sort_keys=True, indent=4))
 
-    # Sumamrized stats
-    #        print('='*80)
-    #print(json.dumps(stats, indent=4))
 
 """ Stop all running coda daemons """
 def cluster_stop():

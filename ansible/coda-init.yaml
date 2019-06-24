@@ -1,9 +1,14 @@
 ---
 - hosts: "tag_testnet_{{ netname }}"
+  gather_facts: no
+  run_once: True
+  tasks:
+    - include: tasks/task-secretmanager.yaml
+
+- hosts: "tag_testnet_{{ netname }}"
   strategy: free
   gather_facts: no
   tasks:
-    - include: tasks/task-secretmanager.yaml
     - include: tasks/task-varlibcoda.yaml
     - include: tasks/task-pvdownload.yaml
     - include: tasks/task-pvextract.yaml
@@ -13,6 +18,7 @@
     - include: tasks/task-tools.yaml
     - include: tasks/task-install-filebeat.yaml
     - include: tasks/task-install-metricbeat.yaml
+    - include: tasks/task-testnet_config.yaml
 
 # Assign a unique ID to each proposer (so proof of stake works)
 - hosts: "tag_role_{{ netname }}_proposer"

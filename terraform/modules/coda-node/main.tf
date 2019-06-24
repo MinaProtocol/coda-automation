@@ -54,11 +54,26 @@ echo ${var.rolename} > /etc/coda-rolename
 mkdir /var/log/journal
 
 # user tools
-apt-get --yes install emacs-nox htop lsof ncdu tmux ttyload dnsutils rsync jq bc
+apt-get --yes install \
+  bc \
+  dnsutils \
+  emacs-nox \
+  htop \
+  jq \
+  lsof \
+  ncdu \
+  rsync \
+  tmux \
+  ttyload
 
 # dev tools
 apt-get --yes install python3-pip
-pip3 install sexpdata psutil
+pip3 install \
+  'elasticsearch>=6.0.0,<7.0.0' \
+  certifi \
+  geoip2 \
+  psutil \
+  sexpdata
 
   EOF
 }

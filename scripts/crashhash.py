@@ -31,6 +31,7 @@ def coda_version():
 """ Collect lines beginning with the error condition - start of trace """
 def find_error(string):
     output = ''
+    lastline = ''
     for line in string.splitlines(True):
         # First line
         if 'monitor.ml.Error' in line:
@@ -66,6 +67,7 @@ if __name__ == '__main__':
     logfiles=glob.glob('./test-*/coda.log')
     output = {}
     for filename in logfiles:
+        if 'test-snark-worker-' in filename: continue # skip snark workers
         tailcontent = tail(filename, 30)
         if 'monitor.ml.Error' in tailcontent:
             (myerror, mytime) = find_error(tailcontent)

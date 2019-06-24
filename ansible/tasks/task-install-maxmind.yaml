@@ -1,0 +1,11 @@
+# maxmind geoip updater deb
+
+- name: Download geoipupdate
+  get_url:
+    url: "https://github.com/maxmind/geoipupdate/releases/download/v4.0.3/geoipupdate_4.0.3_linux_amd64.deb"
+    dest: /tmp/geoipupdate_4.0.3_linux_amd64.deb
+    force: no
+
+- name: Install geoipupdate
+  apt: deb="/tmp/geoipupdate_4.0.3_linux_amd64.deb"
+  sudo: true
