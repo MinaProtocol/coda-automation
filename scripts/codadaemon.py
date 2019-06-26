@@ -12,6 +12,7 @@ import shutil
 import random
 import uuid
 import psutil
+import codalib
 from subprocess import Popen, PIPE
 from multiprocessing import Pool
 from collections import Counter
@@ -232,8 +233,8 @@ def init_cluster(
 def each_block(fnc, maxblock=999, pretty=False):
     last_block = None
     while(True):
-        current_block = coda_block()
-        current_slot = coda_slot()
+        current_block = codalib.coda_block()
+        current_slot = codalib.coda_slot()
         if last_block != current_block:
             data = {}
             #print('-'*80)
@@ -246,5 +247,3 @@ def each_block(fnc, maxblock=999, pretty=False):
             print(json.dumps(data))
             sys.stdout.flush()
         time.sleep(5)
-
-
