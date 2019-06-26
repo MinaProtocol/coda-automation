@@ -20,7 +20,7 @@ if os.path.isfile(order_file):
 else:
     big_key = '%s/testkeys/high0' % (os.getcwd())
 
-clientport = codalib.coda_processes()[0]
+clientport = 8301
 
 def single_transaction(use_new_account=False, fee=4, amount=None):
     ### Single transaction to an existing account

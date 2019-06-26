@@ -28,10 +28,11 @@ def create_stats_index(client, index):
         'mappings': {
             'stats': {
                 'properties': {
-                    "block_count":   {'type': 'integer', "index": False},
-                    "account_count": {'type': 'integer', "index": False},
-                    "peer_count":    {'type': 'integer', "index": False},
-                    'peers':         {'index': False, 'type': 'text'},
+                    'stattime':      {'type': 'date',    'format': "date_optional_time"},
+                    "block_count":   {'type': 'integer', 'index': False},
+                    "account_count": {'type': 'integer', 'index': False},
+                    "peer_count":    {'type': 'integer', 'index': False},
+                    'peers':         {'type': 'text',    'index': False,},
                 }
             }
         }
@@ -80,13 +81,13 @@ if __name__ == "__main__":
 
     # Prep data
     body = {
-        '@timestamp':    '%s' % datetime.utcnow(),
         'block_count':   stats['block_count'],
         'account_count': stats['num_accounts'],
         'peer_count':    len(stats['peers']),
         'peers':         stats['peers'],
         'hostname':      gethostname(),
-        'testnet':       testnet
+        'testnet':       testnet,
+        'stattime':      "%s" % datetime.utcnow().isoformat()
     }
 
     print('Posting new data:\n', json.dumps(body, indent=4, sort_keys=True))

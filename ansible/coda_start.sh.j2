@@ -26,6 +26,7 @@ CODA_RPCPORT=8301
 CODA_EXTPORT=$(($CODA_RPCPORT + 1))
 CODA_PEERPORT=$(($CODA_RPCPORT + 2))
 CODA_QLPORT=$(($CODA_RPCPORT + 3))
+PUBLIC_KEY='8QnLTHMZPbBFezS8j8kDPu6iLiwPsTPyX2vMwcFzjiDZbp6GQDEBEyLbYvzApSdTsE'
 
 CODA_PRIVKEY_PASS=testnet
 
@@ -53,13 +54,13 @@ case $CODA_ROLE in
 "proposer")
     CLI_ROLE="-peer ${CODA_SEED} "
     CLI_ROLE+=" -propose-key /home/admin/testkeys/high${CODA_PROPOSER_ORDER} "
-    # Note: Following flag strips the propose key of its password and 
+    # Note: Following flag strips the propose key of its password and
     # imports it into the Daemon's internal wallet store.
     CLI_ROLE+=" -unsafe-track-propose-key"
     ;;
 "snarker")
     CLI_ROLE="-peer ${CODA_SEED} "
-    CLI_ROLE+="-run-snark-worker 8QnLTHMZPbBFezS8j8kDPu6iLiwPsTPyX2vMwcFzjiDZbp6GQDEBEyLbYvzApSdTsE "
+    CLI_ROLE+="-run-snark-worker ${PUBLIC_KEY} "
     CLI_ROLE+="-snark-worker-fee 1"
     export OMP_NUM_THREADS=8
     ;;
@@ -79,6 +80,24 @@ echo "Starting coda ${CODA_ROLE}"
 echo "CODA_PRIVKEY_PASS=testnet coda daemon  ${CLI_COMMON} ${CLI_ROLE}"
 CODA_PRIVKEY_PASS=testnet coda daemon ${CLI_COMMON} ${CLI_ROLE}
 
+
+start_worker () {
+    if [ -z "$1" ]
+    then
+        DAEMON='127.0.0.1:8301'
+    else
+        DAEMON=$1
+    fi
+
+    NEW_UUID=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'A-Z0-9' | fold -w 8 | head -n 1)
+    echo ${NEW_UUID}
+    mkdir test-snark-worker-${NEW_UUID}
+    nohup coda internal snark-worker \
+        -public-key ${PUBLIC_KEY} \
+        -daemon-address $DAEMON \
+        -shutdown-on-disconnect false  2>&1 >> test-snark-worker-${NEW_UUID}/coda.log &
+}
+
 # Secondary start of snark workers
 case $CODA_ROLE in
 "snarker")
@@ -86,7 +105,7 @@ case $CODA_ROLE in
     sleep 10 # wait for daemon to come up
     export OMP_NUM_THREADS=8
     while [ "$(pgrep  -f 'coda internal snark-worker' | wc -l)" -lt "$CORE_SCALE" ]; do
-        /home/admin/scripts/snark-worker.sh
+        start_worker
         sleep 5 # wait for it to come up
     done
     ;;
@@ -95,7 +114,7 @@ case $CODA_ROLE in
     sleep 10 # wait for daemon to come up
     export OMP_NUM_THREADS=8
     while [ "$(pgrep  -f 'coda internal snark-worker' | wc -l)" -lt "$CORE_SCALE" ]; do
-        nice /home/admin/scripts/snark-worker.sh {{ snark_leader_ip }}:8301
+        nice start_worker {{ snark_leader_ip }}:8301
         sleep 5 # wait for it to come up
     done
     ;;

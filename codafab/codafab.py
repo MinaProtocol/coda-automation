@@ -29,6 +29,10 @@ def get_trust_status_all(group):
     cmd = 'coda client get-trust-status-all'
     return group.run(cmd, hide='both', warn=True)
 
+def get_date(group):
+    cmd = 'date'
+    return group.run(cmd, hide='both', warn=True)
+
 def hostname(group):
     cmd = 'hostname'
     return group.run(cmd, hide='both', warn=True)
@@ -76,6 +80,13 @@ def package_check(group):
     cmd = 'dpkg -l | grep coda-post'
     results = group.run(cmd, hide='both', warn=True)
     return results
+
+
+def sendstats(group):
+    cmd = './scripts/testnetstats.py'
+    results = group.run(cmd, hide='both', warn=True)
+    return results
+
 
 def package_fix(group):
     cmds = [
