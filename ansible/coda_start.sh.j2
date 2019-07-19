@@ -64,7 +64,7 @@ case $CODA_ROLE in
 "snarker")
     CLI_ROLE="-peer ${CODA_SEED} "
     CLI_ROLE+="-run-snark-worker ${PUBLIC_KEY} "
-    CLI_ROLE+="-snark-worker-fee 1"
+    CLI_ROLE+="-snark-worker-fee 10"
     export OMP_NUM_THREADS=8
     ;;
 "joiner")
