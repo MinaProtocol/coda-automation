@@ -72,7 +72,7 @@ case $CODA_ROLE in
 esac
 
 echo "Starting coda ${CODA_ROLE}"
-CMD="CODA_PRIVKEY_PASS=\"{{ privkey_pass }\" coda daemon ${CLI_COMMON} ${CLI_ROLE}"
+CMD="CODA_PRIVKEY_PASS=\"{{ privkey_pass }}\" coda daemon ${CLI_COMMON} ${CLI_ROLE}"
 echo "Running: ${CMD}"
 ${CMD}
 
