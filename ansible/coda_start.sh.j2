@@ -72,9 +72,9 @@ case $CODA_ROLE in
 esac
 
 echo "Starting coda ${CODA_ROLE}"
-CMD="CODA_PRIVKEY_PASS=\"{{ privkey_pass }}\" coda daemon ${CLI_COMMON} ${CLI_ROLE}"
+CMD="coda daemon ${CLI_COMMON} ${CLI_ROLE}"
 echo "Running: ${CMD}"
-${CMD}
+CODA_PRIVKEY_PASS="{{ privkey_pass }}" ${CMD}
 
 # Start worker function for starting sub-snark workers
 start_worker () {
