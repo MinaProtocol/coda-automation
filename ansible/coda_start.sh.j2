@@ -1,49 +1,41 @@
 #!/bin/bash
 
 ### Script to make starting coda daemons a little easier
+### built from with ansible jinja2
 
 set -e
-
-# built from with ansible jinja2
 
 if pgrep -f "coda daemon" > /dev/null; then
     echo "Coda Already Running"
     exit
 fi
 
+# Make work dir if needed
 if [ ! -d "/home/admin/test-coda" ]; then
   mkdir -p /home/admin/test-coda
 fi
 
-# whitelist ips (derived by ansible - global)
+# Build snarkwork whitelist ips (derived by ansible - global)
 echo "( 127.0.0.1 {% for host in groups['all']  %}{{ hostvars[host].ec2_ip_address }} {% endfor %})" > /home/admin/test-coda/client_whitelist
 
-# external ip (derived by ansible - unique per host)
+# External ip (derived by ansible - unique per host)
 EXTERNAL_IP='{{ ec2_ip_address }}'
 
-CODA_CLIENTPORT=8301
+# Default ports start at 8301
 CODA_RPCPORT=8301
 CODA_EXTPORT=$(($CODA_RPCPORT + 1))
 CODA_PEERPORT=$(($CODA_RPCPORT + 2))
 CODA_QLPORT=$(($CODA_RPCPORT + 3))
 PUBLIC_KEY='tNci9ERxHGkemqBmNxEWTcPgY5sn347yq6BFcUGTpve6aJpaDUgaaTEQ3rfAgYeK7KhzEbYoJvSbqQ8u88aBNtu8ALVcEeRo4ei6sGjxMsmBAJW7vwW57KLzrvou4YEMA3saq6Xqtpg3sb'
 
-CODA_PRIVKEY_PASS=testnet
-
-# This is important 
-export CODA_TIME_OFFSET=$(echo "{{ testnet_timestamp }} - $(date --date="2019-01-30 12:00:00-08:00" +%s)" | bc)
+# Only required when using TIME_OFFSET builds 
+#export CODA_TIME_OFFSET=$(echo "{{ testnet_timestamp }} - $(date --date="2019-01-30 12:00:00-08:00" +%s)" | bc)
 
 CODA_SEED="{{ seed_ip }}:${CODA_PEERPORT}" # derived from ansible
 CODA_ROLE=$(cat /etc/coda-rolename)
 
-if [ -e /etc/coda-proposer_order ]; then
-    CODA_PROPOSER_ORDER=$(cat /etc/coda-proposer_order)
-else
-    CODA_PROPOSER_ORDER='0'
-fi
-
 CLI_COMMON="-background -tracing -log-json -log-level Trace "
-CLI_COMMON+="-client-port ${CODA_CLIENTPORT} " # Default
+CLI_COMMON+="-client-port ${CODA_RPCPORT} " # Default
 CLI_COMMON+="-external-port ${CODA_EXTPORT} "
 CLI_COMMON+="-config-directory /home/admin/test-coda "
 CLI_COMMON+="-external-ip ${EXTERNAL_IP} "
@@ -56,7 +48,7 @@ CORE_SCALE=$(( $CORE_COUNT / 8 ))
 case $CODA_ROLE in
 "proposer")
     CLI_ROLE="-peer ${CODA_SEED} "
-    CLI_ROLE+=" -propose-key /home/admin/wallet-keys/${CODA_PROPOSER_ORDER} "
+    CLI_ROLE+=" -propose-key /home/admin/wallet-keys/proposerkey "
     # Note: Following flag strips the propose key of its password and
     # imports it into the Daemon's internal wallet store.
     CLI_ROLE+=" -unsafe-track-propose-key"
@@ -80,10 +72,11 @@ case $CODA_ROLE in
 esac
 
 echo "Starting coda ${CODA_ROLE}"
-echo "CODA_PRIVKEY_PASS=testnet coda daemon  ${CLI_COMMON} ${CLI_ROLE}"
-CODA_PRIVKEY_PASS=testnet coda daemon ${CLI_COMMON} ${CLI_ROLE}
+CMD="CODA_PRIVKEY_PASS=\"{{ privkey_pass }\" coda daemon ${CLI_COMMON} ${CLI_ROLE}"
+echo "Running: ${CMD}"
+${CMD}
 
-
+# Start worker function for starting sub-snark workers
 start_worker () {
     if [ -z "$1" ]
     then
@@ -95,7 +88,7 @@ start_worker () {
     NEW_UUID=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'A-Z0-9' | fold -w 8 | head -n 1)
     echo ${NEW_UUID}
     mkdir test-snark-worker-${NEW_UUID}
-    nohup coda internal snark-worker \
+    nohup nice nice coda internal snark-worker \
         -public-key ${PUBLIC_KEY} \
         -daemon-address $DAEMON \
         -shutdown-on-disconnect false  2>&1 >> test-snark-worker-${NEW_UUID}/coda.log &

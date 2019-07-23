@@ -1,11 +1,12 @@
-# - name: Create testkey Directory
-#   file:
-#     path: /home/admin/wallet-keys
-#     state: directory
-#     mode: '0700'
+- name: Create testkey Directory
+  file:
+    path: /home/admin/wallet-keys
+    state: directory
+    mode: '0700'
 
-- name: Copy Wallet Keys
-  synchronize:
-    perms: yes
-    src: wallet-keys
-    dest: /home/admin/
+# No longer valid since keys were privatized
+# - name: Copy Wallet Keys
+#   synchronize:
+#     perms: yes
+#     src: wallet-keys
+#     dest: /home/admin/

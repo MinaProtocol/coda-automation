@@ -12,7 +12,6 @@
     - include: tasks/task-wallet-keys.yaml
     - include: tasks/task-sshkeys.yaml
     - include: tasks/task-tools.yaml
-    #- include: tasks/task-installcoda.yaml
     - include: tasks/task-install-filebeat.yaml
     - include: tasks/task-install-metricbeat.yaml
     - include: tasks/task-testnet_config.yaml
@@ -21,9 +20,16 @@
 # Assign a unique ID to each proposer (so proof of stake works)
 - hosts: "tag_role_{{ netname }}_proposer"
   gather_facts: no
+  vars:
+    id: "{{ ansible_play_hosts.index(inventory_hostname) }}"
   tasks:
-    - name: Unique ID
+    - name: Unique Proposer Priv Key
       copy:
-        dest: /etc/coda-proposer_order
-        content: "{{ ansible_play_hosts.index(inventory_hostname) }}"
-      become: true
+        dest: /home/admin/wallet-keys/proposerkey
+        mode: 0600
+        content: "{{ lookup('vars', 'privkey_' + id) }}"
+    - name: Unique Proposer Pub Key
+      copy:
+        dest: /home/admin/wallet-keys/proposerkey.pub
+        mode: 0600
+        content: "{{ lookup('vars', 'pubkey_' + id) }}"
