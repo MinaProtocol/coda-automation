@@ -48,9 +48,9 @@ hostnamectl set-hostname ${var.netname}_${var.region}_${var.rolename}_${count.in
 echo '127.0.1.1  ${var.netname}_${var.region}_${var.rolename}_${count.index}.${var.region}' >> /etc/hosts
 
 echo "Installing Coda"
-echo "deb [trusted=yes] http://packages.o1test.net stable main" > /etc/apt/sources.list.d/coda.list
+echo "deb [trusted=yes] http://packages.o1test.net ${var.coda_repo} main" > /etc/apt/sources.list.d/coda.list
 apt-get update
-apt-get install --force-yes -t stable coda-testnet-postake-medium-curves=${var.coda_version} -y
+apt-get install --force-yes -t ${var.coda_repo} coda-testnet-postake-medium-curves=${var.coda_version} -y
 
 # coda flags
 echo ${var.rolename} > /etc/coda-rolename

@@ -10,12 +10,17 @@ variable "netname" {
   default     = "NONETNAMESET"
 }
 
+variable "coda_repo" {
+  description = "repo of the Coda Deb to Install"
+  type = string
+  default = "stable"
+}
+
 variable "coda_version" {
   description = "Version of the Coda Deb to Install"
   type = string
   default = "0.0.1-release-beta-0d13213e"
 }
-
 
 variable "port_rpc" {
   description = "Port RPC protocol communicates over"
