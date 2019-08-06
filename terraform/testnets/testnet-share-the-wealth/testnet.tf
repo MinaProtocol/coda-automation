@@ -46,6 +46,21 @@ resource "aws_route53_record" "netname" {
   records = module.us-west-2-seed.public_ip
 }
 
+######################################################################
+## Joiners
+module "us-west-2-joiner" {
+  source        = "../../modules/coda-node"
+  region        = "us-west-2"
+  server_count  = 2
+  instance_type = "c5.xlarge"
+  netname       = "${local.netname}"
+  rolename      = "joiner"
+  key_name      = "${local.aws_key_name}"
+  public_key    = ""
+  coda_version  = "${local.coda_version}"
+}
+
+######################################################################
 ## Snarkers
 module "us-west-2-snarker" {
   source        = "../../modules/coda-node"
