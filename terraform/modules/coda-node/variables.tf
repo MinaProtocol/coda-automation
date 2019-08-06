@@ -4,6 +4,11 @@ variable "instance_type" {
   default     = "c5.large"
 }
 
+variable "custom_ami" {
+  description = "Optional Custom AMI - Defaults to newest debian stretch AMI"
+  type = string
+}
+
 variable "netname" {
   description = "Name of the testnet, used for tagging resources"
   type        = string

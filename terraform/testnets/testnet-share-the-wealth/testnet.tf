@@ -25,6 +25,7 @@ module "us-west-2-seed" {
   region        = "us-west-2"
   server_count  = 1
   instance_type = "c5.xlarge"
+  custom_ami = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
   rolename      = "seed"
   key_name      = "${local.aws_key_name}"
@@ -46,6 +47,14 @@ resource "aws_route53_record" "netname" {
   records = module.us-west-2-seed.public_ip
 }
 
+resource "aws_route53_record" "multiseed" {
+  zone_id = "${data.aws_route53_zone.selected.zone_id}"
+  name    = "multiseed-${local.netname}.${data.aws_route53_zone.selected.name}"
+  type    = "A"
+  ttl     = "300"
+  records = concat(module.us-west-2-seed.public_ip, module.us-west-2-joiner.public_ip)
+}
+
 ######################################################################
 ## Joiners
 module "us-west-2-joiner" {
@@ -53,6 +62,7 @@ module "us-west-2-joiner" {
   region        = "us-west-2"
   server_count  = 2
   instance_type = "c5.xlarge"
+  custom_ami = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
   rolename      = "joiner"
   key_name      = "${local.aws_key_name}"
@@ -67,6 +77,7 @@ module "us-west-2-snarker" {
   region        = "us-west-2"
   server_count  = 1
   instance_type = "c5.4xlarge"
+  custom_ami = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
   rolename      = "snarker"
   key_name      = "${local.aws_key_name}"
@@ -82,6 +93,7 @@ module "us-west-2-proposer" {
   region        = "us-west-2"
   server_count  = 3
   instance_type = "c5.2xlarge"
+  custom_ami = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
   rolename      = "proposer"
   key_name      = "${local.aws_key_name}"
@@ -95,6 +107,7 @@ module "us-west-1-proposer" {
   region        = "us-west-1"
   server_count  = 2
   instance_type = "c5.2xlarge"
+  custom_ami = "ami-0f921d4caacd8d746"
   netname       = "${local.netname}"
   rolename      = "proposer"
   key_name      = "${local.aws_key_name}"

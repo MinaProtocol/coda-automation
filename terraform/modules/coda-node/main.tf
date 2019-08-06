@@ -22,7 +22,7 @@ data "aws_ami" "image" {
 # The Node instance
 resource "aws_instance" "coda_node" {
   count                       = "${var.server_count}"
-  ami                         = "${data.aws_ami.image.id}"
+  ami                         = "${var.custom_ami != "" ? var.custom_ami : data.aws_ami.image.id}"
   instance_type               = "${var.instance_type}"
   security_groups             = ["${aws_security_group.coda_sg.name}"]
   key_name                    = "${var.public_key != "" ? aws_key_pair.testnet[0].key_name : var.key_name}"
