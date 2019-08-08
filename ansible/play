@@ -20,7 +20,7 @@ if [ -z ${TESTNET+x} ];
 
         lastcache=`ls -lot ~/.ansible/tmp/ansible-ec2-*.cache | head -n 1 | awk '{print $8}'`
         echo "Possible Values:"
-        cat ${lastcache} | grep tag_testnet_ | cut -d '"' -f 1
+        cat ${lastcache} | grep tag_testnet_ | cut -d '"' -f 2
 
         exit
     else
@@ -28,8 +28,9 @@ if [ -z ${TESTNET+x} ];
 fi
 
 ansible-playbook \
-    ${TESTNET} \
     --vault-password-file=ansible_vault_password \
     -i ec2.py \
+    -l tag_testnet_${TESTNET} \
+    -e netname=${TESTNET} \
     -e start_time=$(date +%s) \
     ${playbook}
