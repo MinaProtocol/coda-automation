@@ -1,7 +1,9 @@
 locals {
   netname      = "share-the-wealth"
   aws_key_name = "testnet"
-  coda_version = "0.0.1-release-0.0.1-beta.2-fd4fb398"
+  coda_repo    = "release"
+  coda_version = "0.0.2-beta.2-ce3da112"
+  
 }
 
 terraform {
@@ -24,12 +26,13 @@ module "us-west-2-seed" {
   source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 1
-  instance_type = "c5.xlarge"
+  instance_type = "c5.2xlarge"
   custom_ami = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
   rolename      = "seed"
   key_name      = "${local.aws_key_name}"
   public_key    = ""
+  coda_repo     = "${local.coda_repo}"
   coda_version  = "${local.coda_version}"
 }
 
@@ -61,12 +64,13 @@ module "us-west-2-joiner" {
   source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 2
-  instance_type = "c5.xlarge"
+  instance_type = "c5.2xlarge"
   custom_ami = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
   rolename      = "joiner"
   key_name      = "${local.aws_key_name}"
   public_key    = ""
+  coda_repo     = "${local.coda_repo}"
   coda_version  = "${local.coda_version}"
 }
 
@@ -82,6 +86,7 @@ module "us-west-2-snarker" {
   rolename      = "snarker"
   key_name      = "${local.aws_key_name}"
   public_key    = ""
+  coda_repo     = "${local.coda_repo}"
   coda_version  = "${local.coda_version}"
 }
 
@@ -98,6 +103,7 @@ module "us-west-2-proposer" {
   rolename      = "proposer"
   key_name      = "${local.aws_key_name}"
   public_key    = ""
+  coda_repo     = "${local.coda_repo}"
   coda_version  = "${local.coda_version}"
 }
 
@@ -112,5 +118,6 @@ module "us-west-1-proposer" {
   rolename      = "proposer"
   key_name      = "${local.aws_key_name}"
   public_key    = ""
+  coda_repo     = "${local.coda_repo}"
   coda_version  = "${local.coda_version}"
 }
