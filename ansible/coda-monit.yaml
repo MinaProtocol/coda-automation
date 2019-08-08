@@ -1,0 +1,6 @@
+---
+- hosts: "tag_testnet_{{ netname }}"
+  gather_facts: no
+  tasks:
+    - include: tasks/task-install-monit.yaml
+

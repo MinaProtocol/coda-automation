@@ -13,7 +13,7 @@
             start program = "/home/admin/coda_start.sh"
                 as uid "admin" and gid "admin"
             stop program = "/home/admin/scripts/stop-hard.sh"
-                as uid "admin" and gid "admin
+                as uid "admin" and gid "admin"
 
 - name: config -- monitrc
   become: true

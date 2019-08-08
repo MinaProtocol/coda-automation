@@ -46,12 +46,16 @@
         key = 'grafanaNet'
         type = 'grafanaNet'
         addr = 'https://graphite-us-central1.grafana.net/metrics'
-        apikey = '8246:eyJrIjoiYmNkN2YwMWQ4ZmE2OTI1MjU1MTRlNGUxNDgxYjIxOTI0MDIzZjdjNSIsIm4iOiJ0ZXN0bmV0IiwiaWQiOjI2MDI2Nn0='
+        apikey = '8246:{{ grafana_graphite_api }}'
         schemasFile = '/etc/carbon-relay-ng/storage-schemas.conf'
 
         [instrumentation]
         graphite_addr = "localhost:2003"
         graphite_interval = 10000  # in ms
+
+- name: Restart Carbon Relay
+  command: systemctl restart carbon-relay-ng
+  become: true
 
 - name: Install graphyte
   command: pip3 install graphyte

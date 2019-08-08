@@ -1,0 +1,18 @@
+---
+- hosts: "tag_testnet_{{ netname }}"
+  gather_facts: no
+  run_once: True
+  tasks:
+    - include: tasks/task-secretmanager.yaml
+
+- hosts: "tag_testnet_{{ netname }}"
+  gather_facts: no
+  tasks:
+    - ec2_metadata_facts:
+    - name: Generating coda_start.sh
+      vars:
+        seed_ip: "{{ hostvars[groups['tag_role_' + netname + '_seed'][0]].ec2_ip_address }}"
+        snark_leader_ip: "{{ hostvars[groups['tag_role_' + netname + '_snarker'][0]].ec2_ip_address }}"
+        testnet_timestamp: "{{ start_time }}"
+      template: "src=coda_start.sh.j2 dest='/home/admin/coda_start.sh' owner=admin group=admin mode=0755"
+      tags: coda_start

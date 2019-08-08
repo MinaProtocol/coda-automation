@@ -10,6 +10,12 @@ if pgrep -f "coda daemon" > /dev/null; then
     exit
 fi
 
+# If test-code exists, mv it (previous crash)
+if [ -d "/home/admin/test-coda" ]; then
+    DS=`date +"%Y-%m-%d_%H-%M-%S"`
+    mv /home/admin/test-coda /home/admin/test-coda-CRASH-${DS}
+fi
+
 # Make work dir if needed
 if [ ! -d "/home/admin/test-coda" ]; then
   mkdir -p /home/admin/test-coda
@@ -28,13 +34,13 @@ CODA_PEERPORT=$(($CODA_RPCPORT + 2))
 CODA_QLPORT=$(($CODA_RPCPORT + 3))
 PUBLIC_KEY='tNci9ERxHGkemqBmNxEWTcPgY5sn347yq6BFcUGTpve6aJpaDUgaaTEQ3rfAgYeK7KhzEbYoJvSbqQ8u88aBNtu8ALVcEeRo4ei6sGjxMsmBAJW7vwW57KLzrvou4YEMA3saq6Xqtpg3sb'
 
-# Only required when using TIME_OFFSET builds 
+# Only required when using TIME_OFFSET build
 #export CODA_TIME_OFFSET=$(echo "{{ testnet_timestamp }} - $(date --date="2019-01-30 12:00:00-08:00" +%s)" | bc)
 
 CODA_SEED="{{ seed_ip }}:${CODA_PEERPORT}" # derived from ansible
 CODA_ROLE=$(cat /etc/coda-rolename)
 
-CLI_COMMON="-background -tracing -log-json -log-level Trace "
+CLI_COMMON="-background -tracing -no-bans -log-json -log-level Trace "
 CLI_COMMON+="-client-port ${CODA_RPCPORT} " # Default
 CLI_COMMON+="-external-port ${CODA_EXTPORT} "
 CLI_COMMON+="-config-directory /home/admin/test-coda "

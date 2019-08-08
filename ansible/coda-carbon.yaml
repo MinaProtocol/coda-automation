@@ -1,0 +1,12 @@
+---
+- hosts: "tag_testnet_{{ netname }}"
+  gather_facts: no
+  run_once: True
+  tasks:
+    - include: tasks/task-secretmanager.yaml
+
+- hosts: "tag_testnet_{{ netname }}"
+  gather_facts: no
+  tasks:
+    - include: tasks/task-install-carbon.yaml
+
