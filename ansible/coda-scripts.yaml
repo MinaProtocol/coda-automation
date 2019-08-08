@@ -1,0 +1,11 @@
+---
+- hosts: "tag_testnet_{{ netname }}"
+  strategy: free
+  gather_facts: no
+  tasks:
+    - include: tasks/task-tools.yaml
+
+- hosts: "tag_role_{{ netname }}_seed"
+  gather_facts: no
+  tasks:
+    - include: tasks/task-testnetstats_cron.yaml

@@ -31,7 +31,7 @@ except IOError as error:
     sys.exit(1)
 
 
-keys = json.loads(cli('coda advanced get-public-keys -j'))
+keys = json.loads(cli('coda advanced get-public-keys -j'))[40:]
 keys_with_balances = json.loads(cli('coda advanced get-public-keys -w -j'))['accounts']
 balances={}
 for item in keys_with_balances:
@@ -50,10 +50,10 @@ for mydict in nonces:
         #print(mydict)
         gmetrics = graphyte.Sender('localhost', prefix='testnet.%s.stats.nonce_bykey.%s' % (testnet, mydict['key'][:10]), log_sends=True)
         gmetrics.send('nonce_count',int(mydict['nonce']))
-        
+
         gmetrics = graphyte.Sender('localhost', prefix='testnet.%s.stats.balance_bykey.%s' % (testnet, mydict['key'][:10]), log_sends=True)
         gmetrics.send('balance', int(balances[mydict['key']]))
-        
+
 print('Total:', noncesum)
 
 
