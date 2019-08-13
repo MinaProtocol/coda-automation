@@ -22,6 +22,7 @@ if [ ! -d "/home/admin/test-coda" ]; then
 fi
 
 # Build snarkwork whitelist ips (derived by ansible - global)
+# liberal list (all groups)
 echo "( 127.0.0.1 {% for host in groups['all']  %}{{ hostvars[host].ec2_ip_address }} {% endfor %})" > /home/admin/test-coda/client_whitelist
 
 # External ip (derived by ansible - unique per host)
@@ -37,7 +38,7 @@ PUBLIC_KEY='tNci9ERxHGkemqBmNxEWTcPgY5sn347yq6BFcUGTpve6aJpaDUgaaTEQ3rfAgYeK7Khz
 # Only required when using TIME_OFFSET build
 #export CODA_TIME_OFFSET=$(echo "{{ testnet_timestamp }} - $(date --date="2019-01-30 12:00:00-08:00" +%s)" | bc)
 
-CODA_SEEDLIST=" -peer {% for host in groups['all']  %}{{ hostvars[host].ec2_ip_address }}:${CODA_PEERPORT} {% endfor %}" # derived from ansible
+CODA_SEEDLIST="{% for host in groups['tag_testnet_' + netname]  %}-peer {{ hostvars[host].ec2_ip_address }}:${CODA_PEERPORT} {% endfor %}" # derived from ansible
 CODA_ROLE=$(cat /etc/coda-rolename)
 
 CLI_COMMON="-background -tracing -no-bans -log-json -log-level Trace "
