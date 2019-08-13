@@ -9,6 +9,9 @@ import sys
 import json
 import pprint
 import boto3
+import requests
+
+import dns.resolver
 
 pp = pprint.PrettyPrinter(indent=4)
 client = boto3.client('es')
@@ -25,10 +28,32 @@ def read_ansible_inventory(fname):
                 iplist.append(data[5])
     return(iplist)
 
+def ips_from_ec2_json(fname='ec2.json'):
+    with open(fname) as jsonfile:
+        data = json.load(jsonfile)
+    return(data['key_testnet'])
+
+def ips_from_hosted_grafana():
+
+    myResolver = dns.resolver.Resolver()
+    myAnswers = myResolver.query("src-ips.hosted-grafana.grafana.net", "A")
+    iplist=[]
+    for rdata in myAnswers:
+        print(rdata)
+        iplist.append(str(rdata))
+
+    #url = 'https://grafana.com/api/hosted-grafana/source-ips.txt'
+    #r = requests.get(url)
+
+    #for line in r.text.split("\n"):
+    #    iplist.append(line)
+    return(iplist)
 
 if __name__ == "__main__":
     # Read currently used IPs from ansible
-    proposed_ips = read_ansible_inventory("../ansible/inventory")
+    #proposed_ips = read_ansible_inventory("../ansible/inventory")
+
+    proposed_ips = ips_from_ec2_json() + ips_from_hosted_grafana()
 
     # Load sensitive config
     try:
