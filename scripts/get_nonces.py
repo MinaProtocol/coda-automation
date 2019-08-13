@@ -31,31 +31,20 @@ except IOError as error:
     sys.exit(1)
 
 
-keys = json.loads(cli('coda advanced get-public-keys -j'))[40:]
-keys_with_balances = json.loads(cli('coda advanced get-public-keys -w -j'))['accounts']
-balances={}
-for item in keys_with_balances:
-    for key in item:
-        balances[key] = item[key]
+dumped_ledger = cli('coda advanced dump-ledger -json')
 
-pool = Pool(processes=4)
-nonces = pool.map(get_nonce, keys)
-noncesum=0
+for line in dumped_ledger.splitlines():
+    jline = json.loads(line)
+    nonce_sum = 0
+    balance_sum = 0
+    if 'public_key' in jline:
+        nonce_metrics   = graphyte.Sender('localhost', prefix='testnet.%s.stats.nonce_bykey.%s'   % (testnet, jline['public_key'][:12]))
+        nonce_metrics.send('nonce_count',int(jline['nonce']))
+        nonce_sum += int(jline['nonce'])
 
-for mydict in nonces:
-    if mydict['nonce'] == '0':
-        continue
-    else:
-        noncesum += int(mydict['nonce'])
-        #print(mydict)
-        gmetrics = graphyte.Sender('localhost', prefix='testnet.%s.stats.nonce_bykey.%s' % (testnet, mydict['key'][:10]), log_sends=True)
-        gmetrics.send('nonce_count',int(mydict['nonce']))
+        balance_metrics = graphyte.Sender('localhost', prefix='testnet.%s.stats.balance_bykey.%s' % (testnet, jline['public_key'][:12]))
+        balance_metrics.send('balance', int(jline['balance']))
+        balance_sum += int(jline['balance'])
 
-        gmetrics = graphyte.Sender('localhost', prefix='testnet.%s.stats.balance_bykey.%s' % (testnet, mydict['key'][:10]), log_sends=True)
-        gmetrics.send('balance', int(balances[mydict['key']]))
-
-print('Total:', noncesum)
-
-
-gmetrics = graphyte.Sender('localhost', prefix='testnet.%s.stats' % testnet, log_sends=True)
-gmetrics.send('nonce_sum', noncesum)
+    sum = graphyte.Sender('localhost', prefix='testnet.%s.stats' % (testnet), log_sends=True)
+    sum.send('nonce_sum', nonce_sum)
