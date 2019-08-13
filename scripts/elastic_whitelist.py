@@ -14,60 +14,47 @@ import requests
 import dns.resolver
 
 pp = pprint.PrettyPrinter(indent=4)
-client = boto3.client('es')
 
-
-# Read IP list from ansible inventory - FIXME: SourceOfTruth
-def read_ansible_inventory(fname):
-    iplist = []
-    with open(fname) as f:
-        lines = f.readlines()
-        for line in lines:
-            if line.startswith("ec2"):
-                data = line.split()
-                iplist.append(data[5])
-    return(iplist)
-
+""" Get list of IPs from local ec2.json --- ec2.py > ec2.json """
 def ips_from_ec2_json(fname='ec2.json'):
     with open(fname) as jsonfile:
         data = json.load(jsonfile)
     return(data['key_testnet'])
 
+""" Get list of IPs from hosted_grafana """
 def ips_from_hosted_grafana():
+    iplist=[]
+    # FIXME: They have a HTTP endpoint, but it was buggy and only returning a partial list
+    #url = 'https://grafana.com/api/hosted-grafana/source-ips.txt'
+    #r = requests.get(url)
+    #for line in r.text.split("\n"):
+    #    iplist.append(line)
 
+    # DNS method (not broken, but requires dns module)
     myResolver = dns.resolver.Resolver()
     myAnswers = myResolver.query("src-ips.hosted-grafana.grafana.net", "A")
-    iplist=[]
     for rdata in myAnswers:
         print(rdata)
         iplist.append(str(rdata))
 
-    #url = 'https://grafana.com/api/hosted-grafana/source-ips.txt'
-    #r = requests.get(url)
-
-    #for line in r.text.split("\n"):
-    #    iplist.append(line)
     return(iplist)
 
 if __name__ == "__main__":
-    # Read currently used IPs from ansible
-    #proposed_ips = read_ansible_inventory("../ansible/inventory")
-
     proposed_ips = ips_from_ec2_json() + ips_from_hosted_grafana()
 
     # Load sensitive config
     try:
         with open('elastic_whitelist_config.json') as config_file:
             config = json.load(config_file)
+            # Add static whitelist ips from config.json
+            for ip in config['whitelist_ips']:
+                proposed_ips.append(ip)
     except IOError as error:
         print('Error opening secrets config:', error)
         sys.exit(1)
 
-    # Add static whitelist ips from config.json
-    for ip in config['whitelist_ips']:
-        proposed_ips.append(ip)
-
-    # Load current access policy
+    # Load current es access policy
+    client = boto3.client('es')
     response = client.describe_elasticsearch_domains(
         DomainNames=[config['elastic_domain_name']])
     for domain in response['DomainStatusList']:
