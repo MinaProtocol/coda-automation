@@ -2,6 +2,7 @@
 FROM debian:stable
 
 ## TERRAFORM
+## derived from https://learn.hashicorp.com/terraform/getting-started/install.html
 ENV TERRAFORM_VERSION 0.12.6
 ENV TERRAFORM_URL https://releases.hashicorp.com/terraform
 ENV TERRAFORM_SHA256 6544eb55b3e916affeea0a46fe785329c36de1ba1bdb51ca5239d3567101876f
@@ -19,6 +20,7 @@ RUN apt-get -qq update \
     && rmdir terraform
 
 ## ANSIBLE
+## derived from https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#latest-releases-via-apt-debian
 ENV ANSIBLE_VERSION 2.8.4-1ppa~trusty
 
 RUN apt-get -qq install -y gnupg2 \
