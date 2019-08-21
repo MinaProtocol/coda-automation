@@ -10,8 +10,17 @@ jobs:
                   name: terraform init
                   command: cd terraform/testnets/testnet-smoke-test && terraform init
             - run:
-                  name: terraform init
+                  name: terraform refresh
+                  command: cd terraform/testnets/testnet-smoke-test && terraform refresh
+            - run:
+                  name: terraform plan
                   command: cd terraform/testnets/testnet-smoke-test && terraform plan
+            - run:
+                  name: terraform apply -auto-approve
+                  command: cd terraform/testnets/testnet-smoke-test && terraform apply -auto-approve
+
+
+
 workflows:
     version: 2
     smoke-test:
