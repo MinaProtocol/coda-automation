@@ -1,0 +1,16 @@
+---
+version: 3
+jobs:
+    create-instances:
+        docker:
+            - image: codaprotocol/coda-automation:latest
+        steps:
+            - checkout
+            - run:
+                  name: terraform init
+                  command: cd terraform/testnets/testnet-smoke-test && terraform init
+workflows:
+    version: 2
+    smoke-test:
+        jobs:
+            - create-instances
