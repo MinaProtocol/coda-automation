@@ -3,7 +3,7 @@ version: 3
 jobs:
     create-instances:
         docker:
-            - image: codaprotocol/coda-automation:latest
+            - image: codaprotocol/coda-automation:manual
               environment:
                 TESTNET: smoke_test
         steps:
