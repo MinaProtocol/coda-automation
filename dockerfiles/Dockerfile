@@ -33,4 +33,5 @@ RUN apt-get -qq update \
 
 ## COMMON TOOLS
 RUN apt-get -qq update \
-    && apt-get -qq install -y --no-install-recommends git python3 python3-botocore
+    && apt-get -qq install -y --no-install-recommends git python3 python3-pip \
+    && pip3 install boto
