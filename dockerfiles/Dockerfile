@@ -1,5 +1,10 @@
 # Last updated: 2019-09-20
+# Utility image with deploy tools
 FROM debian:stable
+
+## COMMON
+RUN apt-get -qq update \
+    && apt-get -qq install -y --no-install-recommends git
 
 ## TERRAFORM
 ## derived from https://learn.hashicorp.com/terraform/getting-started/install.html
@@ -8,8 +13,7 @@ ARG TERRAFORM_URL=https://releases.hashicorp.com/terraform
 ARG TERRAFORM_SHA256=6544eb55b3e916affeea0a46fe785329c36de1ba1bdb51ca5239d3567101876f
 # eg https://releases.hashicorp.com/terraform/0.12.6/terraform_0.12.6_linux_amd64.zip
 
-RUN apt-get -qq update \
-    && apt-get -qq install -y --no-install-recommends ca-certificates wget unzip \
+RUN apt-get -qq install -y --no-install-recommends ca-certificates wget unzip \
     && mkdir /terraform \
     && cd /terraform \
     && wget -q -O terraform.zip ${TERRAFORM_URL}/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
