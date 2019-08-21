@@ -94,7 +94,7 @@ module "us-west-2-snarker" {
   source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 1
-  instance_type = "c5.8xlarge"
+  instance_type = "c5.9xlarge"
   custom_ami    = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
   rolename      = "snarker"
