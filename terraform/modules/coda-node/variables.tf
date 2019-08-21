@@ -7,6 +7,7 @@ variable "instance_type" {
 variable "custom_ami" {
   description = "Optional Custom AMI - Defaults to newest debian stretch AMI"
   type = string
+  default = ""
 }
 
 variable "netname" {
