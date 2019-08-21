@@ -8,7 +8,7 @@ locals {
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "test-net/terraform-medium-rare.tfstate"
+    key     = "test-net/terraform-smoke-test.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state-smoke-test"
