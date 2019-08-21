@@ -9,6 +9,9 @@ jobs:
             - run:
                   name: terraform init
                   command: cd terraform/testnets/testnet-smoke-test && terraform init
+            - run:
+                  name: terraform init
+                  command: cd terraform/testnets/testnet-smoke-test && terraform plan
 workflows:
     version: 2
     smoke-test:
