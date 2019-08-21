@@ -31,7 +31,7 @@ RUN apt-get -qq update \
     && apt-get -qq update \
     && apt-get -qq install -y --no-install-recommends ansible=${ANSIBLE_VERSION}
 
-## COMMON TOOLS
+## COMMON TOOLS and python3 support
 RUN apt-get -qq update \
-    && apt-get -qq install -y --no-install-recommends git python3 python3-pip \
-    && pip3 install boto
+    && apt-get -qq install -y --no-install-recommends git python3 python3-setuptools python3-pip
+RUN pip3 install boto ansible
