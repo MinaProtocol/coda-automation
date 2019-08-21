@@ -21,6 +21,9 @@ jobs:
                   name: terraform apply -auto-approve
                   command: cd terraform/testnets/testnet-smoke-test && terraform apply -auto-approve
             - run:
+                  name: HACK install ssh
+                  command: sudo apt-get install openssh-client
+            - run:
                   name: ansible init
                   command: cd ansible && ./play coda-init.yaml
 
