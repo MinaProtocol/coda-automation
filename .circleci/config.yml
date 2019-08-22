@@ -46,8 +46,16 @@ jobs:
                   name: ansible start
                   command: cd ansible && ./play coda-start-all.yaml
             - run:
-                  name: Wait 10min for network to actually do something
+                  name: Wait 10 min for network to actually do something
                   command: sleep 600
+                  no_output_timeout: 30m
+            - run:
+                  name: ansible monit
+                  command: cd ansible && ./play coda-monit.yaml
+            - run:
+                  name: Wait 2 min for joiners
+                  command: sleep 120
+                  no_output_timeout: 30m
             - run:
                   name: coda client status
                   command: cd ansible && ./adhoc tag_testnet_smoke_test "coda client status"
