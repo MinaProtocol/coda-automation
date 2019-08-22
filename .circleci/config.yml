@@ -21,12 +21,9 @@ jobs:
                   name: terraform apply -auto-approve
                   command: cd terraform/testnets/testnet-smoke-test && terraform apply -auto-approve
             - run:
-                  name: HACK install ssh
-                  command: sudo apt-get install openssh-client
-            - run:
-                  name: HACK install ssh
+                  name: ssh config
                   command: |
-                    echo $TESTNETPEM > ~/.ssh/id_rsa
+                    echo -e "$TESTNETPEM" > ~/.ssh/id_rsa
                     chmod 0600 ~/.ssh/id_rsa
                     echo -e "Host *.amazonaws.com\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  User admin" > ~/.ssh/config
             - run:
