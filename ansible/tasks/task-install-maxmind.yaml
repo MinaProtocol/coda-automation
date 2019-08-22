@@ -9,6 +9,10 @@
 - name: Install geoipupdate
   apt: deb="/tmp/geoipupdate_4.0.3_linux_amd64.deb"
   sudo: true
+  register: apt_status
+  until: apt_status|success
+  delay: 6
+  retries: 10
 
 - name: Run geoipupdate
   command: geoipupdate

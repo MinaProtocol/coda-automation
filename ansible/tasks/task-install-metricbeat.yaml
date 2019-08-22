@@ -11,8 +11,12 @@
     force: no
 
 - name: Install Metricbeat
-  become: true
-  shell: dpkg -i /tmp/{{ deb_filename }}
+  apt: deb="/tmp/{{ deb_filename }}"
+  sudo: true
+  register: apt_status
+  until: apt_status|success
+  delay: 6
+  retries: 10
 
 - name: Configure Metricbeat
   become: true

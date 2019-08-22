@@ -13,6 +13,10 @@
 - name: Run carbon
   command: sudo apt-get install carbon-relay-ng=0.11.0-1
   become: true
+  register: apt_status
+  until: apt_status|success
+  delay: 6
+  retries: 10
 
 - name: Fix carbon /var/run perms
   command: chown carbon-relay-ng:carbon-relay-ng /var/run/carbon-relay-ng
