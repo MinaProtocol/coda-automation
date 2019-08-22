@@ -15,6 +15,9 @@ jobs:
                   name: terraform refresh
                   command: cd terraform/testnets/testnet-smoke-test && terraform refresh
             - run:
+                  name: terraform destroy -auto-approve
+                  command: cd terraform/testnets/testnet-smoke-test && terraform destroy -auto-approve
+            - run:
                   name: terraform plan
                   command: cd terraform/testnets/testnet-smoke-test && terraform plan
             - run:
@@ -34,13 +37,16 @@ jobs:
                     ../ansible/ec2.py > ec2.json
                     ./elastic_whitelist.py
             - run:
+                  name: Wait 2 min for things like dpkg to settle (lame)
+                  command: sleep 120
+            - run:
                   name: ansible init
                   command: cd ansible && ./play coda-init.yaml
             - run:
                   name: ansible start
                   command: cd ansible && ./play coda-start-all.yaml
             - run:
-                  name: Wait 10min (lame)
+                  name: Wait 10min for network to actually do something
                   command: sleep 600
             - run:
                   name: coda client status
