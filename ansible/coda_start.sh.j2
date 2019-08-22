@@ -48,9 +48,6 @@ CLI_COMMON+="-config-directory /home/admin/test-coda "
 CLI_COMMON+="-external-ip ${EXTERNAL_IP} "
 CLI_COMMON+="-rest-port ${CODA_QLPORT} "
 
-CORE_COUNT=`nproc --all`
-CORE_SCALE=$(( $CORE_COUNT / 8 ))
-
 # Main start
 case $CODA_ROLE in
 "proposer")
@@ -58,13 +55,13 @@ case $CODA_ROLE in
     CLI_ROLE+=" -propose-key /home/admin/wallet-keys/proposerkey "
     # Note: Following flag strips the propose key of its password and
     # imports it into the Daemon's internal wallet store.
-    CLI_ROLE+=" -unsafe-track-propose-key"
+    CLI_ROLE+=" -unsafe-track-propose-key "
     ;;
 "snarker")
     CLI_ROLE="${CODA_SEEDLIST} "
     CLI_ROLE+="-run-snark-worker ${PUBLIC_KEY} "
-    CLI_ROLE+="-snark-worker-fee 2"
-    export OMP_NUM_THREADS=8
+    CLI_ROLE+="-snark-worker-fee 2 -work-selection seq "
+    export OMP_NUM_THREADS=4
     ;;
 "joiner")
     CLI_ROLE="${CODA_SEEDLIST} "
@@ -96,7 +93,6 @@ start_worker () {
     echo ${NEW_UUID}
     mkdir test-snark-worker-${NEW_UUID}
     nohup nice nice coda internal snark-worker \
-        -public-key ${PUBLIC_KEY} \
         -daemon-address $DAEMON \
         -shutdown-on-disconnect false  2>&1 >> test-snark-worker-${NEW_UUID}/coda.log &
 }
@@ -106,10 +102,17 @@ case $CODA_ROLE in
 "snarker")
     echo "Sleeping before adding more snark workers."
     sleep 10 # wait for daemon to come up
-    export OMP_NUM_THREADS=8
+
+    CORE_COUNT=`nproc --all`
+    CORE_SCALE=$(( $CORE_COUNT / 5 ))
+
+    export OMP_NUM_THREADS=4
+    count=1
     while [ "$(pgrep  -f 'coda internal snark-worker' | wc -l)" -lt "$CORE_SCALE" ]; do
+        echo "Worker Count: ${count}"
         start_worker
-        sleep 5 # wait for it to come up
+        count=$((count+1))
+        sleep 5 # wait for it to stablize
     done
     ;;
 esac
