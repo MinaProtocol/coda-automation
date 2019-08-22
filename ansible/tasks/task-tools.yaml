@@ -1,3 +1,11 @@
+- name: Install rsync
+  command: sudo apt-get install rsync
+  become: true
+  register: apt_status
+  until: apt_status|success
+  delay: 6
+  retries: 10
+
 - name: Copy Testing Tools
   synchronize:
     src: ../scripts
