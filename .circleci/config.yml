@@ -27,8 +27,18 @@ jobs:
                     chmod 0600 ~/.ssh/id_rsa
                     echo -e "Host *.amazonaws.com\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  User admin" > ~/.ssh/config
             - run:
+                  name: elastic_whitelist
+                  command: |
+                    echo ${ELASTICJSON} > scripts/elastic_whitelist_config.json
+                    cd scripts
+                    ../ansible/ec2.py > ec2.json
+                    ./elastic_whitelist.py
+            - run:
                   name: ansible init
                   command: cd ansible && ./play coda-init.yaml
+            - run:
+                  name: ansible start
+                  command: cd ansible && ./play coda-start-all.yaml
 
 
 

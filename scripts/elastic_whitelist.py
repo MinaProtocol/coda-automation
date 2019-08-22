@@ -10,16 +10,19 @@ import json
 import pprint
 import boto3
 import requests
-
+import socket
 import dns.resolver
 
 pp = pprint.PrettyPrinter(indent=4)
 
 """ Get list of IPs from local ec2.json --- ec2.py > ec2.json """
 def ips_from_ec2_json(fname='ec2.json'):
+    iplist = []
     with open(fname) as jsonfile:
         data = json.load(jsonfile)
-    return(data['key_testnet'])
+    for hostname in data['key_testnet']:
+        iplist.append(socket.gethostbyname(hostname))
+    return(iplist)
 
 """ Get list of IPs from hosted_grafana """
 def ips_from_hosted_grafana():
@@ -34,7 +37,7 @@ def ips_from_hosted_grafana():
     myResolver = dns.resolver.Resolver()
     myAnswers = myResolver.query("src-ips.hosted-grafana.grafana.net", "A")
     for rdata in myAnswers:
-        print(rdata)
+        #print(rdata)
         iplist.append(str(rdata))
 
     return(iplist)
@@ -53,6 +56,11 @@ if __name__ == "__main__":
         print('Error opening secrets config:', error)
         sys.exit(1)
 
+
+    proposed_ips += ips_from_ec2_json()
+    proposed_ips += ips_from_hosted_grafana()
+
+
     # Load current es access policy
     client = boto3.client('es')
     response = client.describe_elasticsearch_domains(
@@ -60,6 +68,9 @@ if __name__ == "__main__":
     for domain in response['DomainStatusList']:
         ap = domain['AccessPolicies']
     ap = json.loads(ap)
+
+    unique_proposed_ips = set(proposed_ips)
+    proposed_ips = list(unique_proposed_ips)
 
     # override ips with new set (ugly)
     current_ap_ips = ap['Statement'][0]['Condition']['IpAddress']['aws:SourceIp']
