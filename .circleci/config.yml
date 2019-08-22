@@ -26,9 +26,9 @@ jobs:
             - run:
                   name: HACK install ssh
                   command: |
-                    echo $TESTNET > ~/.ssh/testnet.pem
-                    chmod 0600 ~/.ssh/testnet.pem
-                    echo "Host *.amazonaws.com\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  User admin" > ~/.ssh/config
+                    echo $TESTNETPEM > ~/.ssh/id_rsa
+                    chmod 0600 ~/.ssh/id_rsa
+                    echo -e "Host *.amazonaws.com\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  User admin" > ~/.ssh/config
             - run:
                   name: ansible init
                   command: cd ansible && ./play coda-init.yaml
