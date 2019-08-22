@@ -33,5 +33,5 @@ RUN apt-get -qq update \
 
 ## COMMON TOOLS and python3 support
 RUN apt-get -qq update \
-    && apt-get -qq install -y --no-install-recommends git openssh-client python3 python3-setuptools python3-pip rsync sudo
+    && apt-get -qq install -y --no-install-recommends git openssh-client python3 python3-dns python3-setuptools python3-pip rsync sudo
 RUN pip3 install ansible awscli boto boto3 requests
