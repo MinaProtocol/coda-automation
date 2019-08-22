@@ -56,9 +56,15 @@ jobs:
             - run:
                   name: coda client status
                   command: cd ansible && ./adhoc tag_testnet_smoke_test "coda client status"
-# FIXME run ansible jobs AFTER tf?
-# FIXME do some sanity testing
 
+            # FIXME: Capture logs before you destroy?
+            - run:
+                  name: Network Failed - Destroy
+                  command: cd terraform/testnets/testnet-smoke-test && terraform destroy -auto-approve
+                  when: on_fail
+
+            # FIXME run ansible jobs AFTER tf?
+            # FIXME make a txn, check that it completes
 
 workflows:
     version: 2
