@@ -1,6 +1,6 @@
 locals {
   netname      = "smoke-test"
-  aws_key_name = "testnet"
+  aws_key_name = "testnet" # FIXME: adjust to a new key specific for smoke
   coda_repo    = "unstable" # FIXME: move to develop
   coda_version = "205567-develop-5caeb746-PV221733ab" # FIXME: take as input or use $latest
 }
@@ -110,9 +110,24 @@ module "us-west-2-snarker" {
 module "us-west-1-proposer" {
   source        = "../../modules/coda-node"
   region        = "us-west-1"
-  server_count  = 1
+  server_count  = 2
   instance_type = "c5.2xlarge"
   custom_ami    = "ami-0f921d4caacd8d746"
+  netname       = "${local.netname}"
+  rolename      = "proposer"
+  key_name      = "${local.aws_key_name}"
+  public_key    = ""
+  coda_repo     = "${local.coda_repo}"
+  coda_version  = "${local.coda_version}"
+}
+
+
+module "us-west-2-proposer" {
+  source        = "../../modules/coda-node"
+  region        = "us-west-2"
+  server_count  = 3
+  instance_type = "c5.2xlarge"
+  custom_ami    = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
   rolename      = "proposer"
   key_name      = "${local.aws_key_name}"
