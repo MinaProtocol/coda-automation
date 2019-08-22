@@ -37,9 +37,6 @@ jobs:
                     ../ansible/ec2.py > ec2.json
                     ./elastic_whitelist.py
             - run:
-                  name: Wait 2 min for things like dpkg to settle (lame)
-                  command: sleep 120
-            - run:
                   name: ansible init
                   command: cd ansible && ./play coda-init.yaml
             - run:
