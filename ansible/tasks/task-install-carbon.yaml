@@ -14,7 +14,7 @@
   command: sudo apt-get install carbon-relay-ng=0.11.0-1
   become: true
 
-- name: Fix carbon /var/rum perms
+- name: Fix carbon /var/run perms
   command: chown carbon-relay-ng:carbon-relay-ng /var/run/carbon-relay-ng
   become: true
 
