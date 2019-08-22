@@ -39,8 +39,14 @@ jobs:
             - run:
                   name: ansible start
                   command: cd ansible && ./play coda-start-all.yaml
-
-
+            - run:
+                  name: Wait 10min (lame)
+                  command: sleep 600
+            - run:
+                  name: coda client status
+                  command: cd ansible && ./adhoc tag_testnet_smoke_test "coda client status"
+# FIXME run ansible jobs AFTER tf?
+# FIXME do some sanity testing
 
 
 workflows:
