@@ -2,7 +2,7 @@ locals {
   netname      = "does-not-compute"
   aws_key_name = "testnet"
   coda_repo    = "stable"
-  coda_version = "206610-release-0.0.5-beta-fd6261e3-PV94eb8ccf"
+  coda_version = "207324-release-0.0.5-beta-be9f7a6b-PV1c4f9302"
 }
 
 terraform {
@@ -91,7 +91,7 @@ module "us-west-2-snarker" {
   source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 1
-  instance_type = "c5.8xlarge"
+  instance_type = "c5.9xlarge"
   netname       = "${local.netname}"
   rolename      = "snarker"
   key_name      = "${local.aws_key_name}"
