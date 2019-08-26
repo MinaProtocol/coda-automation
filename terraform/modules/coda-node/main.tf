@@ -66,6 +66,7 @@ apt-get --yes install \
   htop \
   jq \
   lsof \
+  monit \
   ncdu \
   rsync \
   tmux \
@@ -78,6 +79,7 @@ pip3 install \
   'elasticsearch>=6.0.0,<7.0.0' \
   certifi \
   geoip2 \
+  graphyte \
   psutil \
   sexpdata
 
