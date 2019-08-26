@@ -1,8 +1,8 @@
 locals {
   netname      = "smoke-test"
-  aws_key_name = "testnet" # FIXME: adjust to a new key specific for smoke
-  coda_repo    = "unstable" # FIXME: move to develop
-  coda_version = "205567-develop-5caeb746-PV221733ab" # FIXME: take as input or use $latest
+  aws_key_name = "testnet_smoketest.pub"
+  coda_repo    = "develop"
+  coda_version = "*"  # Note: '*' gets latest when specifying version
 }
 
 terraform {
