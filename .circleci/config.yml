@@ -57,6 +57,11 @@ jobs:
                   name: coda client status
                   command: cd ansible && ./adhoc tag_testnet_smoke_test "coda client status"
 
+            - run:
+                  name: Wait 15m
+                  command: sleep 900
+                  when: always
+
             # FIXME: Capture logs before you destroy?
             - run:
                   name: Network Failed - Destroy
