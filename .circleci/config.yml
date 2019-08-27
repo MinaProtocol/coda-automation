@@ -75,7 +75,17 @@ jobs:
             # FIXME make a txn, check that it completes
 
 workflows:
-    version: 2
-    smoke-test:
-        jobs:
-            - create-instances
+      version: 2
+      smoke-test-manual:
+            jobs:
+              - create-instances
+
+      smoke-test-auto:
+            triggers:
+              - schedule:
+                  cron: "0 12 * * 1-5" # M-F @ 12 UTC  M-F
+                  filters:
+                    branches:
+                      only: master
+            jobs:
+              - create-instances
