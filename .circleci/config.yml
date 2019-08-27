@@ -1,94 +1,119 @@
 ---
-version: 3
+version: 2.1
 jobs:
-    create-instances:
+    terraform:
         docker:
-            - image: codaprotocol/coda-automation:manual
-              environment:
+          - image: codaprotocol/coda-automation:manual
+            environment:
                 TESTNET: smoke_test
         steps:
             - checkout
             - run:
-                  name: terraform init
-                  command: cd terraform/testnets/testnet-smoke-test && terraform init
+                name: terraform init
+                command: cd terraform/testnets/testnet-smoke-test && terraform init
             - run:
-                  name: terraform refresh
-                  command: cd terraform/testnets/testnet-smoke-test && terraform refresh
+                name: terraform refresh
+                command: cd terraform/testnets/testnet-smoke-test && terraform refresh
             - run:
-                  name: terraform destroy -auto-approve
-                  command: cd terraform/testnets/testnet-smoke-test && terraform destroy -auto-approve
+                name: terraform destroy -auto-approve
+                command: cd terraform/testnets/testnet-smoke-test && terraform destroy -auto-approve
             - run:
-                  name: terraform plan
-                  command: cd terraform/testnets/testnet-smoke-test && terraform plan
+                name: terraform plan
+                command: cd terraform/testnets/testnet-smoke-test && terraform plan
             - run:
-                  name: terraform apply -auto-approve
-                  command: cd terraform/testnets/testnet-smoke-test && terraform apply -auto-approve
+                name: terraform apply -auto-approve
+                command: cd terraform/testnets/testnet-smoke-test && terraform apply -auto-approve
             - run:
-                  name: ssh config
-                  command: |
+                name: Network Failed - Destroy
+                command: cd terraform/testnets/testnet-smoke-test && terraform destroy -auto-approve
+                when: on_fail
+    ansible:
+        docker:
+          - image: codaprotocol/coda-automation:manual
+            environment:
+                TESTNET: smoke_test
+        steps:
+            - run:
+                name: ssh config
+                command: |
                     echo -e "$TESTNETPEM" > ~/.ssh/id_rsa
                     chmod 0600 ~/.ssh/id_rsa
                     echo -e "Host *.amazonaws.com\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  User admin" > ~/.ssh/config
             - run:
-                  name: elastic_whitelist
-                  command: |
+                name: elastic_whitelist
+                command: |
                     echo ${ELASTICJSON} > scripts/elastic_whitelist_config.json
                     cd scripts
                     ../ansible/ec2.py > ec2.json
                     ./elastic_whitelist.py
             - run:
-                  name: instances2inventory
-                  command: cd scripts && ./instances2inventory.py smoke-test
+                name: instances2inventory
+                command: cd scripts && ./instances2inventory.py smoke-test
             - run:
-                  name: ansible init
-                  command: cd ansible && ./play coda-init.yaml
+                name: ansible init
+                command: cd ansible && ./play coda-init.yaml
             - run:
-                  name: ansible start
-                  command: cd ansible && ./play coda-start-all.yaml
+                name: ansible start
+                command: cd ansible && ./play coda-start-all.yaml
             - run:
-                  name: Wait 10 min for network to actually do something
-                  command: sleep 600
-                  no_output_timeout: 30m
+                name: Wait 10 min for network to actually do something
+                command: sleep 600
+                no_output_timeout: 30m
             - run:
-                  name: ansible monit
-                  command: cd ansible && ./play coda-monit.yaml
+                name: ansible monit
+                command: cd ansible && ./play coda-monit.yaml
             - run:
-                  name: Wait 2 min for joiners
-                  command: sleep 120
-                  no_output_timeout: 30m
+                name: Wait 2 min for joiners
+                command: sleep 120
+                no_output_timeout: 30m
+    check-status:
+        docker:
+          - image: codaprotocol/coda-automation:manual
+            environment:
+              TESTNET: smoke_test
+        steps:
             - run:
-                  name: coda client status
-                  command: cd ansible && ./adhoc tag_testnet_smoke_test "coda client status"
+                name: ssh config
+                command: |
+                    echo -e "$TESTNETPEM" > ~/.ssh/id_rsa
+                    chmod 0600 ~/.ssh/id_rsa
+                    echo -e "Host *.amazonaws.com\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  User admin" > ~/.ssh/config
+            - run:
+                name: coda client status
+                command: cd ansible && ./adhoc tag_testnet_smoke_test "coda client status"
+            - run:
+                name: Tail Logs
+                command: cd ansible && ./adhoc tag_testnet_smoke_test "tail -n 100 test-coda/coda.log"
+                when: on_fail
+            - run:
+                name: Wait 15m
+                command: sleep 900
+                when: always
 
-            - run:
-                  name: Tail Logs
-                  command: cd ansible && ./adhoc tag_testnet_smoke_test "tail -n 100 test-coda/coda.log"
-                  when: on_fail
 
-            - run:
-                  name: Wait 15m
-                  command: sleep 900
-                  when: always
-            - run:
-                  name: Network Failed - Destroy
-                  command: cd terraform/testnets/testnet-smoke-test && terraform destroy -auto-approve
-                  when: on_fail
-
-            # FIXME run ansible jobs AFTER tf?
-            # FIXME make a txn, check that it completes
+                  # FIXME run ansible jobs AFTER tf?
+                  # FIXME make a txn, check that it completes
 
 workflows:
-      version: 2
-      smoke-test-manual:
-            jobs:
-              - create-instances
+    version: 2
+    smoke-test-manual:
+        jobs:
+            - terraform
+            - ansible
+            - check-status
 
-      smoke-test-auto:
-            triggers:
-              - schedule:
-                  cron: "0 12 * * 1-5" # M-F @ 12 UTC  M-F
-                  filters:
-                    branches:
-                      only: master
-            jobs:
-              - create-instances
+    smoke-test-auto:
+        triggers:
+          - schedule:
+              cron: "0 12 * * 1-5" # M-F @ 12 UTC  M-F
+              filters:
+                branches:
+                  only: master
+        jobs:
+            - terraform
+            - ansible:
+                requires:
+                    - terraform
+            - check-status:
+                requires:
+                    - ansible
