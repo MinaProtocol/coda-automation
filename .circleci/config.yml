@@ -37,6 +37,9 @@ jobs:
                     ../ansible/ec2.py > ec2.json
                     ./elastic_whitelist.py
             - run:
+                  name: instances2inventory
+                  command: cd scripts && ./instances2inventory.py smoke-test
+            - run:
                   name: ansible init
                   command: cd ansible && ./play coda-init.yaml
             - run:
