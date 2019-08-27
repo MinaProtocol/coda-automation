@@ -36,6 +36,7 @@ jobs:
             - run:
                 name: ssh config
                 command: |
+                    mkdir -p ~/.ssh
                     echo -e "$TESTNETPEM" > ~/.ssh/id_rsa
                     chmod 0600 ~/.ssh/id_rsa
                     echo -e "Host *.amazonaws.com\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  User admin" > ~/.ssh/config
