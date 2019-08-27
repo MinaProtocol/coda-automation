@@ -2,7 +2,7 @@ locals {
   netname      = "does-not-compute"
   aws_key_name = "testnet"
   coda_repo    = "stable"
-  coda_version = "207324-release-0.0.5-beta-be9f7a6b-PV1c4f9302"
+  coda_version = "208618-release-0.0.5-beta-41c5ceec-PV6d572417"
 }
 
 terraform {
