@@ -99,16 +99,14 @@ workflows:
     smoke-test-manual:
         jobs:
             - terraform
-            - ansible
-            - check-status
+            - ansible:
+                requires:
+                    - terraform
+            - check-status:
+                requires:
+                    - ansible
 
     smoke-test-auto:
-        triggers:
-          - schedule:
-              cron: "0 12 * * 1-5" # M-F @ 12 UTC  M-F
-              filters:
-                branches:
-                  only: master
         jobs:
             - terraform
             - ansible:
@@ -117,3 +115,9 @@ workflows:
             - check-status:
                 requires:
                     - ansible
+        triggers:
+          - schedule:
+              cron: "0 12 * * 1-5" # M-F @ 12 UTC  M-F
+              filters:
+                branches:
+                  only: master
