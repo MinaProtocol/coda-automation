@@ -33,6 +33,7 @@ jobs:
             environment:
                 TESTNET: smoke_test
         steps:
+            - checkout
             - run:
                 name: ssh config
                 command: |
@@ -73,6 +74,7 @@ jobs:
             environment:
               TESTNET: smoke_test
         steps:
+            - checkout
             - run:
                 name: ssh config
                 command: |
