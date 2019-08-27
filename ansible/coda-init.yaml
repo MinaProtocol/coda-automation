@@ -15,6 +15,7 @@
     - include: tasks/task-install-filebeat.yaml
     - include: tasks/task-install-metricbeat.yaml
     - include: tasks/task-testnet_config.yaml
+    - include: tasks/task-install-carbon.yaml
 
 # Assign a unique ID to each proposer (so proof of stake works)
 - hosts: "tag_role_{{ netname }}_proposer"
