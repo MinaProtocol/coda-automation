@@ -24,7 +24,7 @@ jobs:
                 name: terraform apply -auto-approve
                 command: cd terraform/testnets/testnet-smoke-test && terraform apply -auto-approve
             - run:
-                name: Network Failed - Destroy
+                name: Apply Failed - Destroy
                 command: cd terraform/testnets/testnet-smoke-test && terraform destroy -auto-approve
                 when: on_fail
     ansible:
@@ -65,8 +65,8 @@ jobs:
                 name: ansible monit
                 command: cd ansible && ./play coda-monit.yaml
             - run:
-                name: Wait 2 min for joiners
-                command: sleep 120
+                name: Wait 5 min for joiners
+                command: sleep 300
                 no_output_timeout: 30m
     check-status:
         docker:
@@ -85,17 +85,20 @@ jobs:
                 name: coda client status
                 command: cd ansible && ./adhoc tag_testnet_smoke_test "coda client status"
             - run:
+                name: New block test
+                command: cd ansible && ./adhoc tag_testnet_smoke_test "./scripts/test-new-blocks.sh"
+                no_output_timeout: 30m
+
+            # FIXME: make a txn, make sure it succeeds.
+
+            - run:
                 name: Tail Logs
                 command: cd ansible && ./adhoc tag_testnet_smoke_test "tail -n 100 test-coda/coda.log"
                 when: on_fail
             - run:
-                name: Wait 15m
-                command: sleep 900
-                when: always
-
-
-                  # FIXME run ansible jobs AFTER tf?
-                  # FIXME make a txn, check that it completes
+                name: Tests Failed - destroy
+                command: cd terraform/testnets/testnet-smoke-test && terraform destroy -auto-approve
+                when: on_fail
 
 workflows:
     version: 2
