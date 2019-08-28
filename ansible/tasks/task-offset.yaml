@@ -1,0 +1,14 @@
+- name: Create offset file (if needed)
+  vars:
+    testnet_timestamp: "{{ start_time }}"
+  become: true
+  shell: |
+    if grep -Fq "define time_offsets true" /etc/coda/build_config/BUILD.mlh; then
+      testnet_time="{{ testnet_timestamp }}"
+      genesis=$(grep genesis_state_timestamp /etc/coda/build_config/BUILD.mlh | cut -d '"' -f 2)
+      genesis_epoch=$(date --date="$genesis" +%s)
+      CODA_TIME_OFFSET=$(echo "$testnet_time - $genesis_epoch - 600" | bc )
+      echo "export CODA_TIME_OFFSET=$CODA_TIME_OFFSET" > /etc/coda_offset
+    fi
+  args:
+    creates: /etc/coda_offset

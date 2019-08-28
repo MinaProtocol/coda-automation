@@ -35,8 +35,11 @@ CODA_PEERPORT=$(($CODA_RPCPORT + 2))
 CODA_QLPORT=$(($CODA_RPCPORT + 3))
 PUBLIC_KEY='tNci9ERxHGkemqBmNxEWTcPgY5sn347yq6BFcUGTpve6aJpaDUgaaTEQ3rfAgYeK7KhzEbYoJvSbqQ8u88aBNtu8ALVcEeRo4ei6sGjxMsmBAJW7vwW57KLzrvou4YEMA3saq6Xqtpg3sb'
 
-# Only required when using TIME_OFFSET build
-#export CODA_TIME_OFFSET=$(echo "{{ testnet_timestamp }} - $(date --date="2019-01-30 12:00:00-08:00" +%s)" | bc)
+# Set offset if it is being used
+if [ -f "/etc/coda_offset" ]; then
+    source /etc/coda_offset
+    cat /etc/coda_offset
+fi
 
 CODA_SEEDLIST="{% for host in groups['tag_testnet_' + netname]  %}-peer {{ hostvars[host].ec2_ip_address }}:${CODA_PEERPORT} {% endfor %}" # derived from ansible
 CODA_ROLE=$(cat /etc/coda-rolename)

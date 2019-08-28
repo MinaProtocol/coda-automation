@@ -12,6 +12,7 @@
     - include: tasks/task-wallet-keys.yaml
     - include: tasks/task-sshkeys.yaml
     - include: tasks/task-tools.yaml
+    - include: tasks/task-offset.yaml
     - include: tasks/task-install-filebeat.yaml
     - include: tasks/task-install-metricbeat.yaml
     - include: tasks/task-testnet_config.yaml
