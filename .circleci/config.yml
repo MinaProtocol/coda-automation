@@ -58,11 +58,11 @@ jobs:
                 name: ansible start
                 command: cd ansible && ./play coda-start-all.yaml
             - run:
-                name: Wait 10 min for network to actually do something
-                command: sleep 600
+                name: Wait 5 min for network to actually do something
+                command: sleep 300
                 no_output_timeout: 30m
             - run:
-                name: ansible monit
+                name: ansible monit (starts joiners)
                 command: cd ansible && ./play coda-monit.yaml
             - run:
                 name: Wait 5 min for joiners
@@ -99,6 +99,22 @@ jobs:
                 name: Tests Failed - destroy
                 command: cd terraform/testnets/testnet-smoke-test && terraform destroy -auto-approve
                 when: on_fail
+    destroy:
+        docker:
+          - image: codaprotocol/coda-automation:manual
+            environment:
+              TESTNET: smoke_test
+        steps:
+            - checkout
+            - run:
+                name: terraform init
+                command: cd terraform/testnets/testnet-smoke-test && terraform init
+            - run:
+                name: terraform refresh
+                command: cd terraform/testnets/testnet-smoke-test && terraform refresh
+            - run:
+                name: Tests Failed - destroy
+                command: cd terraform/testnets/testnet-smoke-test && terraform destroy -auto-approve
 
 workflows:
     version: 2
@@ -124,6 +140,16 @@ workflows:
         triggers:
           - schedule:
               cron: "0 12 * * 1-5" # M-F @ 12 UTC  M-F
+              filters:
+                branches:
+                  only: master
+
+    smoke-test-destroy:
+        jobs:
+            - destroy
+        triggers:
+          - schedule:
+              cron: "0 20 * * 1-5" # M-F @ 20 UTC  M-F
               filters:
                 branches:
                   only: master
