@@ -1,7 +1,24 @@
 ---
 - hosts: "tag_testnet_{{ netname }}"
-  strategy: free
+  strategy: linear
   gather_facts: no
+  vars:
+    all_blockchain_lengths: |
+      {%- set o=[] %}
+      {%- for i in play_hosts %}
+        {%- if o.append(hostvars[i].blockchain_length_fact) %}
+        {%- endif %}
+      {%- endfor %}
+      {{ o }}
   tasks:
-    - include: tasks/task-tools.yaml
-#    - include: tasks/task-install-maxmind.yaml
+    - name: get block count
+      shell: coda client status -json | jq .blockchain_length
+      register: blockchain_length
+    - set_fact:
+        blockchain_length_fact: "{{ blockchain_length.stdout }}"
+
+
+    - debug:
+        var: all_blockchain_lengths
+      run_once: true
+      delegate_to: 127.0.0.1

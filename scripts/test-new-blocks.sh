@@ -10,15 +10,16 @@ NOW="$START"
 
 COUNTER=1
 while [ "$NOW" -le "$START" ]; do
+    NOW=$(coda client status -json | jq .blockchain_length)
     echo "Count: ${COUNTER}"
     echo "Block Height Now: ${NOW}"
     echo "Sleeping ${SLEEP_DURATION}s"
     sleep $SLEEP_DURATION
-    NOW=$(coda client status -json | jq .blockchain_length)
     COUNTER=$((COUNTER + 1))
     if [ "$COUNTER" -gt 10 ]; then
         echo 'Block test failed -- too much time passed without seeing a new block'
         exit 1
     fi
 done
+
 echo "Block test passed"
