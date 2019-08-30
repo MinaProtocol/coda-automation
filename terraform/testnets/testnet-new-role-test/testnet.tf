@@ -35,7 +35,6 @@ module "us-west-2-seed" {
 }
 
 ## Seed Hostname
-
 data "aws_route53_zone" "selected" {
   name = "o1test.net."
 }
@@ -108,19 +107,6 @@ module "us-west-2-snarkcoordinator" {
   instance_type = "c5.9xlarge"
   netname       = "${local.netname}"
   rolename      = "snarkcoordinator"
-  key_name      = "${local.aws_key_name}"
-  public_key    = ""
-  coda_repo     = "${local.coda_repo}"
-  coda_version  = "${local.coda_version}"
-}
-
-module "us-west-2-archive" {
-  source        = "../../modules/coda-node"
-  region        = "us-west-2"
-  server_count  = 1
-  instance_type = "c5.2xlarge"
-  netname       = "${local.netname}"
-  rolename      = "archive"
   key_name      = "${local.aws_key_name}"
   public_key    = ""
   coda_repo     = "${local.coda_repo}"

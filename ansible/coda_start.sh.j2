@@ -38,7 +38,10 @@ PUBLIC_KEY='tNci9ERxHGkemqBmNxEWTcPgY5sn347yq6BFcUGTpve6aJpaDUgaaTEQ3rfAgYeK7Khz
 # Only required when using TIME_OFFSET build
 #export CODA_TIME_OFFSET=$(echo "{{ testnet_timestamp }} - $(date --date="2019-01-30 12:00:00-08:00" +%s)" | bc)
 
-CODA_SEEDLIST="{% for host in groups['tag_testnet_' + netname]  %}-peer {{ hostvars[host].ec2_ip_address }}:${CODA_PEERPORT} {% endfor %}" # derived from ansible
+# tag_role_{{ netname }}_seed
+
+CODA_SEEDLIST="-peer {{ seed_ip }}:8303 " # Initial seed peer
+CODA_SEEDLIST+="{% for host in groups['tag_testnet_' + netname]  %}-peer {{ hostvars[host].ec2_ip_address }}:${CODA_PEERPORT} {% endfor %}" # All other nodes
 CODA_ROLE=$(cat /etc/coda-rolename)
 
 CLI_COMMON="-background -tracing -no-bans -log-json -log-level Trace "
@@ -72,10 +75,7 @@ case $CODA_ROLE in
     ;;
 "archive")
     CLI_ROLE="${CODA_SEEDLIST} "
-    CLI_ROLE+=" -propose-key /home/admin/wallet-keys/proposerkey "
-    # Note: Following flag strips the propose key of its password and
-    # imports it into the Daemon's internal wallet store.
-    CLI_ROLE+=" -unsafe-track-propose-key "
+    CLI_ROLE+=" -archive "
     ;;
 *)
     echo "Uknown CODA_ROLE ${CODA_ROLE}"

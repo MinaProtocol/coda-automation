@@ -33,7 +33,7 @@
         seconds: 45
 
 # Start the rest all at once (will no-op on seed)
-- hosts: "tag_role_{{ netname }}"
+- hosts: "tag_testnet_{{ netname }}"
   gather_facts: no
   tasks:
     - name: Start Coda
