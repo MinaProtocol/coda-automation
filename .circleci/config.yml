@@ -118,16 +118,6 @@ jobs:
 
 workflows:
     version: 2
-    smoke-test-manual:
-        jobs:
-            - terraform
-            - ansible:
-                requires:
-                    - terraform
-            - check-status:
-                requires:
-                    - ansible
-
     smoke-test-auto:
         jobs:
             - terraform
@@ -139,7 +129,7 @@ workflows:
                     - ansible
         triggers:
           - schedule:
-              cron: "0 12 * * 1-5" # M-F @ 12 UTC  M-F
+              cron: "0 12 * * *" # 12 UTC
               filters:
                 branches:
                   only: master
@@ -149,7 +139,7 @@ workflows:
             - destroy
         triggers:
           - schedule:
-              cron: "0 20 * * 1-5" # M-F @ 20 UTC  M-F
+              cron: "0 20 * * *" # 20 UTC
               filters:
                 branches:
                   only: master
