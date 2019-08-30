@@ -26,7 +26,9 @@ snarkers = {
     "tNciCJB9Df2QdurcjSpKEJDuFU5sBphMCmjSr5xVPf77V7Pq3HyuKqheWiz6pekZjdhnBMTxYrfttMoiA4tzYPBmTwEN2bZKkhH9hcHa28eEJFZdiSryZ6mCKyniqXYhAxzKUfSXAKwQWN": "jspadave",
     "tNciPt5taz5rze7dF6TZSMUYtWzwoLKRfQxgCi8tT35HGsama9dmGqAZXNonv8m8dnbRe56H9zT63kVBSxTHjbeU5egZcqTFMpsCbCvV6sbMq44X45eguHSWhPtFodqfR7fPWXSLqFFBku": "Dmitry D",
     "tNciBNjgL24UDGk6PfqB49S5sZmkPrmzxKjJchk9XAiFrd9TWxpyFSsxEVpXeVTfAkfYXndZU97512YpYbJXKVp5TTcXjKen3f1MZQrjW63MhrP4L3cGq9yYv9b7uEs2wDfPq7j83zmY2e": "Unknown",
-    "tNciUwf4Uns6fSuxcfgtdLHKv1CJd7iQmfGt9m9dWNNiB9nxC3A4FMD8xT13k5eqeasNwQKP8yBNbreQxePjBPzQDHSzbh93UXQgvjLQ5vYtTXC8bTavZDaRZtq41fpnD2246RvAsvFR9u": "ansonlau3"
+    "tNciUwf4Uns6fSuxcfgtdLHKv1CJd7iQmfGt9m9dWNNiB9nxC3A4FMD8xT13k5eqeasNwQKP8yBNbreQxePjBPzQDHSzbh93UXQgvjLQ5vYtTXC8bTavZDaRZtq41fpnD2246RvAsvFR9u": "ansonlau3",
+    "tNciVbLmBb3kkZggRNUstqMeYKBEVikXtnVufMpEXJkv1hhVj2dfmk3owUraN3xfwk6foz8aJXRsrK6NsiqLNFS3uMBNwnD7uNgou9KqFHvhNNrHLf8MiERTxgubS7SvYpwyV6gNXDTrpx": "ilya_petrov",
+    "tNcibPYLvy6MvM9XEfm2ECoibzcsRNv7cF5AcGpiQa5zs3bpmZF8DiHkvPvRcr6iGe2hsii6mE5ufXsdCdfZdA51GuuDaDYaVZJwSwcTiYRw1aJ2WMgm3JSLPYUPQ1bTBieQveWwUT45dK": "Tyler34214",
 }
 
 for value in blocks["nodes"]:
@@ -48,4 +50,3 @@ else:
         ["sum", "count"]).sort_values("sum", ascending=False).rename(columns={"sum": "Total Fees", "count": "Total SNARKS Sold"})
     print(earners)
     print("{} Blocks Observed".format(nBlocks))
-    
