@@ -12,13 +12,14 @@
     - name: Generating coda_start.sh
       vars:
         seed_ip: "{{ hostvars[groups['tag_role_' + netname + '_seed'][0]].ec2_ip_address }}"
-        snark_leader_ip: "{{ hostvars[groups['tag_role_' + netname + '_snarker'][0]].ec2_ip_address }}"
+        snark_leader_ip: "{{ hostvars[groups['tag_role_' + netname + '_snarkcoordinator'][0]].ec2_ip_address }}"
         testnet_timestamp: "{{ start_time }}"
       template: "src=coda_start.sh.j2 dest='/home/admin/coda_start.sh' owner=admin group=admin mode=0755"
       tags: coda_start
     - pause:
         seconds: 5
 
+# Start the seed and pause
 - hosts: "tag_role_{{ netname }}_seed"
   gather_facts: no
   tasks:
@@ -29,26 +30,15 @@
       register: seed_start
     - debug: msg="{{ seed_start.stdout }}"
     - pause:
-        seconds: 30
+        seconds: 45
 
-- hosts: "tag_role_{{ netname }}_snarker"
+# Start the rest all at once (will no-op on seed)
+- hosts: "tag_role_{{ netname }}"
   gather_facts: no
   tasks:
     - name: Start Coda
       shell: /home/admin/coda_start.sh
       args:
         executable: /bin/bash
-      register: snarker_start
-    - debug: msg="{{ snarker_start.stdout }}"
-    - pause:
-        seconds: 5
-
-- hosts: "tag_role_{{ netname }}_proposer"
-  gather_facts: no
-  tasks:
-    - name: Start Coda
-      shell: /home/admin/coda_start.sh
-      args:
-        executable: /bin/bash
-      register: proposer_start
-    - debug: msg="{{ proposer_start.stdout }}"
+      register: all_start
+    - debug: msg="{{ all_start.stdout }}"

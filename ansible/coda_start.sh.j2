@@ -50,25 +50,32 @@ CLI_COMMON+="-rest-port ${CODA_QLPORT} "
 
 # Main start
 case $CODA_ROLE in
-"proposer")
+"seed")
+    CLI_ROLE=""
+    ;;
+"seedjoiner")
+    CLI_ROLE="${CODA_SEEDLIST} "
+    CLI_ROLE+=""
+    ;;
+"snarkcoordinator")
+    CLI_ROLE="${CODA_SEEDLIST} "
+    CLI_ROLE+="-run-snark-worker ${PUBLIC_KEY} "
+    CLI_ROLE+="-snark-worker-fee 2 -work-selection seq "
+    export OMP_NUM_THREADS=4
+    ;;
+"blockproducer")
     CLI_ROLE="${CODA_SEEDLIST} "
     CLI_ROLE+=" -propose-key /home/admin/wallet-keys/proposerkey "
     # Note: Following flag strips the propose key of its password and
     # imports it into the Daemon's internal wallet store.
     CLI_ROLE+=" -unsafe-track-propose-key "
     ;;
-"snarker")
+"archive")
     CLI_ROLE="${CODA_SEEDLIST} "
-    CLI_ROLE+="-run-snark-worker ${PUBLIC_KEY} "
-    CLI_ROLE+="-snark-worker-fee 2 -work-selection seq "
-    export OMP_NUM_THREADS=4
-    ;;
-"joiner")
-    CLI_ROLE="${CODA_SEEDLIST} "
-    CLI_ROLE+=""
-    ;;
-"seed")
-    CLI_ROLE=""
+    CLI_ROLE+=" -propose-key /home/admin/wallet-keys/proposerkey "
+    # Note: Following flag strips the propose key of its password and
+    # imports it into the Daemon's internal wallet store.
+    CLI_ROLE+=" -unsafe-track-propose-key "
     ;;
 *)
     echo "Uknown CODA_ROLE ${CODA_ROLE}"
