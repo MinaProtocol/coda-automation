@@ -59,14 +59,14 @@ resource "aws_route53_record" "multiseed" {
 
 ######################################################################
 ## Joiners
-module "us-west-2-joiner" {
+module "us-west-2-seedjoiner" {
   source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 1
   instance_type = "c5.2xlarge"
   custom_ami    = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
-  rolename      = "joiner"
+  rolename      = "seedjoiner"
   key_name      = "${local.aws_key_name}"
   public_key    = ""
   coda_repo     = "${local.coda_repo}"
@@ -74,14 +74,14 @@ module "us-west-2-joiner" {
 }
 
 
-module "us-east-1-joiner" {
+module "us-east-1-seedjoiner" {
   source        = "../../modules/coda-node"
   region        = "us-east-1"
   server_count  = 1
   instance_type = "c5.2xlarge"
   custom_ami    = "ami-0cfac3931b2a799d1"
   netname       = "${local.netname}"
-  rolename      = "joiner"
+  rolename      = "seedjoiner"
   key_name      = "${local.aws_key_name}"
   public_key    = ""
   coda_repo     = "${local.coda_repo}"
@@ -89,15 +89,15 @@ module "us-east-1-joiner" {
 }
 
 ######################################################################
-## Snarkers
-module "us-west-2-snarker" {
+## snarkcoordinators
+module "us-west-2-snarkcoordinator" {
   source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 1
   instance_type = "c5.9xlarge"
   custom_ami    = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
-  rolename      = "snarker"
+  rolename      = "snarkcoordinator"
   key_name      = "${local.aws_key_name}"
   public_key    = ""
   coda_repo     = "${local.coda_repo}"
@@ -105,16 +105,16 @@ module "us-west-2-snarker" {
 }
 
 ######################################################################
-## Proposers
+## blockproducers
 
-module "us-west-1-proposer" {
+module "us-west-1-blockproducer" {
   source        = "../../modules/coda-node"
   region        = "us-west-1"
   server_count  = 2
   instance_type = "c5.2xlarge"
   custom_ami    = "ami-0f921d4caacd8d746"
   netname       = "${local.netname}"
-  rolename      = "proposer"
+  rolename      = "blockproducer"
   key_name      = "${local.aws_key_name}"
   public_key    = ""
   coda_repo     = "${local.coda_repo}"
@@ -122,14 +122,14 @@ module "us-west-1-proposer" {
 }
 
 
-module "us-west-2-proposer" {
+module "us-west-2-blockproducer" {
   source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 3
   instance_type = "c5.2xlarge"
   custom_ami    = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
-  rolename      = "proposer"
+  rolename      = "blockproducer"
   key_name      = "${local.aws_key_name}"
   public_key    = ""
   coda_repo     = "${local.coda_repo}"
