@@ -55,7 +55,7 @@ variable "port_ql" {
 variable "public_key" {
   description = "An SSH Public Key used to configure node access, if not set defaults to key_name"
   type        = "string"
-  default     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHWTr1IZY2c4+j7KldT59folvsdpJjTGC6ULBDD7IyUqGDYhxv2X4UeO17V1ENeZLvABaiIPtw6R4qRMgoOXEVOZsNljqpPwLMK3cY3JeM/tL9XPQXuZQrpRsFdYUOeNI9OyG34gfdHpbn24SIEGrDjqWg6kKtwJ916fB6f7JNxBDLP5cJQhP7z57Km3V6+YcaRIkshkrfaBGKVKp58aibbNOPn1B4vMWSQcPyC50xlnUT5rnKiRUClT1nP0OTgxL9L6FWADKow83wJ/95RA5evBHjZuE7Qz1U3sVLx0lzWBgZRC40Nz+77W3/kQvceCWe8WCuavArH/q5It5fOzsv testnet"
+  default     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKIzMn7890zeG1cdYEaxFhpTPY1ylgZKPZD/BKrVos7Yq6tTmqevQMXHSyvtbaQ7CQoyCiCAShFFzMjNelQ1q1X8Uo45YS4HL12eaqE9mbgwzVyaz5njL/N3DihxFqK5MGzolAh/Y/IerRzjq3f17twSzJwNOoiiqVoKk/JPeZUdvIKnrq09LckZ2ImWY520QchNS8bUHM1whlDU41Ovm/64cuheaLcI5+hz0Jc698YrQ83yh8Q0eo9qCmp7cE7JnLn5psxMwAVBSUHANret751qZZWvfNxwrV0J+UvHSVULtKyaM5WhM0dah9u+g84Lmoy+RRM5JfJGAa1VwtXibT testnet"
 }
 
 variable "key_name" {
