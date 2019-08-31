@@ -54,7 +54,7 @@ resource "aws_route53_record" "multiseed" {
   name    = "multiseed-${local.netname}.${data.aws_route53_zone.selected.name}"
   type    = "A"
   ttl     = "300"
-  records = concat(module.us-west-2-seed.public_ip, module.us-west-2-joiner.public_ip, module.us-east-1-joiner.public_ip)
+  records = concat(module.us-west-2-seed.public_ip, module.us-west-2-seedjoiner.public_ip, module.us-east-1-seedjoiner.public_ip)
 }
 
 ######################################################################
