@@ -2,7 +2,7 @@ locals {
   netname      = "grab-bag"
   aws_key_name = "testnet"
   coda_repo    = "stable"
-  coda_version = "213368-release-0.0.6-beta-f4b6688e-PV7d8f70ec"  # Note: '*' gets latest when specifying version
+  coda_version = "213772-release-0.0.6-beta-2ea9e73e-PV3cc28f98"  # Note: '*' gets latest when specifying version
 }
 
 terraform {
