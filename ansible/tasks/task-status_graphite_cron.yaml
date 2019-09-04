@@ -1,0 +1,8 @@
+# Cronjob for reporting stats
+- name: Cron status_graphite
+  become: true
+  copy:
+    dest: /etc/cron.d/status_graphite
+    content: |
+        PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+        * * * * * admin /home/admin/scripts/status_graphite.py 2>&1 > /tmp/status_graphite.last.log

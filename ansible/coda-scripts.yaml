@@ -4,6 +4,7 @@
   gather_facts: no
   tasks:
     - include: tasks/task-tools.yaml
+    - include: tasks/task-status_graphite_cron.yaml
 
 - hosts: "tag_role_{{ netname }}_seed"
   gather_facts: no

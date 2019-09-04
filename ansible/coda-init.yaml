@@ -17,6 +17,7 @@
     - include: tasks/task-install-metricbeat.yaml
     - include: tasks/task-testnet_config.yaml
     - include: tasks/task-install-carbon.yaml
+    - include: tasks/task-status_graphite_cron.yaml
 
 # Assign a unique ID to each blockproducer (so proof of stake works)
 - hosts: "tag_role_{{ netname }}_blockproducer"

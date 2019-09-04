@@ -7,5 +7,4 @@
         PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
         * * * * * admin /home/admin/scripts/testnetstats.py          2>&1 > /tmp/testnetstats.last.log
         * * * * * admin /home/admin/scripts/testnetstats-graphite.py 2>&1 > /tmp/testnetstats-graphite.last.log
-        * * * * * admin /home/admin/scripts/get_nonces.py            2>&1 > /tmp/getnonces.last.log
 
