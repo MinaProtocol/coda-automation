@@ -109,7 +109,7 @@ start_worker () {
 
 # Secondary start of snark workers
 case $CODA_ROLE in
-"snarker")
+"snarkcoordinator")
     echo "Sleeping before adding more snark workers."
     sleep 10 # wait for daemon to come up
 
