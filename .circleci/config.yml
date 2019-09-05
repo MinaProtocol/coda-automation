@@ -65,8 +65,8 @@ jobs:
                 name: ansible monit (starts joiners)
                 command: cd ansible && ./play coda-monit.yaml
             - run:
-                name: Wait 5 min for joiners
-                command: sleep 300
+                name: Wait 10 min for joiners
+                command: sleep 600
                 no_output_timeout: 30m
     check-status:
         docker:
@@ -107,14 +107,30 @@ jobs:
         steps:
             - checkout
             - run:
+                name: ssh config
+                command: |
+                    echo -e "$TESTNETPEM" > ~/.ssh/id_rsa
+                    chmod 0600 ~/.ssh/id_rsa
+                    echo -e "Host *.amazonaws.com\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  User admin" > ~/.ssh/config
+            - run:
+                name: coda client status
+                command: cd ansible && ./adhoc tag_testnet_smoke_test "coda client status"
+            - run:
+                name: Tail Logs
+                command: cd ansible && ./adhoc tag_testnet_smoke_test "tail -n 100 test-coda/coda.log"
+                when: always
+            - run:
                 name: terraform init
                 command: cd terraform/testnets/testnet-smoke-test && terraform init
+                when: always
             - run:
                 name: terraform refresh
                 command: cd terraform/testnets/testnet-smoke-test && terraform refresh
+                when: always
             - run:
-                name: Tests Failed - destroy
+                name: terraform destroy
                 command: cd terraform/testnets/testnet-smoke-test && terraform destroy -auto-approve
+                when: always
 
 workflows:
     version: 2
@@ -129,7 +145,7 @@ workflows:
                     - ansible
         triggers:
           - schedule:
-              cron: "0 12 * * *" # 12 UTC
+              cron: "0 15 * * *" # 12 UTC 9am PT
               filters:
                 branches:
                   only: master
@@ -139,7 +155,7 @@ workflows:
             - destroy
         triggers:
           - schedule:
-              cron: "0 20 * * *" # 20 UTC
+              cron: "0 22 * * *" # 22 UTC  3pm PT
               filters:
                 branches:
                   only: master
