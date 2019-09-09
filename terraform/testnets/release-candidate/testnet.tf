@@ -2,7 +2,7 @@ locals {
   netname      = "release-candidate"
   aws_key_name = "testnet"
   coda_repo    = "stable"
-  coda_version = "215466-release-0.0.7-beta-3d21aedb-PV3cc28f98"  # Note: '*' gets latest when specifying version
+  coda_version = "217810-release-0.0.7-beta-63921281-PV3cc28f98"  # Note: '*' gets latest when specifying version
 }
 
 terraform {
