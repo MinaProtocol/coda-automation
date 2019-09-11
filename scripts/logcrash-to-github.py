@@ -7,17 +7,18 @@ import sys
 import requests
 
 # Authentication for user filing issue
+USE_GITHUB = True
 try:
     USERNAME = os.environ['GITHUB_USER']
 except KeyError:
-    print('ERROR: Environent variable GITHUB_USER unset.')
-    sys.exit(1)
+    print('WARN: Environent variable GITHUB_USER unset -- cannot write to github.')
+    USE_GITHUB = False
 try:
     # Use a developer token if you have 2FA
     PASSWORD = os.environ['GITHUB_PASSWORD']
 except KeyError:
-    print('ERROR: Environent variable GITHUB_PASSWORD unset.')
-    sys.exit(1)
+    print('WARN: Environent variable GITHUB_PASSWORD unset -- cannot write to github.')
+    USE_GITHUB = False
 
 # The repository to add this issue to
 REPO_OWNER = 'CodaProtocol'
@@ -83,12 +84,19 @@ if __name__ == "__main__":
                     print(crashdir)
                     print('New: %s' % exn)
                     print(json.dumps(data, indent=4, sort_keys=True))
-                    if yes_or_no('Create new issue?'):
-                        # FIXME - how to attach gz to issue.
-                        title = 'TESTING - CRASH - TESTNET - %s' % exn.strip()
-                        body = 'Details:\n```'
-                        body += json.dumps(data, indent=4, sort_keys=True)
-                        body += '\n```'
-                        make_github_issue(title=title,
-                                body=body,
-                                labels=['testnet', 'robot'])
+
+
+                    if sys.stdin.isatty():
+                        # running interactively
+                        if yes_or_no('Create new issue?'):
+                            # FIXME - how to attach gz to issue.
+                            title = 'TESTING - CRASH - TESTNET - %s' % exn.strip()
+                            body = 'Details:\n```'
+                            body += json.dumps(data, indent=4, sort_keys=True)
+                            body += '\n```'
+                            if USE_GITHUB:
+                                make_github_issue(title=title,
+                                        body=body,
+                                        labels=['testnet', 'robot'])
+                    else:
+                        print('Running non-interactively.')

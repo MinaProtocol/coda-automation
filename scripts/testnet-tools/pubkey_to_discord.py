@@ -1,0 +1,50 @@
+
+keymap = {
+    'tNci9ERxHGkemqBmNxEWTcPgY5sn347yq6BFcUGTpve6aJpaDUgaaTEQ3rfAgYeK7KhzEbYoJvSbqQ8u88aBNtu8ALVcEeRo4ei6sGjxMsmBAJW7vwW57KLzrvou4YEMA3saq6Xqtpg3sb': 'o1-node-snark-coordinator',
+    'tNciczxpMfZ4eW1ZPP9NVK2vxcm9cCHvTBWMe8Nskn2A25P1YqcdvFCD5LvgngraiCmAsnC8zWAiv5pwMYjrUwpMNYDePMQYiXX7HVMjrnB1JkEckyayvsAm2Bo4EQBWbHXD5Cxp65PZy5': 'o1-node-faucet-tiny',
+    'tNciQET6x3DhYmBVLXYRwqdRAtTMgH4tzZfU9vYGdSrnk3p9qvnB8JK5BcSou51gfZbvCrnoKhqUFKqbRi2qCWpKNhZS1j4txdEaNHDzBYVZScsCCZFJrgW2PyLMi7no6UVMnuCTSJ5nym': 'garethtdavies',
+    'tNciNsTaDKWqZFTDkiYNDK6U942iWRRX8FamMvhArgqQzkVMeLvRAt7DCNtJZcZuT4A5wGYtXbjQCedF4yh3JWbM2WEY8CwKribgnjRSbNjX6Hk6K5JxmnrbTyQm8iKtCA7UNxNkiaqawA': 'ansonlau3',
+    'tNcigzZykcdn1hSpckfKXnYK1xgxLsnpeDcp9juD8bhisVdmiU5EQTTkdwNhF4SfbGFg2cwTtM2RQokn7S3Bdr2NZyXRsoL29bHfyvEYmmPv5msknysfNY1Lop7HyUt68aYh46PMmn2z2B': 'Deepthi',
+    'tNcicNArpuQKzfokRasB2Mz7nFaSxnF2zojB43GZcN6pK3oDXVGUvJ8bxTW5rcB3b6UwTorUdvo8dV5R7dd25SVvErwhuF8KtmFBsG8Zu6visqrNVN99Y1QdUjZByLLz1BZbnh1yGcvHXR': 'Ilya_|_Genesis_Lab',
+    'tNci2apfQDHNoaGXnBZ4TM6XDTTrcMGNe2BHK7XMWMCZ9KoXbW4MPw86dmmsgjRBNTv62AA7HvEhGH7CnjJYCxfj2KJ52nC3UZrfLW8qSzbCzuFNJThCc2fx6vbhpBSSoMKVnxTEwEvpbU': 'LatentHero',
+    'tNciQ5nHMgNrzAWTkZx8Nc6fZVGTJ9xg9HEqGVE4SDoBXafsMAqbw5gU2Fx8Eq1ZNAD3YyxqqtsYdbrTm3kbMG3kGfX1D6WuQM4ZoeNDU6bHcMGF9MT9aM3d9HXWbFNf6XFtGAPBTJ8PHF': 'Prague',
+    'tNciCpHoXJRiWYSsx4HZzMNJxRYmHt5yLJbF5fa6Yv9fR1m99a9KfgEgaFmtSkhbJ3eq2NzwdeHMAafGCAYjeKQ8tLoF34e3vPhtW9nYiEqJUJuZEsPZE9RRQWqyPuMPFSZdeqdj5dut5H': 'Alexander',
+    'tNciRGY5DkKoeAbMWscZfJF9ZvJZHqEbharXjFuck43gKZkENsD2svkzKBp3ZrvGcoeVC4VDKt1Wp3vkrLXjsP7vTavnaseeRh5QeptFLiijzk7mGgFkgZi7ns53brN7Bk91WmyYPhBUDA': 'TipaZloy',
+}
+
+"""
+Older data...
+tNcibAmoSQqiZYT whataday2day
+tNci7NvTGz8AVng boscro
+tNcihsGQhy8XmDq y3v63n
+tNcicNArpuQKzfo Ilya | Genesis Lab
+tNci6xWipwohUQQ aureus
+tNciCJB9Df2Qdur jspadave
+tNciPt5taz5rze7 Dmitry D
+tNciBNjgL24UDGk OranG3
+tNciUwf4Uns6fSu ansonlau3
+tNciVbLmBb3kkZg ilya_petrov
+tNcibPYLvy6MvM9 Tyler34214
+tNciRGY5DkKoeAb TipaZloy
+tNciX9H5cqmhWTi hulio
+tNciNB9392r2f36 PetrG
+tNciQFukA6prhQi Hunterr84
+tNciUJbzpyufFsD ttt
+tNciVRxhXhJq78L novy
+tNciSsa6QA8sREh Kitfrag
+tNciYjrq2YuX6Ms Gs
+tNci66YXVbXh5bM GregMas
+tNciWh4QiBS5cBb Gavin Cox
+tNciC4yPCG7VCrJ TylerTY
+tNci9ViV7ieBUu7 Connor Di
+tNciGfaEEdEkMpE Chester123
+tNciFwvpwzMVPJD mamio
+tNcidgsCphkdpU2 sashka
+tNciN3JM45idr84 Q.Margo
+tNcik6XeAF6d2WX Mishdmish
+tNciEkJqE2UDfVg romantoz
+tNciCS4K5fytmzD Unknown
+tNciUoHEKPAyPrR Unknown
+tNci8R29YXciQt2 Unknown
+tNciKViQguhg2A9 Unknown
+"""
