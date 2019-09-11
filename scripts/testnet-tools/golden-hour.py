@@ -12,11 +12,12 @@ endtime   = datetime(2019, 9, 11, 10, 0)
 coda = CodaClient.Client(graphql_host="localhost", graphql_port="8304")
 blocks = coda.get_blocks()
 
-golden_transactions={}
-golden_provers={}
+block_transactions={}
+block_provers={}
 
 all_transactions = Counter()
 all_provers = Counter()
+all_provers_fees = Counter()
 
 for block in blocks['blocks']['nodes']:
     timestamp = int(int(block['protocolState']['blockchainState']['date'])/1000)
@@ -26,15 +27,15 @@ for block in blocks['blocks']['nodes']:
         transactions = Counter()
         for transaction in block['transactions']['userCommands']:
             transactions[transaction['from']] += 1
-        print('TXNS', transactions)
-        golden_transactions[timestamp] = transactions
+        block_transactions[timestamp] = transactions
         all_transactions += transactions
 
         provers = Counter()
         for snarkjob in block['snarkJobs']:
             provers[snarkjob['prover']] += 1
-        print ('SNARKS', provers)
-        golden_provers[timestamp] = provers
+            all_provers_fees[snarkjob['prover']] += int(snarkjob['fee'])
+
+        block_provers[timestamp] = provers
         all_provers += provers
 
 def print_key_counter(mycounter, label='UNKNOWN'):
@@ -44,15 +45,15 @@ def print_key_counter(mycounter, label='UNKNOWN'):
             key = pubkey_to_discord.keymap[key]
         print("\t",count,"\t",key[:20])
 
-timestamps = list(golden_transactions.keys())
+timestamps = list(block_transactions.keys())
 timestamps.sort()
 for timestamp in timestamps:
     print('-'*40)
     print(datetime.fromtimestamp(timestamp))
-    print_key_counter(golden_transactions[timestamp], label='TXNs')
-    print_key_counter(golden_provers[timestamp], label='SNKs')
+    print_key_counter(block_transactions[timestamp], label='TXNs')
+    print_key_counter(block_provers[timestamp], label='SNKs')
 
 print('='*40)
 print_key_counter(all_transactions, label='ALL TXNs')
 print_key_counter(all_provers, label='ALL SNKs')
-
+print_key_counter(all_provers_fees, label='ALL SNK FEEs')
