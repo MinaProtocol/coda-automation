@@ -29,7 +29,7 @@
     content: |
         [default]
         pattern = .*
-        retentions = 10s:1d
+        retentions = 2m:14d
 
 - name: Copy carbon-relay-ng.conf Config
   become: true
