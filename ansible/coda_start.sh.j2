@@ -6,33 +6,49 @@
 set -e
 
 if pgrep -f "coda daemon" > /dev/null; then
-    echo "Coda Already Running"
-    exit
+    echo "Coda Already Running - continuing with DRYRUN mode"
+    DRYRUN=true
+else
+    DRYRUN=false
 fi
 
-# If test-code exists, mv it (previous crash)
-if [ -d "/home/admin/test-coda" ]; then
-    DS=`date +"%Y-%m-%d_%H-%M-%S"`
-    mv /home/admin/test-coda /home/admin/test-coda-CRASH-${DS}
-fi
+CODA_ROLE=$(cat /etc/coda-rolename)
 
-# Make work dir if needed
+# Conf dir management
+case $CODA_ROLE in
+"archive")
+    echo "Archive node -- Not altering test_coda dir"
+    ;;
+*)
+    # If test-code exists, mv it (previous crash)
+    if [ -d "/home/admin/test-coda" ]; then
+        DS=$(date +"%Y-%m-%d_%H-%M-%S")
+        if [ "$DRYRUN" = false ]; then
+            mv /home/admin/test-coda /home/admin/test-coda-CRASH-"${DS}"
+        fi
+    fi
+    ;;
+esac
+
+# Make conf dir if needed
 if [ ! -d "/home/admin/test-coda" ]; then
   mkdir -p /home/admin/test-coda
 fi
 
 # Build snarkwork whitelist ips (derived by ansible - global)
 # liberal list (all groups)
-echo "( 127.0.0.1 {% for host in groups['all']  %}{{ hostvars[host].ec2_ip_address }} {% endfor %})" > /home/admin/test-coda/client_whitelist
+if [ "$DRYRUN" = false ]; then
+    echo "( 127.0.0.1 {% for host in groups['all']  %}{{ hostvars[host].ec2_ip_address }} {% endfor %})" > /home/admin/test-coda/client_whitelist
+fi
 
 # External ip (derived by ansible - unique per host)
 EXTERNAL_IP='{{ ec2_ip_address }}'
 
 # Default ports start at 8301
 CODA_RPCPORT=8301
-CODA_EXTPORT=$(($CODA_RPCPORT + 1))
-CODA_PEERPORT=$(($CODA_RPCPORT + 2))
-CODA_QLPORT=$(($CODA_RPCPORT + 3))
+CODA_EXTPORT=$((CODA_RPCPORT + 1))
+CODA_PEERPORT=$((CODA_RPCPORT + 2))
+CODA_QLPORT=$((CODA_RPCPORT + 3))
 PUBLIC_KEY='tNci9ERxHGkemqBmNxEWTcPgY5sn347yq6BFcUGTpve6aJpaDUgaaTEQ3rfAgYeK7KhzEbYoJvSbqQ8u88aBNtu8ALVcEeRo4ei6sGjxMsmBAJW7vwW57KLzrvou4YEMA3saq6Xqtpg3sb'
 
 # Set offset if it is being used
@@ -42,17 +58,18 @@ if [ -f "/etc/coda_offset" ]; then
 fi
 
 # tag_role_{{ netname }}_seed
-
-CODA_SEEDLIST="-peer {{ seed_ip }}:8303 " # Initial seed peer
+CODA_SEEDLIST="-peer {{ netname }}.o1test.net:8303 " # Initial seed peer(s)
 CODA_SEEDLIST+="{% for host in groups['tag_testnet_' + netname]  %}-peer {{ hostvars[host].ec2_ip_address }}:${CODA_PEERPORT} {% endfor %}" # All other nodes
-CODA_ROLE=$(cat /etc/coda-rolename)
 
-CLI_COMMON="-background -tracing -no-bans -log-json -log-level Trace "
-CLI_COMMON+="-client-port ${CODA_RPCPORT} " # Default
-CLI_COMMON+="-external-port ${CODA_EXTPORT} "
-CLI_COMMON+="-config-directory /home/admin/test-coda "
-CLI_COMMON+="-external-ip ${EXTERNAL_IP} "
-CLI_COMMON+="-rest-port ${CODA_QLPORT} "
+# Common CLI options for all roles
+CLI_COMMON="\
+ -background \
+ -tracing -no-bans -log-json -log-level Trace \
+ -client-port ${CODA_RPCPORT} \
+ -external-port ${CODA_EXTPORT} \
+ -config-directory /home/admin/test-coda \
+ -external-ip ${EXTERNAL_IP} \
+ -rest-port ${CODA_QLPORT} "
 
 # Main start
 case $CODA_ROLE in
@@ -61,24 +78,22 @@ case $CODA_ROLE in
     ;;
 "seedjoiner")
     CLI_ROLE="${CODA_SEEDLIST} "
-    CLI_ROLE+=""
     ;;
 "snarkcoordinator")
-    CLI_ROLE="${CODA_SEEDLIST} "
-    CLI_ROLE+="-run-snark-worker ${PUBLIC_KEY} "
-    CLI_ROLE+="-snark-worker-fee 2 -work-selection seq "
     export OMP_NUM_THREADS=4
+    CLI_ROLE="${CODA_SEEDLIST} \
+    -run-snark-worker ${PUBLIC_KEY} \
+    -snark-worker-fee 2 \
+    -work-selection seq "
     ;;
 "blockproducer")
-    CLI_ROLE="${CODA_SEEDLIST} "
-    CLI_ROLE+=" -propose-key /home/admin/wallet-keys/proposerkey "
-    # Note: Following flag strips the propose key of its password and
-    # imports it into the Daemon's internal wallet store.
-    CLI_ROLE+=" -unsafe-track-propose-key "
+    CLI_ROLE="${CODA_SEEDLIST} \
+    -propose-key /home/admin/wallet-keys/proposerkey \
+    -unsafe-track-propose-key "
     ;;
 "archive")
-    CLI_ROLE="${CODA_SEEDLIST} "
-    CLI_ROLE+=" -archive "
+    CLI_ROLE="${CODA_SEEDLIST} \
+    -archive "
     ;;
 *)
     echo "Uknown CODA_ROLE ${CODA_ROLE}"
@@ -88,22 +103,26 @@ esac
 echo "Starting coda ${CODA_ROLE}"
 CMD="coda daemon ${CLI_COMMON} ${CLI_ROLE}"
 echo "Running: ${CMD}"
-CODA_PRIVKEY_PASS="{{ privkey_pass }}" ${CMD}
+
+if [ "$DRYRUN" = false ]; then
+    CODA_PRIVKEY_PASS="{{ privkey_pass }}"  ${CMD}
+else
+    echo "NO-OP: DryRun"
+fi
 
 # Start worker function for starting sub-snark workers
 start_worker () {
-    if [ -z "$1" ]
-    then
+    if [ -z "$1" ] ; then
         DAEMON='127.0.0.1:8301'
     else
         DAEMON=$1
     fi
-
+    export OMP_NUM_THREADS=4
     NEW_UUID=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'A-Z0-9' | fold -w 8 | head -n 1)
-    echo ${NEW_UUID}
-    mkdir test-snark-worker-${NEW_UUID}
+    echo "${NEW_UUID}"
+    mkdir "test-snark-worker-${NEW_UUID}"
     nohup nice nice coda internal snark-worker \
-        -daemon-address $DAEMON \
+        -daemon-address ${DAEMON} \
         -shutdown-on-disconnect false  2>&1 >> test-snark-worker-${NEW_UUID}/coda.log &
 }
 
@@ -113,16 +132,14 @@ case $CODA_ROLE in
     echo "Sleeping before adding more snark workers."
     sleep 10 # wait for daemon to come up
 
-    CORE_COUNT=`nproc --all`
-    CORE_SCALE=$(( $CORE_COUNT / 5 ))
-
-    export OMP_NUM_THREADS=4
+    CORE_COUNT=$(nproc --all)
+    CORE_SCALE=$(( CORE_COUNT / 5 ))
     count=1
     while [ "$(pgrep  -f 'coda internal snark-worker' | wc -l)" -lt "$CORE_SCALE" ]; do
         echo "Worker Count: ${count}"
         start_worker
         count=$((count+1))
-        sleep 5 # wait for it to stablize
+        sleep 5 # wait for daemons to stablize
     done
     ;;
 esac
