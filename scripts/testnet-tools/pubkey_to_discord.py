@@ -3,7 +3,7 @@
 # Example: 
 #   'tNciczxpMfZ4eW1ZPP9NVK2vxcm9cCHvTBWMe8Nskn2A25P1YqcdvFCD5LvgngraiCmAsnC8zWAiv5pwMYjrUwpMNYDePMQYiXX7HVMjrnB1JkEckyayvsAm2Bo4EQBWbHXD5Cxp65PZy5': 'DISCORD_USERNAME#1234',
 FILET_MIGNON_STAKING_CHALLENGE = {
-
+'tNciVRxhXhJq78LFxg8acp7VwVSXtJMsQgyyASr9q9vXMcJ4whwawrtz1TZyH8TXHyy68cPatDR5xRn5G2o7cm8kWYMbooPaTVpte2vYsd7pqFDAJ6QAYTD8Ro1FPmzQdvCZHdhdMfdZqi': 'novy',
 }
 
 # For Community Members
