@@ -13,6 +13,7 @@ FILET_MIGNON_STAKING_CHALLENGE = {
     'tNciaKqn2vMY7JA66AHEP1bupBcsnPYeFM58SorCWL78pGoVKrM9r7j968a9BaqmEqH2hx8UCCURy8op27HFE9auLfesTbu4u7MmRQmsGVmWhMfXSqpTQpmkcjzW7hd4Bc44G32jv2SLLS': 'Matt Harrop / Figment Network',
     'tNciBBcEcajd4AFCAiSLWvwg9X3fCUT57X5h9UhVuDhh3UrZ26nxCeVEzjFCN6uVhy2CFSqUjWqGsZ2yQno64nqE6SWPbqVr1WX2JiBQ23mBCmtkViPxCQUdq2EJZPyMDx6tWbazW2xgYo': 'garethtdavies#4963'
     'tNciVRxhXhJq78LFxg8acp7VwVSXtJMsQgyyASr9q9vXMcJ4whwawrtz1TZyH8TXHyy68cPatDR5xRn5G2o7cm8kWYMbooPaTVpte2vYsd7pqFDAJ6QAYTD8Ro1FPmzQdvCZHdhdMfdZqi': 'novy',
+    'tNciC4yPCG7VCrJhtnik81np3FA8hhHei2LdJ93Yux5GC1FKmdK5UsGASYqkgfBg5SjQKPamE9iPpBw84p3F542HPN4TjQGa1gsewxdXv7XDfbXN8K8z98UmPD7pbLxqHu9K22y6BpTqxu': 'TylerTY#0202',
 }
 
 # For Community Members
