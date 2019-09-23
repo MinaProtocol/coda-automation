@@ -14,6 +14,9 @@ FILET_MIGNON_STAKING_CHALLENGE = {
     'tNciBBcEcajd4AFCAiSLWvwg9X3fCUT57X5h9UhVuDhh3UrZ26nxCeVEzjFCN6uVhy2CFSqUjWqGsZ2yQno64nqE6SWPbqVr1WX2JiBQ23mBCmtkViPxCQUdq2EJZPyMDx6tWbazW2xgYo': 'garethtdavies#4963'
     'tNciVRxhXhJq78LFxg8acp7VwVSXtJMsQgyyASr9q9vXMcJ4whwawrtz1TZyH8TXHyy68cPatDR5xRn5G2o7cm8kWYMbooPaTVpte2vYsd7pqFDAJ6QAYTD8Ro1FPmzQdvCZHdhdMfdZqi': 'novy',
     'tNciVbLmBb3kkZggRNUstqMeYKBEVikXtnVufMpEXJkv1hhVj2dfmk3owUraN3xfwk6foz8aJXRsrK6NsiqLNFS3uMBNwnD7uNgou9KqFHvhNNrHLf8MiERTxgubS7SvYpwyV6gNXDTrpx': 'ilya_petrov#5431',
+    'tNcibAmoSQqiZYTEu52LPV3KadPQJKZUVpQe3ji3cdGMv8uB6ByyhMsfTnCYdKxUXUNjFGMdyW7dBVmDpFEFdjxVGpekAKfrsHc9Pbk8pXY2MCLQwNqgBbWHcWWyqhVjCdh7X6zVHSu87A': 'whataday2day#1271'
+    'tNcibPYLvy6MvM9XEfm2ECoibzcsRNv7cF5AcGpiQa5zs3bpmZF8DiHkvPvRcr6iGe2hsii6mE5ufXsdCdfZdA51GuuDaDYaVZJwSwcTiYRw1aJ2WMgm3JSLPYUPQ1bTBieQveWwUT45dK': 'Tyler34214#4119',
+    'tNciN3JM45idr84C8bjKXJXbWCQXWRSuDYq2ZZg6HbtT1g6dgvwBScPc8WL26VdfWzf7okUgaFktd63KtP2zM7X7pRgNDhBXHaEseUJ18NSqzuVdgtv1X5YBJivS8i2masYzaUszVdjfzJ': 'Q.Margo#8900',
 }
 
 # For Community Members
