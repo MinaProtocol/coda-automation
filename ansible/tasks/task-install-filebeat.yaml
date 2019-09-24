@@ -1,19 +1,25 @@
 
+# task to install and configure filebeat-oss
 
-- set_fact:
-    deb_url: "https://artifacts.elastic.co/downloads/beats/filebeat"
-    deb_filename: "filebeat-oss-7.0.1-amd64.deb"
+- name: Add apt signing key
+  become: true
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
 
-- name: Download Filebeat Deb
-  get_url:
-    url: "{{ deb_url }}/{{ deb_filename }}"
-    dest: /tmp/{{ deb_filename }}
-    force: no
+- name: Apt repository
+  become: true
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main
+    state: present
+    filename: elastic-7.x.list
 
-# OS updates happening a bootup can block dpkg, use until
-- name: Install Filebeat
-  apt: deb="/tmp/{{ deb_filename }}"
-  sudo: true
+- name: Install package
+  become: true
+  apt:
+    name: filebeat=7.3.2
+    state: present
+    update_cache: yes
   register: apt_status
   until: apt_status|success
   delay: 6
@@ -24,6 +30,7 @@
   copy:
     dest: /etc/filebeat/filebeat.yml
     content: |
+        setup.ilm.enabled: false
         logging.level: error
         filebeat.inputs:
         - type: log

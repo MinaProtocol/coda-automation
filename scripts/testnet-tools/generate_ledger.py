@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import pubkey_to_discord
+import offline_keys
 
 content = """
 open Functor.Without_private
@@ -118,7 +119,7 @@ coda_per_user = int(40000000 / total_user_accounts)
 
 id = 1
 for (user_key, discord_id) in pubkey_to_discord.FILET_MIGNON_STAKING_CHALLENGE.items():
-    offline_key = pubkey_to_discord.OFFLINE_PUBLIC_KEYS[id]
+    offline_key = offline_keys.OFFLINE_PUBLIC_KEYS[id]
     content += """
       (* Offline/Online User Keys: %s   %s of %s *)
     ; { pk=
