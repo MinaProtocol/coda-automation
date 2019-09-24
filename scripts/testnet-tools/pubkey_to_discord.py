@@ -50,6 +50,7 @@ FILET_MIGNON_STAKING_CHALLENGE = {
     'tNciEkJqE2UDfVgbWDynNXuA8eXLuSWJs5CGc5Nk6giUvoQQdny7wZaBRyWpZpaBMFXHzG6iiSuwUwVjF1tFfv5GdDvRA4uEwsKzAkGy9Lb25TsiDTTzKeFAgGBZB7LNnQ22Zg4QxYSuxm': 'romantoz#6819',
     'tNcik6XeAF6d2WXKuVb9TRjKV9Gqm2WK2kWVVGoR1VKPMSfLxzYhkH7YxCAVPHBLBwnMKinrGiBCynRPzML8SuMGtqG1mnE398wtYgLor2xMmYLc5PZbu2pimTmrmvbKLZLoiY7JaAUGds': 'Mishdmish#8101',
     'tNciWKYWy8cCkPW2H3L8cRpopd8qzBp1tGbni31BEbAKEnPqp4WTRCZHZ1LsfNAJbsv95Tam1retzxPPQ4wH2tBJ6fSTX9QcD7URQbrcQkexe9LY7jTyjDXzJef6GxnCpWux3FEwkyk1fT': 'niuniu#9001'
+    'tNcihEh77DbibdWrdGgTsrhSb3ccUm2cGGVDRitpxRKXjTP9f8KuxBoes9MBTxRH7rzoGA3Kzs27L2gmrBEppPTubX2AgN9GkBJ6fHGWBKyB39zhaemjWQFjdG4YZkGrESp7ZxNd9r2n3S': 'tarcieri | iqlusion.io#0590',
 }
 
 # For Community Members
