@@ -60,6 +60,7 @@ mkdir /var/log/journal
 
 # user tools
 apt-get --yes install \
+  atop \
   bc \
   dnsutils \
   emacs-nox \

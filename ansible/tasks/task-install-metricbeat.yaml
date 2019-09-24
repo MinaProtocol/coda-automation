@@ -1,18 +1,24 @@
+# task to install and configure metricbeat-oss
 
+- name: Add apt signing key
+  become: true
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
 
-- set_fact:
-    deb_url: "https://artifacts.elastic.co/downloads/beats/metricbeat"
-    deb_filename: "metricbeat-oss-7.1.1-amd64.deb"
+- name: Add apt repository
+  become: true
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main
+    state: present
+    filename: elastic-7.x.list
 
-- name: Download Metricbeat Deb
-  get_url:
-    url: "{{ deb_url }}/{{ deb_filename }}"
-    dest: /tmp/{{ deb_filename }}
-    force: no
-
-- name: Install Metricbeat
-  apt: deb="/tmp/{{ deb_filename }}"
-  sudo: true
+- name: Install package
+  become: true
+  apt:
+    name: metricbeat=7.3.2
+    state: present
+    update_cache: yes
   register: apt_status
   until: apt_status|success
   delay: 6
@@ -23,6 +29,7 @@
   copy:
     dest: /etc/metricbeat/metricbeat.yml
     content: |
+        setup.ilm.enabled: false
         metricbeat.modules:
         - module: system
         metricsets:
@@ -54,6 +61,26 @@
             - "{{ elastic_url }}"
           protocol: "https"
 
+- name: delete unwanted dashboards with wildcards
+  become: true
+  shell: |
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-apache-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-consul-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-golang-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-haproxy-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-kafka-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-kubernetes-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-mongodb-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-mysql-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-nats-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/metricbeat-nginx-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-redis-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-rabbitmq-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-uwsgi-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/metricbeat-windows-*.json
+    rm -f /usr/share/metricbeat/kibana/7/dashboard/Metricbeat-zookeeper-*.json
+  args:
+    warn: false
 
 - name: force systemd reload
   become: true
