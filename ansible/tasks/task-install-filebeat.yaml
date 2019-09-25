@@ -40,8 +40,8 @@
           json.overwrite_keys: true
           overwrite_keys: true
           paths:
-            - /home/admin/test-*/*.log
-            - /home/admin/test-*/*.log.*
+            - /home/admin/test-coda/coda.log
+            - /home/admin/test-snark-worker-*/coda.log
 
         output.elasticsearch:
           hosts:
