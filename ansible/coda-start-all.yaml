@@ -19,20 +19,7 @@
     - pause:
         seconds: 5
 
-# Start the seed and pause
-- hosts: "tag_role_{{ netname }}_seed"
-  gather_facts: no
-  tasks:
-    - name: Start Coda
-      shell: /home/admin/coda_start.sh
-      args:
-        executable: /bin/bash
-      register: seed_start
-    - debug: msg="{{ seed_start.stdout }}"
-    - pause:
-        seconds: 45
-
-# Start the rest all at once (will no-op on seed)
+# Start tall the nodes at once (seems to work more reliably)
 - hosts: "tag_testnet_{{ netname }}"
   gather_facts: no
   tasks:
