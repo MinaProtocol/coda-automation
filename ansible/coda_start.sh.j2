@@ -74,7 +74,7 @@ CLI_COMMON="\
 # Main start
 case $CODA_ROLE in
 "seed")
-    CLI_ROLE=""
+    CLI_ROLE="${CODA_SEEDLIST} "
     ;;
 "seedjoiner")
     CLI_ROLE="${CODA_SEEDLIST} "
