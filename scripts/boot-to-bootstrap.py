@@ -21,9 +21,14 @@ with open('test-coda/coda.log', 'r') as f:
     for line in f:
         if 'Coda daemon is booting up' in line:
             t0 = get_timestamp(line)
-            print('Found boot time: %0.2f' % t0)
+            print('Found boot:                 %0.2f' % t0)
+
+        elif 'Starting Bootstrap Controller' in line:
+            t1 = get_timestamp(line)
+            print('Found bootstrap start:      %0.2f' % t1)
 
         elif 'Bootstrap state: complete' in line:
-            t1 = get_timestamp(line)
-            print('Found bootstrap completion time: %0.2f' % t1)
-            print('Delta: %0.2f seconds' % (t1-t0))
+            t2 = get_timestamp(line)
+            print('Found bootstrap completion: %0.2f' % t2)
+            print('Time to sync:               %0.2f seconds' % (t2-t0))
+            print('Time to bootstrap:          %0.2f seconds' % (t2-t1))
