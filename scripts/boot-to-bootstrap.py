@@ -32,3 +32,4 @@ with open('test-coda/coda.log', 'r') as f:
             print('Found bootstrap completion: %0.2f' % t2)
             print('Time to sync:               %0.2f seconds' % (t2-t0))
             print('Time to bootstrap:          %0.2f seconds' % (t2-t1))
+            print('Time to begin bootstrap:    %0.2f seconds' % (t1-t0))
