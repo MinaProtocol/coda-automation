@@ -1,12 +1,20 @@
-- name: Install rsync
-  command: sudo apt-get install rsync
+- name: Install package
   become: true
+  apt:
+    name:
+      - rsync
+      - git
+    state: present
+    update_cache: yes
   register: apt_status
   until: apt_status|success
-  delay: 20
+  delay: 3
   retries: 10
-  # This is the first blocking apt call, let it take it's time to recover (os is busy updating packages)
 
+- name: coda-python-client
+  pip:
+    name: git+https://github.com/CodaProtocol/coda-python-client.git
+    executable: pip3
 
 - name: Copy Testing Tools
   synchronize:
