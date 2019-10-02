@@ -46,6 +46,12 @@ variable "port_dht" {
   default     = 8303
 }
 
+variable "port_libp2p" {
+  description = "Port libp2p protocol communicates over"
+  type        = number
+  default     = 28675
+}
+
 variable "port_ql" {
   description = "Port GraphQL endpoint is listening on"
   type        = number
