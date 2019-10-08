@@ -1,0 +1,1 @@
+--extra-index-url https://o1labs.jfrog.io/o1labs/api/pypi/pypi/simple CodaClient
