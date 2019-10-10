@@ -72,9 +72,9 @@ def create_points_report(window_times=[], windowed_metrics={}, global_metrics={}
 
     return report
 
-def collect_metrics(blocks, metrics):
+def collect_metrics(blocks, metrics_dict):
     computed_metrics = {
-        metric_name: metric(blocks) for metric_name, metric in metrics.items()
+        metric_name: metric(blocks) for metric_name, metric in metrics_dict.items()
     }
 
     public_keys = functools.reduce(
@@ -85,7 +85,7 @@ def collect_metrics(blocks, metrics):
 
     return { public_key: {
         metric_name: computed_metrics[metric_name][public_key]
-        for metric_name in metrics.keys()
+        for metric_name in metrics_dict.keys()
         if public_key in computed_metrics[metric_name]
     } for public_key in public_keys }
 
@@ -103,13 +103,13 @@ def main():
         "Blocks Produced (Windowed)": metrics.blocks_produced,
         "SNARK Fees Collected (Windowed)": metrics.snark_fees_collected,
         "Transactions Sent (Windowed)": metrics.transactions_sent,
-        "Transactions Received (Windowed)": metrics.transactions_received
+        #"Transactions Received (Windowed)": metrics.transactions_received
     }
     global_metrics = {
         "Blocks Produced (Global)": metrics.blocks_produced,
-        "SNARK Fees Collected (Global)": metrics.snark_fees_collected,
-        "Transactions Sent (Global)": metrics.transactions_sent,
-        "Transactions Received (Global)": metrics.transactions_received,
+        # "SNARK Fees Collected (Global)": metrics.snark_fees_collected,
+        # "Transactions Sent (Global)": metrics.transactions_sent,
+        # "Transactions Received (Global)": metrics.transactions_received,
         "Transactions Sent Echo (Global)": metrics.transactions_sent_echo
     }
 

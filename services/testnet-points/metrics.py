@@ -2,8 +2,11 @@ from collections import Counter
 from itertools import chain
 
 def snark_fees_collected(blocks):
-   jobs = chain.from_iterable(block["snarkJobs"] for block in blocks)
-   return Counter({ job["prover"]: int(job["fee"]) for job in jobs })
+    count = Counter()
+    jobs = chain.from_iterable(block["snarkJobs"] for block in blocks)
+    for job in jobs:
+        count.update({ job["prover"]: int(job["fee"])})
+    return count
 
 def blocks_produced(blocks):
     return Counter(block["creator"] for block in blocks)
