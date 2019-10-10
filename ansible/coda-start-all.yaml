@@ -29,3 +29,7 @@
         executable: /bin/bash
       register: all_start
     - debug: msg="{{ all_start.stdout }}"
+    - pause:
+        seconds: 10
+    # Install/run monit (done last so it doesn't auto start daemons earlier)
+    - include: tasks/task-install-monit.yaml
