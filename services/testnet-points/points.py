@@ -8,7 +8,8 @@ import json
 from collections import defaultdict, Counter
 from itertools import chain
 import functools
-
+# from LeaderboardUpload import upload, sheets
+# from LeaderboardUpload.metrics import latest, no_update, max_metric, add
 
 #  Note: new metrics should be in the following form:
 #     {
@@ -48,27 +49,37 @@ def load_blocks():
     return response["data"]["blocks"]["nodes"]
 
 def create_points_report(window_times=[], windowed_metrics={}, global_metrics={}, pk_mapping={}):
+    logger = logging.Logger(__name__)
+
     blocks = load_blocks()
+    logger.debug(f"Loaded {len(blocks)} Blocks")
 
     windowed_blocks = [
         block for block in blocks if in_range(block["protocolState"]["blockchainState"]["date"], window_times)
     ]
+    logger.debug(f"Filtered out {len(windowed_blocks)} Windowed Blocks")
 
     global_metrics = collect_metrics(blocks, global_metrics)
     windowed_metrics = collect_metrics(windowed_blocks, windowed_metrics)
 
-    report = {}
-    for public_key in global_metrics.keys():
-        report[public_key] = functools.reduce(
-            lambda res, metrics: res.update(metrics.get(public_key, {})) or res,
-            [windowed_metrics, global_metrics],
-            {}
-        )
+    metrics = [global_metrics, windowed_metrics]
+    public_keys = set(chain.from_iterable(metrics.keys() for metrics in metrics))
+    logger.debug(f"Observed {len(public_keys)} Public Keys")
 
-    for public_key in report.keys():
-        if public_key in pk_mapping:
-            report[pk_mapping[public_key]] = report[public_key]
+    report = defaultdict(dict)
+    for public_key in public_keys:
+        for metric in metrics:
+            report[public_key].update(metric.get(public_key, {}))
+    
+    #print(json.dumps(report, indent=2))
+
+
+    for public_key, user in pk_mapping.items():
+        if public_key in report:
+            report[user] = report[public_key]
             del(report[public_key])
+        else:
+            logger.debug(f"Did not find user={user} public_key={public_key}")
 
     return report
 
@@ -77,11 +88,7 @@ def collect_metrics(blocks, metrics_dict):
         metric_name: metric(blocks) for metric_name, metric in metrics_dict.items()
     }
 
-    public_keys = functools.reduce(
-        lambda keys, metric_name: set(computed_metrics[metric_name].keys()) | keys,
-        computed_metrics.keys(),
-        set()
-    )
+    public_keys = set(chain.from_iterable(metric.keys() for metric in computed_metrics.values()))
 
     return { public_key: {
         metric_name: computed_metrics[metric_name][public_key]
@@ -90,14 +97,17 @@ def collect_metrics(blocks, metrics_dict):
     } for public_key in public_keys }
 
 def main():
+    logger = logging.Logger(__name__)
     timezone = pytz.timezone('America/Los_Angeles')
     window_times = [
-        (datetime.datetime(year=2019, month=10, day=8, hour=14, tzinfo=timezone), datetime.timedelta(hours=1)),
-        (datetime.datetime(year=2019, month=10, day=10, hour=17, tzinfo=timezone), datetime.timedelta(hours=1)),
+        # (datetime.datetime(year=2019, month=10, day=8, hour=14, tzinfo=timezone), datetime.timedelta(hours=1)),
+        #(datetime.datetime(year=2019, month=10, day=10, hour=17, tzinfo=timezone), datetime.timedelta(hours=1)),
+        (datetime.datetime(year=2019, month=10, day=10, hour=21, tzinfo=timezone), datetime.timedelta(hours=1)),
         (datetime.datetime(year=2019, month=10, day=12, hour=9, tzinfo=timezone), datetime.timedelta(hours=1)),
-        (datetime.datetime(year=2019, month=10, day=15, hour=17, tzinfo=timezone), datetime.timedelta(hours=1)),
+        (datetime.datetime(year=2019, month=10, day=15, hour=21, tzinfo=timezone), datetime.timedelta(hours=1)),
         (datetime.datetime(year=2019, month=10, day=16, hour=9, tzinfo=timezone), datetime.timedelta(hours=1))
     ]
+    logger.debug(f"Using these windows: {window_times}")
 
     windowed_metrics = {
         "Blocks Produced (Windowed)": metrics.blocks_produced,
@@ -105,20 +115,44 @@ def main():
         "Transactions Sent (Windowed)": metrics.transactions_sent,
         #"Transactions Received (Windowed)": metrics.transactions_received
     }
+    logger.debug(f"Running with these windowed metrics: {windowed_metrics.keys()}")
+
     global_metrics = {
         "Blocks Produced (Global)": metrics.blocks_produced,
         # "SNARK Fees Collected (Global)": metrics.snark_fees_collected,
-        # "Transactions Sent (Global)": metrics.transactions_sent,
+        "Transactions Sent (Global)": metrics.transactions_sent,
         # "Transactions Received (Global)": metrics.transactions_received,
         "Transactions Sent Echo (Global)": metrics.transactions_sent_echo
     }
+    logger.debug(f"Running with these windowed metrics: {global_metrics.keys()}")
 
     with open('known_keys.json', 'r') as f:
         known_users = json.load(f)
 
     report = create_points_report(window_times, windowed_metrics, global_metrics, known_users)
     print(json.dumps(report, indent=2))
-    return report
+    
+
+    # SHEET_ID = ""
+    
+    # combine_fns = {
+    #     "Blocks Produced (Windowed)": latest,
+    #     "SNARK Fees Collected (Windowed)": latest,
+    #     "Transactions Sent (Windowed)": latest,
+    #     "Blocks Produced (Global)": latest,
+    #     "Transactions Sent Echo (Global)": latest
+
+    # }
+    # credentials = sheets.get_credentials()
+    # uploaded_metrics = upload.upload_metrics(
+    #     credentials,
+    #     SHEET_ID,
+    #     "Metrics2.2",
+    #     combine_fns,
+    #     report)
+    
+    # print(json.dumps(uploaded_metrics, indent=2))
+    # return uploaded_metrics
 
 if __name__ == "__main__":
     main()
