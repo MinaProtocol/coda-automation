@@ -139,7 +139,6 @@ workflows:
                 branches:
                   only:
                    - master
-                   - /manualsmoke-.*/
 
     smoke-test-destroy:
         jobs:
