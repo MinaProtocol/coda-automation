@@ -126,7 +126,7 @@ module "us-west-2-blockproducer" {
   source        = "../../modules/coda-node"
   region        = "us-west-2"
   server_count  = 3
-  instance_type = "c5.2xlarge"
+  instance_type = "t3.2xlarge"
   custom_ami    = "ami-09d31fc66dcb58522"
   netname       = "${local.netname}"
   rolename      = "blockproducer"
