@@ -1,8 +1,7 @@
-# This is pretty ugly, but it works.
-# Ties together ips from secretmanager and kibana
+# Ties together ips from secretmanager, ec2 and kibana
 # Relies on ec2.py and elastic_whitelist.py
 
-- name: Apply elastic ip whitelist
+- name: Apply elastic whitelist ips
   delegate_to: 127.0.0.1
   run_once: True
   shell: |
