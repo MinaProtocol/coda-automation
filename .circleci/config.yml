@@ -42,13 +42,6 @@ jobs:
                     chmod 0600 ~/.ssh/id_rsa
                     echo -e "Host *.amazonaws.com\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  User admin" > ~/.ssh/config
             - run:
-                name: elastic_whitelist
-                command: |
-                    echo ${ELASTICJSON} > scripts/elastic_whitelist_config.json
-                    cd scripts
-                    ../ansible/ec2.py > ec2.json
-                    ./elastic_whitelist.py
-            - run:
                 name: instances2inventory
                 command: cd scripts && ./instances2inventory.py smoke-test
             - run:
@@ -64,10 +57,6 @@ jobs:
             - run:
                 name: ansible monit (starts joiners)
                 command: cd ansible && ./play coda-monit.yaml
-            - run:
-                name: Wait 10 min for joiners
-                command: sleep 600
-                no_output_timeout: 30m
     check-status:
         docker:
           - image: codaprotocol/coda-automation:manual
@@ -145,17 +134,19 @@ workflows:
                     - ansible
         triggers:
           - schedule:
-              cron: "0 15 * * *" # 12 UTC 9am PT
+              cron: "0 14 * * *" # 14 UTC 7am PT
               filters:
                 branches:
-                  only: master
+                  only:
+                   - master
+                   - /manualsmoke-.*/
 
     smoke-test-destroy:
         jobs:
             - destroy
         triggers:
           - schedule:
-              cron: "0 0 * * *" # 0 UTC  5pm PT
+              cron: "0 1 * * *" # 01 UTC 6pm PT
               filters:
                 branches:
                   only: master

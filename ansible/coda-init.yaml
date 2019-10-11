@@ -4,6 +4,7 @@
   run_once: True
   tasks:
     - include: tasks/task-secretmanager.yaml
+    - include: tasks/task-elastic_whitelist.yaml
 
 - hosts: "tag_testnet_{{ netname }}"
   strategy: free
