@@ -17,19 +17,39 @@ def get_timestamp(line):
         return(dt.timestamp())
 
 
-with open('test-coda/coda.log', 'r') as f:
-    for line in f:
+with open('test-coda/coda.log', 'rb') as f:
+    for line_bare in f:
+        line = line_bare.decode(errors='ignore')
         if 'Coda daemon is booting up' in line:
             t0 = get_timestamp(line)
             print('Found boot:                 %0.2f' % t0)
-
+        elif 'curr_global_slot' in line:
+            # no-op for now - but want to collect later
+            continue
+        # Bootstrap starts at 2k+delta
         elif 'Starting Bootstrap Controller' in line:
-            t1 = get_timestamp(line)
-            print('Found bootstrap start:      %0.2f' % t1)
+            tb1 = get_timestamp(line)
+            print('Found bootstrap start:         %0.2f' % tb1)
 
         elif 'Bootstrap state: complete' in line:
-            t2 = get_timestamp(line)
-            print('Found bootstrap completion: %0.2f' % t2)
-            print('Time to sync:               %0.2f seconds' % (t2-t0))
-            print('Time to bootstrap:          %0.2f seconds' % (t2-t1))
-            print('Time to begin bootstrap:    %0.2f seconds' % (t1-t0))
+            tb2 = get_timestamp(line)
+            print('Found bootstrap completion:    %0.2f' % tb2)
+            print('')
+            print('Seconds to begin bootstrap:    %0.2f' % (tb1-t0))
+            print('Seconds to bootstrap:          %0.2f' % (tb2-tb1))
+            print('')
+
+        elif 'Coda daemon is now doing ledger catchup' in line:
+            tc1 = get_timestamp(line)
+            print('Found catchup start:           %0.2f' % tc1)
+
+        elif 'Coda daemon is now synced' in line:
+            tc2 = get_timestamp(line)
+            try:
+                tc1
+                print('Found catchup complete:        %0.2f' % tc2)
+                print('')
+                print('Seconds to catchup:            %0.2f' % (tc2-tc1))
+                print('Seconds to sync (from boot):   %0.2f' % (tc2-t0))
+            except:
+                pass
