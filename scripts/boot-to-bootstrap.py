@@ -22,7 +22,7 @@ with open('test-coda/coda.log', 'rb') as f:
         line = line_bare.decode(errors='ignore')
         if 'Coda daemon is booting up' in line:
             t0 = get_timestamp(line)
-            print('Found boot:                 %0.2f' % t0)
+            print('Found boot:                    %0.2f' % t0)
         elif 'curr_global_slot' in line:
             # no-op for now - but want to collect later
             continue
