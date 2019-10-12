@@ -101,7 +101,7 @@ def main():
     timezone = pytz.timezone('America/Los_Angeles')
     window_times = [
         # (datetime.datetime(year=2019, month=10, day=8, hour=14, tzinfo=timezone), datetime.timedelta(hours=1)),
-        #(datetime.datetime(year=2019, month=10, day=10, hour=17, tzinfo=timezone), datetime.timedelta(hours=1)),
+        # (datetime.datetime(year=2019, month=10, day=10, hour=17, tzinfo=timezone), datetime.timedelta(hours=1)),
         (datetime.datetime(year=2019, month=10, day=10, hour=21, tzinfo=timezone), datetime.timedelta(hours=1)),
         (datetime.datetime(year=2019, month=10, day=12, hour=9, tzinfo=timezone), datetime.timedelta(hours=1)),
         (datetime.datetime(year=2019, month=10, day=15, hour=21, tzinfo=timezone), datetime.timedelta(hours=1)),
@@ -119,8 +119,8 @@ def main():
 
     global_metrics = {
         "Blocks Produced (Global)": metrics.blocks_produced,
-        # "SNARK Fees Collected (Global)": metrics.snark_fees_collected,
-        "Transactions Sent (Global)": metrics.transactions_sent,
+        #"SNARK Fees Collected (Global)": metrics.snark_fees_collected,
+        #"Transactions Sent (Global)": metrics.transactions_sent,
         # "Transactions Received (Global)": metrics.transactions_received,
         "Transactions Sent Echo (Global)": metrics.transactions_sent_echo
     }
