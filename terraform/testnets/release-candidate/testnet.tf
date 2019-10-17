@@ -1,15 +1,15 @@
 locals {
-  netname      = "autodeploy-test"
-  aws_key_name = "testnet"
-  coda_repo    = "release"
-  coda_version = "0.0.9-beta3-77280b7c"  # Note: '*' gets latest when specifying version
+  netname        = "release-candidate"
+  aws_key_name   = "testnet"
+  coda_repo      = "stable"
+  coda_version   = "250516-release-0.0.10-beta-76fb8362-PV6dbd2c56" # Note: '*' gets latest when specifying version
   ecs_cluster_id = "O1Labs-Services"
 }
 
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "test-net/terraform-autodeploy-test.tfstate"
+    key     = "test-net/terraform-release-candidate.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"

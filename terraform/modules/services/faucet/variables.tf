@@ -25,7 +25,6 @@ variable "faucet_container_version" {
 variable "discord_api_key" {
   description = "A Discord Bot API Key"
   type        = string
-  default     = "dev"
 }
 
 variable "coda_graphql_host" {
@@ -35,7 +34,7 @@ variable "coda_graphql_host" {
 }
 
 variable "coda_graphql_port" {
-  description = "The hostname of the Coda GraphQL Endpoint"
+  description = "The port the Coda GraphQL Endpoint is listening on"
   type        = string
   default     = "3085"
 }

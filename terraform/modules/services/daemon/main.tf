@@ -18,10 +18,10 @@ data "template_file" "container_definition" {
       aws_access_key = var.aws_access_key
       aws_secret_key = var.aws_secret_key
       aws_default_region = var.aws_default_region
-      daemon_peer = var.daemon_peer
-      daemon_rest_port = var.daemon_rest_port
-      daemon_external_port = var.daemon_external_port
-      daemon_metrics_port = var.daemon_metrics_port
+      daemon_peer = var.coda_peer
+      daemon_rest_port = var.coda_rest_port
+      daemon_external_port = var.coda_external_port
+      daemon_metrics_port = var.coda_metrics_port
       coda_privkey_pass = var.coda_privkey_pass
   }
 }

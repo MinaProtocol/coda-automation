@@ -59,4 +59,4 @@ do
   coda advanced unsafe-import -privkey-path $file
 done
 
-coda daemon -peer $DAEMON_PEER -rest-port $DAEMON_REST_PORT -external-port $DAEMON_EXTERNAL_PORT -metrics-port $DAEMON_METRICS_PORT -no-bans
+coda daemon -peer $DAEMON_PEER -rest-port $DAEMON_REST_PORT -external-port $DAEMON_EXTERNAL_PORT -metrics-port $DAEMON_METRICS_PORT

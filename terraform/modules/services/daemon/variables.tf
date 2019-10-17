@@ -21,7 +21,7 @@ variable "daemon_number" {
 }
 
 variable "container_version" {
-  description = "The version of the container to be used when deploying the Faucet Service"
+  description = "The version of the container to be used when deploying the Daemon Service"
   type        = string
   default = "0.0.8-fix"
 }
@@ -46,24 +46,24 @@ variable "aws_default_region" {
   type        = string
 }
 
-variable "daemon_peer" {
+variable "coda_peer" {
   description = "The initial peer to start the Daemon with"
   type        = string
 }
 
-variable "daemon_rest_port" {
+variable "coda_rest_port" {
   description = "The port that the GraphQL server will listen on"
   type        = string
   default = "3085"
 }
 
-variable "daemon_external_port" {
+variable "coda_external_port" {
   description = "The port that the daemon will listen for RPC connections"
   type        = string
   value = "10101"
 }
 
-variable "daemon_metrics_port" {
+variable "coda_metrics_port" {
   description = "The port that the daemon will expose prometheus metrics on"
   type        = string
   value = "10000"
