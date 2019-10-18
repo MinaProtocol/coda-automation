@@ -145,7 +145,7 @@ workflows:
             - destroy
         triggers:
           - schedule:
-              cron: "0 1 * * *" # 01 UTC 6pm PT
+              cron: "0 5 * * *" # 05 UTC 10pm PT
               filters:
                 branches:
                   only: master
