@@ -3,25 +3,30 @@
 # Lazy wrapper: Check for variances of input vs existing files
 # eg foo.yaml, foo., foo
 
-playbook=$1
+# Support old and new style of calling
+if [[ $# -eq 2 ]]; then
+    # improved method ./play test_net playbook.yaml
+    TESTNET=$1
+    playbook=$2
+elif [[ $# -eq 1 ]] ; then
+    # older method ./play playbook.yaml
+    playbook=$1
+fi
 
-if [ -f $playbook ]; then
+if [ -f "$playbook" ]; then
     :
-elif [ -f ${playbook}yaml ]; then
+elif [ -f "${playbook}"yaml ]; then
     playbook+="yaml"
-elif [ -f ${playbook}.yaml ]; then
+elif [ -f "${playbook}".yaml ]; then
     playbook+=".yaml"
 fi
 
 # Workaround until we have a better mechanism for figureing out current testnet
 if [ -z ${TESTNET+x} ];
     then
-        echo "TESTNET is unset"
-
-        lastcache=`ls -lot ~/.ansible/tmp/ansible-ec2-*.cache | head -n 1 | awk '{print $8}'`
-        echo "Possible Values:"
-        cat ${lastcache} | grep tag_testnet_ | cut -d '"' -f 2
-
+        echo "ERROR: TESTNET is unset"
+        lastcache=$(ls -lot ~/.ansible/tmp/ansible-ec2-*.cache | head -n 1 | awk '{print $8}')
+        grep tag_testnet_ "${lastcache}" | cut -d '"' -f 2 | sed 's/tag_testnet_//'
         exit
     else
         echo "TESTNET is set to ${TESTNET}"
@@ -29,7 +34,7 @@ fi
 
 ansible-playbook \
     -i ec2.py \
-    -l tag_testnet_${TESTNET} \
-    -e netname=${TESTNET} \
-    -e start_time=$(date +%s) \
+    -l tag_testnet_"${TESTNET}" \
+    -e netname="${TESTNET}" \
+    -e start_time="$(date +%s)" \
     ${playbook}
