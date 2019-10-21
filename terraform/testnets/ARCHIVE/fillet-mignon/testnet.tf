@@ -2,7 +2,7 @@ locals {
   netname      = "fillet-mignon"
   aws_key_name = "testnet"
   coda_repo    = "stable"
-  coda_version = "229876-release-0.0.8-beta-7396272b-PV666e8b6c"  # Note: '*' gets latest when specifying version
+  coda_version = "230497-release-0.0.8-beta-c43d954f-PV0cfe5d17"  # Note: '*' gets latest when specifying version
 }
 
 terraform {
