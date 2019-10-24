@@ -59,8 +59,14 @@ if [ -f "/etc/coda_offset" ]; then
 fi
 
 # tag_role_{{ netname }}_seed
-CODA_SEEDLIST="-peer {{ netname }}.o1test.net:8303 " # Initial seed peer(s)
-CODA_SEEDLIST+="{% for host in groups['tag_testnet_' + netname]  %}-peer {{ hostvars[host].ec2_ip_address }}:${CODA_PEERPORT} {% endfor %}" # All other nodes
+echo "Using libp2p"
+# FIXME Hardcoded IP
+CODA_SEEDLIST="\
+    -discovery-port ${CODA_PEERPORT} \
+    -peer /dns4/seed1-{{ netname }}.o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWHMmfuS9DmmK9eH4GC31arDhbtHEBQzX6PwPtQftxzwJs \
+    -peer /dns4/seed2-{{ netname }}.o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWAux9MAW1yAdD8gsDbYHmgVjRvdfYkpkfX7AnyGvQaRPF \
+    -peer /dns4/seed3-{{ netname }}.o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWCZA4pPWmDAkQf6riDQ3XMRN5k99tCsiRhBAPZCkA8re7 \
+    "
 
 # Common CLI options for all roles
 CLI_COMMON="\
@@ -76,10 +82,10 @@ CLI_COMMON="\
 # Main start
 case $CODA_ROLE in
 "seed")
-    CLI_ROLE="${CODA_SEEDLIST} "
+    CLI_ROLE="${CODA_SEEDLIST} " \
     ;;
 "seedjoiner")
-    CLI_ROLE="${CODA_SEEDLIST} "
+    CLI_ROLE="${CODA_SEEDLIST} " \
     ;;
 "snarkcoordinator")
     export OMP_NUM_THREADS=4
@@ -100,6 +106,13 @@ case $CODA_ROLE in
     echo "Uknown CODA_ROLE ${CODA_ROLE}"
     exit
 esac
+
+DISCOVERY_KEYFILE="/home/admin/discovery_key"
+if [[ -f $DISCOVERY_KEYFILE ]]; then
+    echo 'Using stored libp2p discovery key'
+    DISCOVERY_KEYPAIR=$(cat $DISCOVERY_KEYFILE)
+    CLI_ROLE+=" -discovery-keypair $DISCOVERY_KEYPAIR"
+fi
 
 echo "Starting coda ${CODA_ROLE}"
 CMD="coda daemon ${CLI_COMMON} ${CLI_ROLE}"

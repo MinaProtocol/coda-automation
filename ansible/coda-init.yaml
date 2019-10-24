@@ -37,6 +37,19 @@
         mode: 0600
         content: "{{ lookup('vars', 'pubkey_' + id) }}"
 
+# Assign a unique discovery key file to each seed joiner (so libp2p works)
+- hosts: "tag_role_{{ netname }}_seed tag_role_{{ netname }}_seedjoiner"
+  gather_facts: no
+  vars:
+    id: "{{ ansible_play_hosts.index(inventory_hostname) }}"
+  tasks:
+    - name: Unique libp2p discovery key
+      copy:
+        dest: /home/admin/discovery_key
+        mode: 0600
+        content: "{{ libp2p_keys[id | int ] }}"
+
+
 - hosts: "tag_role_{{ netname }}_seed"
   gather_facts: no
   tasks:
