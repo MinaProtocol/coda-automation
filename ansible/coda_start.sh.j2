@@ -63,9 +63,9 @@ echo "Using libp2p"
 # FIXME Hardcoded IP
 CODA_SEEDLIST="\
     -discovery-port ${CODA_PEERPORT} \
-    -peer /dns4/seed1-{{ netname }}.o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWHMmfuS9DmmK9eH4GC31arDhbtHEBQzX6PwPtQftxzwJs \
-    -peer /dns4/seed2-{{ netname }}.o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWAux9MAW1yAdD8gsDbYHmgVjRvdfYkpkfX7AnyGvQaRPF \
-    -peer /dns4/seed3-{{ netname }}.o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWCZA4pPWmDAkQf6riDQ3XMRN5k99tCsiRhBAPZCkA8re7 \
+    -peer /dns4/peer1-{{ netname }}.o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWHMmfuS9DmmK9eH4GC31arDhbtHEBQzX6PwPtQftxzwJs \
+    -peer /dns4/peer2-{{ netname }}.o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWAux9MAW1yAdD8gsDbYHmgVjRvdfYkpkfX7AnyGvQaRPF \
+    -peer /dns4/peer3-{{ netname }}.o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWCZA4pPWmDAkQf6riDQ3XMRN5k99tCsiRhBAPZCkA8re7 \
     "
 
 # Common CLI options for all roles
@@ -82,10 +82,10 @@ CLI_COMMON="\
 # Main start
 case $CODA_ROLE in
 "seed")
-    CLI_ROLE="${CODA_SEEDLIST} " \
+    CLI_ROLE="${CODA_SEEDLIST} "
     ;;
 "seedjoiner")
-    CLI_ROLE="${CODA_SEEDLIST} " \
+    CLI_ROLE="${CODA_SEEDLIST} "
     ;;
 "snarkcoordinator")
     export OMP_NUM_THREADS=4
