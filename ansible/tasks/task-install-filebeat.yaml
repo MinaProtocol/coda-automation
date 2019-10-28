@@ -48,7 +48,8 @@
           hosts:
             - "{{ elastic_url }}"
           protocol: "https"
-          #pipeline: timestamp_pipeline
+          pipeline: "timestamp_pipeline"
+          bulk_max_size: 4
 
 
 - name: force systemd reload
