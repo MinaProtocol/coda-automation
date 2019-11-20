@@ -39,15 +39,15 @@ for row in cli('coda advanced dump-ledger -json').splitlines():
     if data['delegate'] == data['public_key']:
         # delegated to self
         # print('self')
-        key_to_stake[data['public_key']] += data['balance']
+        key_to_stake[data['public_key']] += int(data['balance'])
     else:
         # delegated to other
         # print('other')
-        key_to_stake[data['delegate']] += data['balance']
+        key_to_stake[data['delegate']] += int(data['balance'])
         key_to_stake[data['public_key']] += 0
 
     # totals
-    key_to_stake['total'] += data['balance']
+    key_to_stake['total'] += int(data['balance'])
 
 # sort keys by value
 key_to_stake_sorted = sorted(
