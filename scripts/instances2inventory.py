@@ -66,7 +66,7 @@ for region in regions:
 
     output[groupname].append(i.public_dns_name)
     try:
-      comments[groupname][i.public_dns_name] = "# %s\t%s\t%s\t%s\t%s" % (i.tags['Name'], myregion, i.instance_type, i.ip_address, i.launch_time)
+      comments[groupname][i.public_dns_name] = "# %s\t%s\t%s" % (i.tags['Name'], i.instance_type, i.ip_address)
     except:
       comments[groupname][i.public_dns_name] = "# MISSING DATA"
 for group in output:
