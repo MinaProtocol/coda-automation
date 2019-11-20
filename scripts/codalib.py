@@ -156,8 +156,8 @@ def cluster_status():
 # --------------------------------------------------------------------------------
 """ Get balances """
 def coda_get_balances(port=default_port, verbose=False):
-    cli = "coda client get-public-keys "
-    cli += "-with-balances -json -daemon-port %s" % (int(port))
+    cli = "coda advanced get-public-keys "
+    cli += "-with-details -json -daemon-port %s" % (int(port))
     (code, out, err) = console(cli, verbose=verbose)
     output = {}
     if code == 0:
@@ -165,7 +165,7 @@ def coda_get_balances(port=default_port, verbose=False):
         # flip publickey and balance amount
         for account in accounts:
             for key in account.keys():
-                output[key] = account[key]
+                output[key] = account[key]['balance']
         #print(output)
         return(output)
     else:
@@ -191,10 +191,10 @@ def random_accounts(count=1, max_balance=9000, port=default_port):
     return accounts
 
 """ create key """
-def coda_create_key():
+def coda_create_key(x):
     # random id
     id = uuid.uuid4().hex.upper()[0:8]
-    cli = "coda client generate-keypair  -privkey-path testkeys/%s" % (id)
+    cli = "coda client generate-keypair  -privkey-path ~/wallet-keys/generated-%s" % (id)
     (_, out, _) = console(cli)
     key = out.decode().split(':')[1].strip()
     return(key)
@@ -202,12 +202,12 @@ def coda_create_key():
 """ create a list of keys"""
 def coda_create_keys(count=1):
     keys = []
-    for i in range(count):
-        keys.append(coda_create_key().strip())
+    with Pool(processes=4) as pool:
+        keys = pool.map(coda_create_key, range(1, count))
     return(keys)
 
 """ send a single transaction """
-def coda_send_transaction(from_keypath, to_keys, amount=50, fee=1, verbose=True, port=default_port):
+def coda_send_transaction(from_keypath, to_keys, amount=50, fee=1, verbose=True, port=default_port, memo='sent by codalib'):
     # only process first key
     to_key = to_keys[0]
     cli = "coda client send-payment"
@@ -215,6 +215,7 @@ def coda_send_transaction(from_keypath, to_keys, amount=50, fee=1, verbose=True,
     cli += " -fee %s" % (fee)
     cli += " -privkey-path %s" % (from_keypath)
     cli += " -receiver %s" % (to_key)
+    cli += " -memo '%s'" % (memo)
     cli += " -daemon-port %s" % (port)
     # FIXME: Parse out and return the receipt ID
     console(cli, verbose=verbose)
