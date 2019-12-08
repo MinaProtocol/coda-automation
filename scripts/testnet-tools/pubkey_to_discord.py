@@ -104,6 +104,8 @@ STAKING_CHALLENGE = {
     'Viktor#0766',
     'tdNE5uAzFmcwxFR9XFVqrEu69ymkapEFwosHKeioxQFzuzkxF7jFdDBCJhennaiHctiin2bNfC8MSXCKSRMBpveJpGVzWwNrjsqe6EXf6eViqrVVu5VNiPsCgBmH6JcW6eBWxjQaubM2Yo':
     'karmoussa95#6768'
+    'Xcxcf#7362'
+    'tdNEJaxSJXASwcUpPtv1xJ5S3HVS8YPSYH82rL9gKPGbpaBtyJ1cy8REAfuo1Jynp3ev5bbJbw6uJ8NCuezbBUpP8LwFYcKtVtMqpNCFFMRB9TuAGyumhiwqDk7CaZxJUz4zHRpAUKPHpw'
 }
 
 # For Community Members
