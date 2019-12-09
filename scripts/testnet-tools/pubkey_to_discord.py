@@ -64,10 +64,6 @@ STAKING_CHALLENGE = {
     'Tyler34214#4119',
     'tdNDjfWWKZALACQPCLFaTGoAtdDoWEXeNuYRZZWChC4wbSeUb5tVn3UiSsVKt913A7btERefMS4GoEMkQWTs4TsGh21as6ecNP2HKfW6foxmXhwscDKdUEXqZRkCXJvNfz8wBjNXJcHaoK':
     'whataday2day#1271',
-    'tdNDrTpvEu3b5DvETffLubWnxBkGCdcJnoDeyW1X428LbkSPUFtn6KvWECH8LmRPP9d8bGw7QZtXwbtw7aKw81WKfkiizU4yrUiZzJcDRzCWmE72cathagoY11zgLDSP7YifyufKFvJr3e':
-    'viktorbunin#7847',
-    'tdNDmhmmnf6r76h7rxQGfFergEYbjN5EEdAtDXdMe5g9v9ayYVzcs1Jow1iv2nB29G4FMwwBpJPtcP6kvvjNVaTtFKs8dbF3p8C34ry5yq1x7bsBX41988w62D75fWJNCN4bsmxtspdaCB':
-    'Bison Paul',
     'tdNDftGmTyYSThU3vsgXUAKQsREjopAj5MyeheBoYK8QrSgkcx93qjwo4Nt72N9UEjz3p5ye1zRVdQBbbVc853rpQHgaGN6L6oRSodY5veGmpwKaJSBXvzzDVuD2MGWKVeBJgXqpcK8RUz':
     'Marius | Ubik Capital#9009',
     'tdNDm5CdY1jj2B4EqUGDCE6WUyh4CbK499t3kcKK3wxSmbhNUjSbitwFWzUVYxmqMX7EBJzapFYxB33seu7C3ai5oWUgKLQesdxmxyEfbmBhVELZK29LKojLcDf67Fm8C6bFtoZAxgkxQA':
@@ -103,7 +99,11 @@ STAKING_CHALLENGE = {
     'tdNDfinzLUS4YThMYo7jB7h3XKTRk3EPPN82nE67YUPxieBeRZrRdgsDHxMFtVZcZ1Lu8rsdznECvSkAcTQR3qtTBWTWvmvwDVmc6PWPk6xYE8LHkJRrQi7UHXe6KVDVh5YbBrKm8TXUfv':
     'Viktor#0766',
     'tdNE5uAzFmcwxFR9XFVqrEu69ymkapEFwosHKeioxQFzuzkxF7jFdDBCJhennaiHctiin2bNfC8MSXCKSRMBpveJpGVzWwNrjsqe6EXf6eViqrVVu5VNiPsCgBmH6JcW6eBWxjQaubM2Yo':
-    'karmoussa95#6768'
+    'karmoussa95#6768',
+    'tdNDrTpvEu3b5DvETffLubWnxBkGCdcJnoDeyW1X428LbkSPUFtn6KvWECH8LmRPP9d8bGw7QZtXwbtw7aKw81WKfkiizU4yrUiZzJcDRzCWmE72cathagoY11zgLDSP7YifyufKFvJr3e':
+    'viktorbunin#7847',
+    'tdNDmhmmnf6r76h7rxQGfFergEYbjN5EEdAtDXdMe5g9v9ayYVzcs1Jow1iv2nB29G4FMwwBpJPtcP6kvvjNVaTtFKs8dbF3p8C34ry5yq1x7bsBX41988w62D75fWJNCN4bsmxtspdaCB':
+    'Bison Paul'
 }
 
 # For Community Members
