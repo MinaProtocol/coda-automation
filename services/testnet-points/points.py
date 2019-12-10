@@ -54,8 +54,20 @@ def load_blocks():
 
 def load_blocks_gareth():
     response = requests.get(
-        "https://codaexplorer.garethtdavies.com/api/blocks?limit=8000").json()
-    return response["blocks"]["nodes"]
+        "https://codaexplorer.garethtdavies.com/api/blocks?limit=20000").json(
+        )
+    blocks = response["blocks"]["nodes"]
+    # HACK: Filter out blocks created that aren't within 2months from start time of Winter Special (12/10/19)
+    two_months = datetime.timedelta(month=2)
+    return [
+        block for block in blocks if in_range(block["dateTime"], [(
+            datetime.datetime(year=2019,
+                              month=12,
+                              day=10,
+                              hour=14,
+                              tzinfo=pytz.timezone('America/Los_Angeles')),
+            two_months)])
+    ]
 
 
 def create_points_report(window_times=[],
