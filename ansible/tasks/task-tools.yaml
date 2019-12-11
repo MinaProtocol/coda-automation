@@ -8,8 +8,8 @@
     update_cache: yes
   register: apt_status
   until: apt_status|success
-  delay: 3
-  retries: 10
+  delay: 5
+  retries: 15
 
 - name: coda-python-client
   pip:
