@@ -58,7 +58,7 @@ def load_blocks_gareth():
         )
     blocks = response["blocks"]["nodes"]
     # HACK: Filter out blocks created that aren't within 2months from start time of Winter Special (12/10/19)
-    two_months = datetime.timedelta(month=2)
+    two_months = datetime.timedelta(days=60)
     return [
         block for block in blocks if in_range(block["dateTime"], [(
             datetime.datetime(year=2019,
@@ -171,7 +171,6 @@ def main():
 
     windowed_metrics = {
         "Blocks Produced - Window #": metrics.blocks_produced,
-        "SNARK Fees Collected - Window #": metrics.snark_fees_collected,
         "Transactions Sent - Window #": metrics.transactions_sent,
         #"Transactions Received (Windowed)": metrics.transactions_received
     }
@@ -180,8 +179,8 @@ def main():
 
     global_metrics = {
         "Blocks Produced (Global)": metrics.blocks_produced,
-        #"SNARK Fees Collected (Global)": metrics.snark_fees_collected,
-        #"Transactions Sent (Global)": metrics.transactions_sent,
+        "SNARKs Produced (Global)": metrics.snarks_produced,
+        "Transactions Sent (Global)": metrics.transactions_sent,
         #"Transactions Received (Global)": metrics.transactions_received,
         #"Transactions Sent Echo (Global)": metrics.transactions_sent_echo
     }
@@ -215,11 +214,13 @@ def main():
         "Transactions Sent - Window #4": latest,
         "Transactions Sent - Window #5": latest,
         "Blocks Produced (Global)": latest,
-        "Transactions Sent Echo (Global)": latest
+        "Transactions Sent (Global)": latest,
+        "Transactions Sent Echo (Global)": latest,
+        "SNARKs Produced (Global)": latest
     }
     credentials = sheets.get_credentials()
     uploaded_metrics = upload.upload_metrics(credentials, SHEET_ID,
-                                             "Metrics2.4-Windows", combine_fns,
+                                             "Metrics Winter Special", combine_fns,
                                              report)
 
     print(json.dumps(uploaded_metrics, indent=2))
