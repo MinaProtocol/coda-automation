@@ -107,7 +107,9 @@ STAKING_CHALLENGE = {
     'tdNE1fjPrFVo7oo26g74aw2qgaHRFYhZH1WjbiApri9Ents9fUcXMMR1dcxyx2UKp2YhfyB88LF8TF3cNcaB1Pw657YK9CgMdvwUkYz8V7kS8ouVyh49uk6EPXkKRd2jqAerVzHeQtCW9c':
     'garethtdavies#4963',
     'tdNDp9xjgojxDAQYHWWKpHV82rHEmN9amo2DPW9G9UiysoGTta4Ca1h7aV2iv5kp1FK9dfFpCbU9R6JknmJCqaG1tPMcE5nqGN6ykeR78ApqWvw2HEoPs6Pzcs6up36nUAqSpVAP6G7JpV':
-    'Adorid (hashpool.eu)#1293'
+    'Adorid (hashpool.eu)#1293',
+    'tdNEJaxSJXASwcUpPtv1xJ5S3HVS8YPSYH82rL9gKPGbpaBtyJ1cy8REAfuo1Jynp3ev5bbJbw6uJ8NCuezbBUpP8LwFYcKtVtMqpNCFFMRB9TuAGyumhiwqDk7CaZxJUz4zHRpAUKPHpw':
+    'Xcxcf#7362'
 }
 
 # For Community Members
