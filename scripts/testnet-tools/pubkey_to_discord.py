@@ -20,7 +20,7 @@ STAKING_CHALLENGE = {
     'Alexander#4542',
     'tdNDgDbHfQZwFA2D53bUCtAheozMs4nRFP1jxfdhZsMvBVDGro5PeYYrAL4NUmqyVGgmxS6kmjebSJTVt57QPwwy8GPQzoGGjYo67mgmUB3if2ZYT2mCe7od7YiQoFG9ccQsnkarxx1eH3':
     'Kai',
-    'tdNEL3uRAqs55Yf1dLch1y1q2Rr6cTzF929N4nG5K5q5mprjGah77pt61dpKXLp6jm51p64f3QUibTFiNmXGL8mjVd1aUuWqhhedG9PZ39v5mMBk3yDpDgpovtDYhZXRUyAznzwzDTD9LA':
+    'tdNE3UqgrhSqKtXjihq4LzHaw7DQ2g7JfYy71Pjsm7Xc6zXG9VDnDyXEHjgyP8XpMSQznZofJH7JpTLiq1FiGGE9qqqqaDv1jAgTAxMQ7q6YgqyrSsNX7bHNEvPcG2FiFZULLSsfR88rSK':
     'pk#9983',
     'tdNEJC1j1xYpY7SdUEurBEyDQpPbCnAYefsqmCcRbNx42VWaGq5GsvsxRQuxVuvH3GmLVbhSPuST9GWBeLEB8LGP7QHQjAUTpLkHfdW1GUV2S4aQQH86ut3BRx1q7ZaKijrYpoQJN7mn5p':
     'Prague#9624',
@@ -50,12 +50,12 @@ STAKING_CHALLENGE = {
     'GRom81#5825',
     'tdNENQ56P3amYyzmU1y2Fty9pkm865Z8XPvvKKJAEY19SNDEwYvgtfWM5Tgh7Qus2XCkWTTaNUEEFkPT6dDiuoKE8stsMmdDz2ZKN1Uf42yMAYoG38kFpTqTB3bpFbMDBJteYVhh1hHWJB':
     'DontPanicBurns#7712',
-    'tdNDgtouu6VruaotDap9w7SWqZoRcVcTtA61Gp6TTK7VmeZM3gtJsVGzyecAK1VkzxWcEEYgJqtfBfvZEvmM2XGQsumWmAERbXq6XHQrcXoxyWSxbzxebMPVxiJbJGDvzJj4VCnjDvDzjo':
+    'tdNDwALngZNMMpA7SvfrQFQ4pUZSDYVuaYKYj31Eej2hKhijVgA5pP2YcSqQLHLHVTcJehQionAAQeWMmWuUeUmmBz6hXFfDMMk1DmW6VqT119kQCLtJdfyzFYmxNwzEPbhvugGg5rGooc':
     'novy',
     'tdNDhVXjumSA4iVQD48uPAHa8EkbLGNCPrBx2wrJSyVGS7f3v3MrpMPswHS9CQwDH5DKfuBzQrje6H7PSP52XJSnGeWYrHKhXNAZ3jbgFnzxWFg6j3XgqgDqePxvsgpbHFY1PAeoVQ2TgG':
     'ilya_petrov#5431',
     'tdNDiGoS4u8WqFTCQjsSffhQXgkeP12HFXj31J4KykSDKFDhUccbwVJ4dQz3QGSggi8pc37jVdDk5XqsaFnuobTfUk8eozZDgoTXUyAgj9T1BTyhXKDQ41PajSXj4gFasPFc3v8KCics9F':
-    'y3v63n#0177',
+    'y3v63n | moonli.me#0177',
     'tdNDzxL5LEEt3oxSyMm1YnMZj2jj7FCtuLWLprzU9ym6Pnb7etmqqPYJPLjJJF1mjmjQsbK9ZGaZj8axGx2buMmrJ5AyGt353C31JMY5EsFicDXy6sKobAU88YW1TDwSeLtqnRWPepvoLB':
     'GS',
     'tdNDvmBHKXyD37nDY7CTRAuC7rCFsEBWYmF5rRefDwWv2dsYysQdiC7XoK3u6Qd9GVSE7aetMYnLcfDSJVnCzBGeVhBvbLQgoLyyMwFPznPiwZpkzX5trqsp8iPi5GHopFeoDv3evt2EfE':
@@ -106,6 +106,8 @@ STAKING_CHALLENGE = {
     'karmoussa95#6768',
     'tdNE1fjPrFVo7oo26g74aw2qgaHRFYhZH1WjbiApri9Ents9fUcXMMR1dcxyx2UKp2YhfyB88LF8TF3cNcaB1Pw657YK9CgMdvwUkYz8V7kS8ouVyh49uk6EPXkKRd2jqAerVzHeQtCW9c':
     'garethtdavies#4963',
+    'tdNDp9xjgojxDAQYHWWKpHV82rHEmN9amo2DPW9G9UiysoGTta4Ca1h7aV2iv5kp1FK9dfFpCbU9R6JknmJCqaG1tPMcE5nqGN6ykeR78ApqWvw2HEoPs6Pzcs6up36nUAqSpVAP6G7JpV':
+    'Adorid (hashpool.eu)#1293'
 }
 
 # For Community Members
