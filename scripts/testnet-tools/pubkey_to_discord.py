@@ -2,7 +2,7 @@
 # Example:
 #   'tNciczxpMfZ4eW1ZPP9NVK2vxcm9cCHvTBWMe8Nskn2A25P1YqcdvFCD5LvgngraiCmAsnC8zWAiv5pwMYjrUwpMNYDePMQYiXX7HVMjrnB1JkEckyayvsAm2Bo4EQBWbHXD5Cxp65PZy5': 'DISCORD_USERNAME#1234',
 STAKING_CHALLENGE = {
-    'tdNEDdTE3BdcmopBvBGwdABXHySBvd2GqQruriNqK4qxLdBsu2xJqQ9wR3PRAthSFDopgHzmQJtr9TmShDZdQoJCLC4mhQ8EGFi1KwYnjBFYvATwijUN5UzSrgmHJ87M6Fx3tbu87QAMTr': 
+    'tdNEDdTE3BdcmopBvBGwdABXHySBvd2GqQruriNqK4qxLdBsu2xJqQ9wR3PRAthSFDopgHzmQJtr9TmShDZdQoJCLC4mhQ8EGFi1KwYnjBFYvATwijUN5UzSrgmHJ87M6Fx3tbu87QAMTr':
     'stevenhq#2903',
     'tdNDgeZGYU5MppfvYpBULVPagefvgPVip6WEqaipqwfd62yKmWVR9NjUkDVoFMTtWzbnX4QEPKLNv8z86G5xAMC1zDWRFk2266WCKNoTVnnDjosWj1CJBFAbueazAMpCsaVzLHwbpgh2ws':
     'WilliamGuozi#6724 | Sparkpool',
@@ -104,6 +104,8 @@ STAKING_CHALLENGE = {
     'Viktor#0766',
     'tdNE5uAzFmcwxFR9XFVqrEu69ymkapEFwosHKeioxQFzuzkxF7jFdDBCJhennaiHctiin2bNfC8MSXCKSRMBpveJpGVzWwNrjsqe6EXf6eViqrVVu5VNiPsCgBmH6JcW6eBWxjQaubM2Yo':
     'karmoussa95#6768',
+    'tdNE1fjPrFVo7oo26g74aw2qgaHRFYhZH1WjbiApri9Ents9fUcXMMR1dcxyx2UKp2YhfyB88LF8TF3cNcaB1Pw657YK9CgMdvwUkYz8V7kS8ouVyh49uk6EPXkKRd2jqAerVzHeQtCW9c':
+    'garethtdavies#4963',
     'tdNDp9xjgojxDAQYHWWKpHV82rHEmN9amo2DPW9G9UiysoGTta4Ca1h7aV2iv5kp1FK9dfFpCbU9R6JknmJCqaG1tPMcE5nqGN6ykeR78ApqWvw2HEoPs6Pzcs6up36nUAqSpVAP6G7JpV':
     'Adorid (hashpool.eu)#1293'
 }
