@@ -21,7 +21,7 @@ const EXTERNAL_PORT = process.env["EXTERNAL_PORT"] || 3000;
 let graphqlUri = "http://" + CODA_GRAPHQL_HOST + ":" + CODA_GRAPHQL_PORT + CODA_GRAPHQL_PATH;
 
 const hiddenFields = [
-  "trackedWallets",
+  "trackedAccounts",
   "currentSnarkWorker",
   "initialPeers",
   "wallet",
