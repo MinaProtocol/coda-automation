@@ -62,66 +62,20 @@ fi
 echo "Using libp2p"
 # FIXME Hardcoded IP
 CODA_SEEDLIST="\
-    -discovery-port ${CODA_PEERPORT} \
     -peer /dns4/peer1-$(tr -s '_' '-' <<< {{ netname }}).o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWHMmfuS9DmmK9eH4GC31arDhbtHEBQzX6PwPtQftxzwJs \
     -peer /dns4/peer2-$(tr -s '_' '-' <<< {{ netname }}).o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWAux9MAW1yAdD8gsDbYHmgVjRvdfYkpkfX7AnyGvQaRPF \
     -peer /dns4/peer3-$(tr -s '_' '-' <<< {{ netname }}).o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWCZA4pPWmDAkQf6riDQ3XMRN5k99tCsiRhBAPZCkA8re7 \
     "
 
-# Common CLI options for all roles
-CLI_COMMON="\
- -background \
- -tracing -log-json -log-level Trace \
- -client-port ${CODA_RPCPORT} \
- -external-port ${CODA_EXTPORT} \
- -config-directory /home/admin/test-coda \
- -external-ip ${EXTERNAL_IP} \
- -rest-port ${CODA_QLPORT} \
- -metrics-port ${CODA_METRICS_PORT} "
+# Call out to specialized start options subscript
+CODA_CLI_DAEMON_HELP_HASH=$(coda daemon -help  | grep -o '\[.*]' | sort | md5sum | cut -d' ' -f1)
 
-# Main start
-case $CODA_ROLE in
-"seed")
-    CLI_ROLE="${CODA_SEEDLIST} "
-    ;;
-"seedjoiner")
-    CLI_ROLE="${CODA_SEEDLIST} "
-    ;;
-"snarkcoordinator")
-    export OMP_NUM_THREADS=4
-    CLI_ROLE="${CODA_SEEDLIST} \
-    -run-snark-worker ${PUBLIC_KEY} \
-    -snark-worker-fee 2 \
-    -work-selection seq "
-    ;;
-"blockproducer")
-    CLI_ROLE="${CODA_SEEDLIST} \
-    -propose-key /home/admin/wallet-keys/proposerkey "
-    ;;
-"archive")
-    CLI_ROLE="${CODA_SEEDLIST} \
-    -archive "
-    ;;
-*)
-    echo "Uknown CODA_ROLE ${CODA_ROLE}"
-    exit
-esac
-
-DISCOVERY_KEYFILE="/home/admin/discovery_key"
-if [[ -f $DISCOVERY_KEYFILE ]]; then
-    echo 'Using stored libp2p discovery key'
-    DISCOVERY_KEYPAIR=$(cat $DISCOVERY_KEYFILE)
-    CLI_ROLE+=" -discovery-keypair $DISCOVERY_KEYPAIR"
-fi
-
-echo "Starting coda ${CODA_ROLE}"
-CMD="coda daemon ${CLI_COMMON} ${CLI_ROLE}"
-echo "Running: ${CMD}"
-
-if [ "$DRYRUN" = false ]; then
-    CODA_PRIVKEY_PASS="{{ privkey_pass }}"  ${CMD}
+if [ -f "coda_CLI_OPTIONS_${CODA_CLI_DAEMON_HELP_HASH}.sh" ]; then
+    echo "Using specific start subscript - coda_start_${CODA_CLI_DAEMON_HELP_HASH}.sh"
+    source coda_CLI_OPTIONS_${CODA_CLI_DAEMON_HELP_HASH}.sh
 else
-    echo "NO-OP: DryRun"
+    echo "WARN: Using default CLI OPTIONS subscript - coda_CLI_OPTIONS_DEFAULT.sh"
+    source coda_CLI_OPTIONS_DEFAULT.sh
 fi
 
 # Start worker function for starting sub-snark workers
@@ -131,7 +85,7 @@ start_worker () {
     else
         DAEMON=$1
     fi
-    export OMP_NUM_THREADS=4
+    export OMP_NUM_THREADS=1
     NEW_UUID=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'A-Z0-9' | fold -w 8 | head -n 1)
     echo "${NEW_UUID}"
     mkdir "test-snark-worker-${NEW_UUID}"
@@ -147,13 +101,14 @@ case $CODA_ROLE in
     sleep 10 # wait for daemon to come up
 
     CORE_COUNT=$(nproc --all)
-    CORE_SCALE=$(( CORE_COUNT / 5 ))
+    CORE_SCALE=$(( CORE_COUNT / 2 ))
     count=1
-    while [ "$(pgrep  -f 'coda internal snark-worker' | wc -l)" -lt "$CORE_SCALE" ]; do
-        echo "Worker Count: ${count}"
+    while [ "$(pgrep  -f 'coda internal snark-worker' | wc -l)" -le "$CORE_SCALE" ]; do
+        count=$(pgrep  -f 'coda internal snark-worker' | wc -l)
+        echo "Worker Count: ${count} of ${CORE_SCALE}"
         start_worker
         count=$((count+1))
-        sleep 5 # wait for daemons to stablize
+        sleep 2 # wait for daemons to stablize
     done
     ;;
 esac
