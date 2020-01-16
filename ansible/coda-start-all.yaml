@@ -18,6 +18,15 @@
       tags: coda_start
     - pause:
         seconds: 5
+    - name: Copying coda_CLI_OPTIONS_VARIANTS.sh
+      vars:
+      copy:
+        src: "{{ item }}"
+        dest: /home/admin/
+        owner: admin
+        mode: 0755
+      with_fileglob:
+        - coda_CLI_OPTIONS_*.sh
 
 # Start tall the nodes at once (seems to work more reliably)
 - hosts: "tag_testnet_{{ netname }}"

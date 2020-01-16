@@ -1,16 +1,20 @@
 #!/bin/bash
 
+# Start scripting for coda daemon
+# Changelog:
+# gossip libp2p
+
 # Common CLI options for all roles
 CLI_COMMON="\
  -background \
  -tracing -log-json -log-level Trace \
  -client-port ${CODA_RPCPORT} \
  -external-port ${CODA_EXTPORT} \
+ -discovery-port ${CODA_PEERPORT} \
  -config-directory /home/admin/test-coda \
  -external-ip ${EXTERNAL_IP} \
  -rest-port ${CODA_QLPORT} \
- -metrics-port ${CODA_METRICS_PORT} \
--discovery-port ${CODA_PEERPORT} "
+ -metrics-port ${CODA_METRICS_PORT} "
 
 # Main start
 case $CODA_ROLE in
@@ -40,11 +44,11 @@ case $CODA_ROLE in
     exit
 esac
 
-DISCOVERY_KEYFILE="/home/admin/discovery_key"
+DISCOVERY_KEYFILE="/home/admin/discovery_keys/discovery_key"
 if [[ -f $DISCOVERY_KEYFILE ]]; then
     echo 'Using stored libp2p discovery key'
-    DISCOVERY_KEYPAIR=$(cat $DISCOVERY_KEYFILE)
-    CLI_ROLE+=" -discovery-keypair $DISCOVERY_KEYPAIR"
+    CLI_ROLE+=" -discovery-keypair discovery_keys/discovery_key"
+    export CODA_LIBP2P_PASS='testnet'
 fi
 
 echo "Starting coda ${CODA_ROLE}"

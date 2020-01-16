@@ -15,4 +15,14 @@
         snark_leader_ip: "{{ hostvars[groups['tag_role_' + netname + '_snarker'][0]].ec2_ip_address }}"
         testnet_timestamp: "{{ start_time }}"
       template: "src=coda_start.sh.j2 dest='/home/admin/coda_start.sh' owner=admin group=admin mode=0755"
-      tags: coda_start
+      tags: coda_start_jinja
+
+    - name: Copying coda_start_VARIANTS.sh
+      vars:
+      copy:
+        src: "{{ item }}"
+        dest: /home/admin/
+        owner: admin
+        mode: 0755
+      with_fileglob:
+        - coda_CLI_OPTIONS_*.sh

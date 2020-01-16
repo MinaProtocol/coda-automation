@@ -55,7 +55,7 @@ CMD="coda daemon ${CLI_COMMON} ${CLI_ROLE}"
 echo "Running: ${CMD}"
 
 if [ "$DRYRUN" = false ]; then
-    CODA_PRIVKEY_PASS="{{ privkey_pass }}"  ${CMD}
+    ${CMD}
 else
     echo "NO-OP: DryRun"
 fi

@@ -2,7 +2,7 @@ locals {
   netname        = "ballmer-echo"
   aws_key_name   = "testnet"
   coda_repo      = "develop"
-  coda_version   = "0.0.11-beta1+310648-develop-2f04c3a-PVea4bb160" # Note: '*' gets latest when specifying version
+  coda_version   = "0.0.11-beta1+311429-develop-456dfaa-PVea4bb160" # Note: '*' gets latest when specifying version
   ecs_cluster_id = "coda-services"
 }
 
@@ -43,7 +43,7 @@ data "aws_route53_zone" "selected" {
 }
 
 resource "aws_route53_record" "netname" {
-  zone_id = "${data.aws_route53_zone.selected.zone_id}"
+  zone_id = ${data.aws_route53_zone.selected.zone_id}
   name    = "${local.netname}.${data.aws_route53_zone.selected.name}"
   type    = "A"
   ttl     = "300"

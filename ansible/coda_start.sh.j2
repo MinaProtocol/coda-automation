@@ -67,6 +67,9 @@ CODA_SEEDLIST="\
     -peer /dns4/peer3-$(tr -s '_' '-' <<< {{ netname }}).o1test.net/tcp/${CODA_PEERPORT}/ipfs/12D3KooWCZA4pPWmDAkQf6riDQ3XMRN5k99tCsiRhBAPZCkA8re7 \
     "
 
+# Skip password prompts
+CODA_PRIVKEY_PASS="{{ privkey_pass }}"
+
 # Call out to specialized start options subscript
 CODA_CLI_DAEMON_HELP_HASH=$(coda daemon -help  | grep -o '\[.*]' | sort | md5sum | cut -d' ' -f1)
 
@@ -74,7 +77,8 @@ if [ -f "coda_CLI_OPTIONS_${CODA_CLI_DAEMON_HELP_HASH}.sh" ]; then
     echo "Using specific start subscript - coda_start_${CODA_CLI_DAEMON_HELP_HASH}.sh"
     source coda_CLI_OPTIONS_${CODA_CLI_DAEMON_HELP_HASH}.sh
 else
-    echo "WARN: Using default CLI OPTIONS subscript - coda_CLI_OPTIONS_DEFAULT.sh"
+    echo "WARN: coda_CLI_OPTIONS_${CODA_CLI_DAEMON_HELP_HASH}.sh not found."
+    echo "      Using default CLI OPTIONS subscript - coda_CLI_OPTIONS_DEFAULT.sh"
     source coda_CLI_OPTIONS_DEFAULT.sh
 fi
 
