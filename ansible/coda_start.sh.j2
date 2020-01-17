@@ -32,7 +32,8 @@ esac
 
 # Make conf dir if needed
 if [ ! -d "/home/admin/test-coda" ]; then
-  mkdir -p /home/admin/test-coda
+    echo "Making configuration directory test-coda"
+    mkdir -p /home/admin/test-coda
 fi
 
 # Build snarkwork whitelist ips (derived by ansible - global)
