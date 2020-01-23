@@ -1,0 +1,62 @@
+locals {
+  container_command = format("coda daemon -log-level Info -config-directory /root/.coda-config -client-port 8301 -rest-port 8304 -external-port 10001 -discovery-port 10002 -metrics-port 10000 -discovery-keypair %s %s", var.discovery_keypair, var.seed_peers)
+}
+
+resource "google_compute_address" "external_ip" {
+  name         = "${var.instance_name}-address"
+  address_type = "EXTERNAL"
+  region       = var.region
+}
+
+resource "google_compute_instance" "vm" {
+  project      = var.project_id
+  name         = var.instance_name
+  machine_type = "n1-standard-2"
+  zone         = var.zone
+
+  boot_disk {
+    initialize_params {
+      image = data.google_compute_image.coreos.self_link
+    }
+  }
+
+  network_interface {
+    subnetwork_project = var.subnetwork_project
+    subnetwork         = var.subnetwork
+    access_config {
+      nat_ip = google_compute_address.external_ip.address
+    }
+  }
+
+  tags = ["coda-daemon"]
+
+  metadata = {
+    gce-container-declaration = <<EOF
+    spec:
+      containers:
+        - name: ${var.instance_name}
+          image: 'codaprotocol/coda-daemon:0.0.11-beta1-release-0.0.12-beta-493b4c6'
+          command:
+            - /bin/bash
+          args:
+            - '-c'
+            - >-
+              ${local.container_command}
+          stdin: true
+          tty: true
+      restartPolicy: Always
+    EOF
+    google-logging-enabled    = true
+  }
+
+  labels = {
+    container-vm = data.google_compute_image.coreos.name
+  }
+
+  service_account {
+    email = var.client_email
+    scopes = [
+      "https://www.googleapis.com/auth/cloud-platform",
+    ]
+  }
+}

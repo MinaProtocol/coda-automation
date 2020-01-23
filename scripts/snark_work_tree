@@ -1,7 +1,0 @@
-#! /usr/bin/env python3
-
-""" track changes to snark transaction tree """
-import codalib
-
-if __name__ == "__main__":
-    codalib.each_block(codalib.print_snark_tree)
