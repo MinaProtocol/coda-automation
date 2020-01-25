@@ -55,5 +55,4 @@ variable "discovery_keypair" {
 
 variable "coda_image" {
   description = "The docker image to deploy."
-  default     = "codaprotocol/coda-daemon:0.0.11-beta1-release-0.0.12-beta-493b4c6"
 }

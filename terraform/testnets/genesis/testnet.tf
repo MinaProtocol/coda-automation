@@ -14,7 +14,8 @@ provider "aws" {
 }
 
 locals {
-  netname = "genesis"
+  netname    = "genesis"
+  coda_image = "codaprotocol/coda-daemon:0.0.11-beta1-release-0.0.12-beta-63b8a66"
 }
 
 provider "google" {
@@ -36,6 +37,7 @@ module "network" {
 
 module "seed_one" {
   source             = "../../modules/google-cloud/coda-seed-node"
+  coda_image         = local.coda_image
   project_id         = data.google_project.project.project_id
   subnetwork_project = data.google_project.project.project_id
   subnetwork         = module.network.subnet_link
@@ -45,11 +47,12 @@ module "seed_one" {
   region             = "us-west1"
   client_email       = "1020762690228-compute@developer.gserviceaccount.com"
   discovery_keypair  = "23jhTeLbLKJSM9f3xgbG1M6QRHJksFtjP9VUNUmQ9fq3urSovGVS25k8LLn8mgdyKcYDSteRcdZiNvXXXAvCUnST6oufs,4XTTMESM7AkSo5yfxJFBpLr65wdVt8dfuQTuhgQgtnADryQwP,12D3KooWP7fTKbyiUcYJGajQDpCFo2rDexgTHFJTxCH8jvcL1eAH"
-  seed_peers         = "-peer /ip4/34.82.159.8/tcp/10002/ipfs/12D3KooWDjSiDwnatZyNw7Mf9G1iWL29YdAJWQF35vkRwcbu7fyL"
+  seed_peers         = ""
 }
 
 module "seed_two" {
   source             = "../../modules/google-cloud/coda-seed-node"
+  coda_image         = local.coda_image
   project_id         = data.google_project.project.project_id
   subnetwork_project = data.google_project.project.project_id
   subnetwork         = module.network.subnet_link
