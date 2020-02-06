@@ -35,7 +35,7 @@ resource "google_compute_instance" "vm" {
     spec:
       containers:
         - name: ${var.instance_name}
-          image: 'codaprotocol/coda-daemon:0.0.11-beta1-release-0.0.12-beta-493b4c6'
+          image: ${var.coda_image}
           command:
             - /bin/bash
           args:

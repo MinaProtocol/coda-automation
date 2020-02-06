@@ -14,8 +14,8 @@ provider "aws" {
 }
 
 locals {
-  netname    = "genesis"
-  coda_image = "codaprotocol/coda-daemon:0.0.11-beta1-release-0.0.12-beta-63b8a66"
+  netname    = "genesis-redux"
+  coda_image = "codaprotocol/coda-daemon:0.0.13-beta-master-99d1e1f"
 }
 
 provider "google" {
@@ -30,9 +30,9 @@ data "google_project" "project" {
 
 module "network" {
   source         = "../../modules/google-cloud/vpc-network"
-  network_name   = "genesis-testnet-network"
+  network_name   = "${local.netname}-testnet-network"
   network_region = "us-west1"
-  subnet_name    = "genesis-testnet-subnet"
+  subnet_name    = "${local.netname}-testnet-subnet"
 }
 
 module "seed_one" {
@@ -42,7 +42,7 @@ module "seed_one" {
   subnetwork_project = data.google_project.project.project_id
   subnetwork         = module.network.subnet_link
   network            = module.network.network_link
-  instance_name      = "genesis-seed-one"
+  instance_name      = "${local.netname}-seed-one"
   zone               = "us-west1-a"
   region             = "us-west1"
   client_email       = "1020762690228-compute@developer.gserviceaccount.com"
@@ -57,7 +57,7 @@ module "seed_two" {
   subnetwork_project = data.google_project.project.project_id
   subnetwork         = module.network.subnet_link
   network            = module.network.network_link
-  instance_name      = "genesis-seed-two"
+  instance_name      = "${local.netname}-seed-two"
   zone               = "us-west1-a"
   region             = "us-west1"
   client_email       = "1020762690228-compute@developer.gserviceaccount.com"

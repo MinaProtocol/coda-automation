@@ -33,6 +33,11 @@ resource "google_compute_firewall" "coda_daemon_ingress" {
     ports    = ["10000-11000", "8303", "8302"]
   }
 
+  allow {
+    protocol = "udp"
+    ports    = ["10000-11000", "8303", "8302"]
+  }
+
   source_tags = ["coda-daemon"]
 }
 

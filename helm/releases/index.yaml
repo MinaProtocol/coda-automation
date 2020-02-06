@@ -1,0 +1,25 @@
+apiVersion: v1
+entries:
+  coda-testnet:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-02-05T23:19:27.109852-08:00"
+    description: A Helm chart for Kubernetes
+    digest: 2369dd26c265bfaa276daefb14fa60dd36d827870862d8998da0ea76a3b470b4
+    name: coda-testnet
+    type: application
+    urls:
+    - coda-testnet-0.1.0.tgz
+    version: 0.1.0
+  helm-testnet:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-02-05T23:19:27.110479-08:00"
+    description: A Helm chart for Kubernetes
+    digest: 7761f287304b3044f9ed3a02967d4500e83620740b707fc4c76e66051e56fd9c
+    name: helm-testnet
+    type: application
+    urls:
+    - helm-testnet-0.1.0.tgz
+    version: 0.1.0
+generated: "2020-02-05T23:19:27.103034-08:00"
