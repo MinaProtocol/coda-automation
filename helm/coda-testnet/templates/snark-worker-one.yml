@@ -36,7 +36,6 @@ spec:
           "-client-port", "$(DAEMON_CLIENT_PORT)", 
           "-rest-port", "$(DAEMON_REST_PORT)", 
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",  
-          "-discovery-port", "$(DAEMON_DISCOVERY_PORT)", 
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-run-snark-worker", "$(CODA_SNARK_KEY)", 
           "-snark-worker-fee", "$(CODA_SNARK_FEE)",
