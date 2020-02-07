@@ -14,12 +14,12 @@ provider "aws" {
 }
 
 locals {
-  testnet_name    = "regeneration"
-  coda_image = "codaprotocol/coda-daemon:0.0.13-beta-master-99d1e1f"
+  testnet_name = "regeneration"
+  coda_image   = "codaprotocol/coda-daemon:0.0.12-beta-feature-net2-e3f2bc0"
 }
 
 provider "google" {
-  alias = "google-us-west1"
+  alias   = "google-us-west1"
   project = "o1labs-192920"
   region  = "us-west1"
   zone    = "us-west1-a"
@@ -29,16 +29,17 @@ module "testnet" {
   providers = {
     google = google.google-us-west1
   }
-  source             = "../../modules/kubernetes/testnet"
-  cluster_name = "coda-cluster-west"
-  cluster_region = "us-west1"
-  testnet_name = "regeneration"
+  source                = "../../modules/kubernetes/testnet"
+  cluster_name          = "coda-cluster-west"
+  cluster_region        = "us-west1"
+  testnet_name          = "regeneration"
+  num_whale_block_producers = 3
+  num_fish_block_producers = 20
   snark_worker_replicas = 1
-  snark_worker_fee = 10
-  coda_image = local.coda_image
-  coda_privkey_pass = "naughty blue worm"
+  snark_worker_fee      = 10
+  coda_image            = local.coda_image
+  coda_privkey_pass     = "naughty blue worm"
 }
-
 
 # Seed DNS
 data "aws_route53_zone" "selected" {

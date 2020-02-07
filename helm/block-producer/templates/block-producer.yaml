@@ -1,20 +1,21 @@
+{{ range $i, $e := until (.Values.numProducers | int)}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: producer-one
+  name: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1 }}
   labels:
-    app: producer-one
+    app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1  }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: producer-one
+      app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1  }}
   template:
     metadata:
       labels:
-        app: producer-one
-        testnet: {{ .Values.testnetName }}
-        role: block-producer
+        app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1  }}
+        testnet: {{ $.Values.testnetName }}
+        role: {{ $.Values.blockProducerClass }}-block-producer
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/port: '10000'
@@ -39,10 +40,12 @@ spec:
       - name: coda
         resources:
           limits:
-            memory: 10.5Gi
+            memory: 6.0Gi
+            cpu: 4
           requests:
-            memory: 8Gi
-        image: {{ .Values.codaImage }}
+            memory: 4.0Gi
+            cpu: 2
+        image: {{ $.Values.codaImage }}
         command: ["coda"]
         args: [ "daemon",
           "-log-level", "Trace",
@@ -53,7 +56,7 @@ spec:
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-block-producer-key", "/root/wallet-keys/key",
-          {{- range .Values.seedPeers }}
+          {{- range $.Values.seedPeers }}
           "-peer", {{ . | quote }},
           {{- end }}
         ]
@@ -65,20 +68,12 @@ spec:
           - name: DAEMON_METRICS_PORT
             value: "10000"
           - name: DAEMON_EXTERNAL_PORT
-            value: {{ add .Values.startingPorts 1 | quote }}
-          - name: DAEMON_DISCOVERY_PORT
-            value: {{ add .Values.startingPorts 2 | quote }}
+            value: {{ add $.Values.startingPorts $i | quote }}
           - name: CODA_PRIVKEY_PASS
-            value: {{ .Values.codaPrivkeyPass | quote }}
-          # This should work but doesn't, need to pass in a file for now
-          # - name: CODA_PROPOSE_KEY
-          #   value: "tdNDjjAwyjgvNgU1x8uWs1n44H8vK7UGrRLvXzkcv8iC3Jw9A1B1UDUZndgBZh6zTb23pNatt7ujfTbCVjiihTZRMJcErZSkz93qE5Ue5VpAJsvaQvpHQGj3XexP2fK6i6xMfQArSvcXWV"
+            value: {{ $.Values.codaPrivkeyPass | quote }}
         ports:
-          - containerPort: {{ add .Values.startingPorts 1 }}
-            hostPort: {{ add .Values.startingPorts 1 }}
-            protocol: TCP
-          - containerPort: {{ add .Values.startingPorts 2 }}
-            hostPort: {{ add .Values.startingPorts 2 }}
+          - containerPort: {{ add $.Values.startingPorts $i }}
+            hostPort: {{ add $.Values.startingPorts $i }}
             protocol: TCP
         imagePullPolicy: Always
         volumeMounts:
@@ -87,7 +82,7 @@ spec:
       volumes:
       - name: private-keys
         secret:
-          secretName: block-producer-one-key
+          secretName: {{ $.Values.keySecretTemplatePrefix }}-{{ add $i 1 }}-key
           defaultMode: 256
           items:
           - key: key
@@ -96,3 +91,5 @@ spec:
             path: key.pub
       - name: wallet-keys
         emptyDir: {}
+---
+{{ end }}

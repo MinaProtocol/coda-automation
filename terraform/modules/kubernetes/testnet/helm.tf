@@ -9,38 +9,56 @@ provider helm {
   }
 }
 
-data "helm_repository" "coda_helm_repo" {
-  name = "coda-helm-repo"
-  url  = var.coda_helm_repo
-}
+# data "helm_repository" "coda_helm_repo" {
+#   name = "coda-helm-repo"
+#   url  = var.coda_helm_repo
+# }
 
 
 locals {
-  chart_variables = {
+  seed_peers = [
+    "/ip4/${module.seed_one.instance_external_ip}/tcp/10002/ipfs/${split(",", module.seed_one.discovery_keypair)[2]}",
+    "/ip4/${module.seed_two.instance_external_ip}/tcp/10002/ipfs/${split(",", module.seed_two.discovery_keypair)[2]}"
+  ]
+  whale_producer_vars = {
+    numProducers = var.num_whale_block_producers
     testnetName = var.testnet_name
-    snarkWorker = {
-      replicas = var.snark_worker_replicas
-      fee = var.snark_worker_fee
-      key = var.snark_worker_key
-    }
     codaImage = var.coda_image
-    seedPeers = [
-      "/ip4/${module.seed_one.instance_external_ip}/tcp/10002/ipfs/${split(",", module.seed_one.discovery_keypair)[2]}",
-      "/ip4/${module.seed_two.instance_external_ip}/tcp/10002/ipfs/${split(",", module.seed_two.discovery_keypair)[2]}"
-    ]
-    coda_privkey_pass = var.coda_privkey_pass
-    starting_ports = var.starting_host_ports
+    seedPeers = local.seed_peers
+    codaPrivkeyPass = var.coda_privkey_pass
+    startingPorts = var.starting_host_ports
+    keySecretTemplatePrefix = "block-producer"
+    blockProducerClass = "whale"
+  }
+  fish_producer_vars = {
+    numProducers = var.num_fish_block_producers
+    testnetName = var.testnet_name
+    codaImage = var.coda_image
+    seedPeers = local.seed_peers
+    codaPrivkeyPass = var.coda_privkey_pass
+    startingPorts = var.starting_host_ports
+    keySecretTemplatePrefix = "fish-account"
+    blockProducerClass = "fish"
   }
 }
 
-resource "helm_release" "testnet" {
-  name       = var.testnet_name
-  chart = "coda-helm-repo/coda-testnet"
-  repository = data.helm_repository.coda_helm_repo.metadata[0].name
-  version = var.testnet_helm_chart_version
+resource "helm_release" "whale_producers" {
+  name       = "${var.testnet_name}-whale-producers"
+  chart = "../../../helm/block-producer"
   namespace  = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
-    yamlencode(local.chart_variables)
+    yamlencode(local.whale_producer_vars)
+  ]
+  wait = false
+  depends_on = [module.seed_one, module.seed_two]
+}
+
+resource "helm_release" "fish_producers" {
+  name       = "${var.testnet_name}-fish-producers"
+  chart = "../../../helm/block-producer"
+  namespace  = kubernetes_namespace.testnet_namespace.metadata[0].name
+  values = [
+    yamlencode(local.fish_producer_vars)
   ]
   wait = false
   depends_on = [module.seed_one, module.seed_two]

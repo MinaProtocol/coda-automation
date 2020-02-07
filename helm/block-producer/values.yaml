@@ -1,0 +1,16 @@
+numProducers: 3
+
+testnetName: "coda-testnet"
+
+codaImage: codaprotocol/coda-daemon:0.0.13-beta-master-99d1e1f
+
+seedPeers: 
+  - /dns4/seed-one.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWP7fTKbyiUcYJGajQDpCFo2rDexgTHFJTxCH8jvcL1eAH
+  - /dns4/seed-two.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWL9ywbiXNfMBqnUKHSB1Q1BaHFNUzppu6JLMVn9TTPFSA
+
+codaPrivkeyPass: naughty blue worm
+
+startingPorts:  10600
+
+keySecretTemplatePrefix: "block-producer"
+blockProducerClass: "whale" # Options "whale", "fish"

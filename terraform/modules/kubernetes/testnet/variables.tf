@@ -71,3 +71,13 @@ variable "starting_host_ports" {
   type    = number
   default = 10000
 }
+
+variable "num_whale_block_producers" {
+  type    = number
+  default = 3
+}
+
+variable "num_fish_block_producers" {
+  type    = number
+  default = 5
+}
