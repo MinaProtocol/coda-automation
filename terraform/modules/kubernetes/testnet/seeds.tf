@@ -4,9 +4,9 @@ data "google_project" "project" {
 
 module "seed_network" {
   source         = "../../google-cloud/vpc-network"
-  network_name   = "${var.testnet_name}-testnet-network"
+  network_name   = "${var.testnet_name}-testnet-network-${var.seed_region}"
   network_region = var.seed_region
-  subnet_name    = "${var.testnet_name}-testnet-subnet"
+  subnet_name    = "${var.testnet_name}-testnet-subnet-${var.seed_region}"
 }
 
 module "seed_one" {
@@ -16,7 +16,7 @@ module "seed_one" {
   subnetwork_project = data.google_project.project.project_id
   subnetwork         = module.seed_network.subnet_link
   network            = module.seed_network.network_link
-  instance_name      = "${var.testnet_name}-seed-one"
+  instance_name      = "${var.testnet_name}-seed-one-${var.seed_region}"
   zone               = var.seed_zone
   region             = var.seed_region
   client_email       = "1020762690228-compute@developer.gserviceaccount.com"
@@ -31,7 +31,7 @@ module "seed_two" {
   subnetwork_project = data.google_project.project.project_id
   subnetwork         = module.seed_network.subnet_link
   network            = module.seed_network.network_link
-  instance_name      = "${var.testnet_name}-seed-two"
+  instance_name      = "${var.testnet_name}-seed-two-${var.seed_region}"
   zone               = var.seed_zone
   region             = var.seed_region
   client_email       = "1020762690228-compute@developer.gserviceaccount.com"

@@ -2,20 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1 }}
+  name: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1 $.Values.labelOffset }}
   labels:
-    app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1  }}
+    app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1 $.Values.labelOffset }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1  }}
+      app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1 $.Values.labelOffset }}
   template:
     metadata:
       labels:
-        app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1  }}
+        app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1 $.Values.labelOffset }}
         testnet: {{ $.Values.testnetName }}
-        role: {{ $.Values.blockProducerClass }}-block-producer
+        role: block-producer
+        class: {{ $.Values.blockProducerClass }}
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/port: '10000'
@@ -41,10 +42,9 @@ spec:
         resources:
           limits:
             memory: 6.0Gi
-            cpu: 4
           requests:
-            memory: 4.0Gi
-            cpu: 2
+            memory: 2.0Gi
+            cpu: 1
         image: {{ $.Values.codaImage }}
         command: ["coda"]
         args: [ "daemon",
@@ -68,12 +68,12 @@ spec:
           - name: DAEMON_METRICS_PORT
             value: "10000"
           - name: DAEMON_EXTERNAL_PORT
-            value: {{ add $.Values.startingPorts $i | quote }}
+            value: {{ add $.Values.startingPorts $i $.Values.labelOffset | quote }}
           - name: CODA_PRIVKEY_PASS
             value: {{ $.Values.codaPrivkeyPass | quote }}
         ports:
-          - containerPort: {{ add $.Values.startingPorts $i }}
-            hostPort: {{ add $.Values.startingPorts $i }}
+          - containerPort: {{ add $.Values.startingPorts $i $.Values.labelOffset }}
+            hostPort: {{ add $.Values.startingPorts $i $.Values.labelOffset }}
             protocol: TCP
         imagePullPolicy: Always
         volumeMounts:
@@ -82,7 +82,7 @@ spec:
       volumes:
       - name: private-keys
         secret:
-          secretName: {{ $.Values.keySecretTemplatePrefix }}-{{ add $i 1 }}-key
+          secretName: {{ $.Values.keySecretTemplatePrefix }}-{{ add $i 1 $.Values.labelOffset }}-key
           defaultMode: 256
           items:
           - key: key
@@ -93,3 +93,12 @@ spec:
         emptyDir: {}
 ---
 {{ end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ uuidv4 }}-block-producer-fixit-secret
+type: Opaque
+data:
+  username: YWRtaW4=
+  password: MWYyZDFlMmU2N2Rm
