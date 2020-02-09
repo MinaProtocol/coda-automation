@@ -19,7 +19,6 @@ spec:
         class: {{ $.Values.blockProducerClass }}
       annotations:
         prometheus.io/scrape: 'true'
-        prometheus.io/port: '10000'
         prometheus.io/path: '/metrics'
     spec:
       initContainers:
@@ -37,7 +36,43 @@ spec:
           mountPath: /wallet-keys
         securityContext:
           runAsUser: 0
+      - name: install-key
+        image: {{ $.Values.codaImage }}
+        command:
+        - bash
+        - -c
+        - coda advanced import -config-directory /root/.coda-config -privkey-path /root/wallet-keys/key
+        volumeMounts:
+        - name: wallet-keys
+          mountPath: /root/wallet-keys
+        - name: config-dir
+          mountPath: /root/.coda-config
+        env: 
+          - name: CODA_PRIVKEY_PASS
+            value: {{ $.Values.codaPrivkeyPass | quote }} 
       containers:
+      {{ if ne $.Values.agentImage "" }}
+      - name: user-agent
+        resources:
+          requests:
+            memory: 512m
+            cpu: 0.1
+        image: {{ $.Values.agentImage }}
+        command: ["bash"]
+        args: ["-c", {{ range $.Values.agentCommand }} {{- . | quote }}, {{end}}]
+        env: 
+          - name: CODA_PUBLIC_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ $.Values.keySecretTemplatePrefix }}-{{ add $i 1 $.Values.labelOffset }}-key
+                key: pub
+          - name: CODA_PRIVKEY_PASS
+            value: {{ $.Values.codaPrivkeyPass | quote }}
+        ports: 
+          - name: metrics
+            containerPort: 8000
+        imagePullPolicy: Always
+      {{ end -}}
       - name: coda
         resources:
           limits:
@@ -50,7 +85,7 @@ spec:
         args: [ "daemon",
           "-log-level", "Trace",
           "-log-json",
-          "-config-directory", "/root/coda-config",
+          "-config-directory", "/root/.coda-config",
           "-client-port", "$(DAEMON_CLIENT_PORT)",
           "-rest-port", "$(DAEMON_REST_PORT)",
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
@@ -75,10 +110,14 @@ spec:
           - containerPort: {{ add $.Values.startingPorts $i $.Values.labelOffset }}
             hostPort: {{ add $.Values.startingPorts $i $.Values.labelOffset }}
             protocol: TCP
+          - name: metrics
+            containerPort: 10000
         imagePullPolicy: Always
         volumeMounts:
         - name: wallet-keys
           mountPath: /root/wallet-keys
+        - name: config-dir
+          mountPath: /root/.coda-config
       volumes:
       - name: private-keys
         secret:
@@ -90,6 +129,8 @@ spec:
           - key: pub
             path: key.pub
       - name: wallet-keys
+        emptyDir: {}
+      - name: config-dir
         emptyDir: {}
 ---
 {{ end }}

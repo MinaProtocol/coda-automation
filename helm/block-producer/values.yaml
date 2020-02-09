@@ -3,7 +3,7 @@ labelOffset: 0
 
 testnetName: "coda-testnet"
 
-codaImage: codaprotocol/coda-daemon:0.0.13-beta-master-99d1e1f
+codaImage: codaprotocol/coda-daemon:0.0.12-beta-new-genesis-01eca9b
 
 seedPeers: 
   - /dns4/seed-one.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWP7fTKbyiUcYJGajQDpCFo2rDexgTHFJTxCH8jvcL1eAH
@@ -13,5 +13,8 @@ codaPrivkeyPass: naughty blue worm
 
 startingPorts:  10600
 
-keySecretTemplatePrefix: "block-producer"
+keySecretTemplatePrefix: "online-whale-account"
 blockProducerClass: "whale" # Options "whale", "fish"
+
+agentImage: ""
+agentCommand: ["python3 agent.py"]

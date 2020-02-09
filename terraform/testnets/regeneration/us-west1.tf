@@ -20,7 +20,7 @@ module "testnet_west" {
   seed_region = "us-west1"
 
   num_whale_block_producers = 5
-  num_fish_block_producers = 5
+  num_fish_block_producers = 10
   block_producer_key_pass = "naughty blue worm"
   block_producer_starting_host_port = 10001
 
