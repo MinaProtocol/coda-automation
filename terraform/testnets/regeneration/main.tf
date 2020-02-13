@@ -15,5 +15,9 @@ provider "aws" {
 
 locals {
   testnet_name = "regeneration"
-  coda_image   = "codaprotocol/coda-daemon:0.0.12-beta-new-genesis-01eca9b"
+  coda_image   = var.coda_image
+}
+variable "coda_image" {
+  type = string
+  default = "codaprotocol/coda-daemon:0.0.12-beta-new-genesis-a596f53"
 }

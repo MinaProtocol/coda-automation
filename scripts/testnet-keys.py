@@ -493,7 +493,8 @@ def upload_seed_keys(key_dir, namespace):
 @k8s.command()
 @click.option('--key-dir', default=DEFAULT_ONLINE_WHALE_KEYS_DIR.absolute(), help='Location of Block Producer keys to Upload, a Directory.')
 @click.option('--namespace', default="coda-testnet", help='The namespace the Kubernetes secret should be uploaded to.')
-def upload_online_whale_keys(key_dir, namespace):
+@click.option('--cluster', default="", help='The cluster the Kubernetes secret should be uploaded to.')
+def upload_online_whale_keys(key_dir, namespace, cluster):
     """Upload Private Keys for Online Whales to Kubernetes -- Ensure kubectl is properly configured!"""
     key_dir = Path(key_dir)
     # Load all the public keys from seed_key_dir
@@ -505,9 +506,9 @@ def upload_online_whale_keys(key_dir, namespace):
         public_key_file = key_dir / (keyfile + ".pub")
         private_key_file = key_dir / keyfile
 
-        command = "kubectl create secret generic {} --namespace={} --from-file=key={} --from-file=pub={}".format(
+        command = "kubectl create secret generic {} --cluster={} --namespace={} --from-file=key={} --from-file=pub={}".format(
             keyfile.replace("_", "-") + "-key",
-            namespace, private_key_file, public_key_file
+            cluster, namespace, private_key_file, public_key_file
         )
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
         output, error = process.communicate()
@@ -520,9 +521,10 @@ def upload_online_whale_keys(key_dir, namespace):
 @k8s.command()
 @click.option('--key-dir', default=DEFAULT_ONLINE_FISH_KEYS_DIR.absolute(), help='Location of Fish keys to Upload, a Directory.')
 @click.option('--namespace', default="coda-testnet", help='The namespace the Kubernetes secret(s) should be uploaded to.')
+@click.option('--cluster', default="", help='The cluster the Kubernetes secret should be uploaded to.')
 @click.option('--count', default=10, help='The number of keys to upload.')
 @click.option('--offset', default=0, help='The number of keys to skip before uploading.')
-def upload_online_fish_keys(key_dir, namespace, count, offset):
+def upload_online_fish_keys(key_dir, namespace, cluster, count, offset):
     """Upload Private Keys for online Fish Block Producers to Kubernetes -- Ensure kubectl is properly configured!"""
     key_dir = Path(key_dir)
     # Load all the public keys from seed_key_dir
@@ -535,9 +537,9 @@ def upload_online_fish_keys(key_dir, namespace, count, offset):
         public_key_file = key_dir / (fish_producer + ".pub")
         private_key_file = key_dir / fish_producer
 
-        command = "kubectl create secret generic {} --namespace={} --from-file=key={} --from-file=pub={}".format(
+        command = "kubectl create secret generic {} --cluster={} --namespace={} --from-file=key={} --from-file=pub={}".format(
             fish_producer.replace("_", "-") + "-key",
-            namespace, private_key_file, public_key_file
+            cluster, namespace, private_key_file, public_key_file
         )
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
         output, error = process.communicate()
@@ -549,7 +551,8 @@ def upload_online_fish_keys(key_dir, namespace, count, offset):
 @k8s.command()
 @click.option('--key-dir', default=DEFAULT_SERVICE_KEY_DIR.absolute(), help='Location of Block Producer keys to Upload, a Directory.')
 @click.option('--namespace', default="coda-testnet", help='The namespace the Kubernetes secret should be uploaded to.')
-def upload_service_keys(key_dir, namespace):
+@click.option('--cluster', default="", help='The cluster the Kubernetes secret should be uploaded to.')
+def upload_service_keys(key_dir, namespace, cluster):
     """Upload Private Keys for Services to Kubernetes -- Ensure kubectl is properly configured!"""
     key_dir = Path(key_dir)
     # Load all the public keys from seed_key_dir
@@ -561,9 +564,9 @@ def upload_service_keys(key_dir, namespace):
         public_key_file = key_dir / (service + ".pub")
         private_key_file = key_dir / service
 
-        command = "kubectl create secret generic {} --namespace={} --from-file=key={} --from-file=pub={}".format(
+        command = "kubectl create secret generic {} --cluster={} --namespace={} --from-file=key={} --from-file=pub={}".format(
             service.replace("_", "-") + "-key",
-            namespace, private_key_file, public_key_file
+            cluster, namespace, private_key_file, public_key_file
         )
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
         output, error = process.communicate()
