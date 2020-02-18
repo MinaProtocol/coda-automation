@@ -86,7 +86,7 @@ def main():
     print("Sending a transaction every {} minutes.".format(AGENT_SEND_EVERY_MINS))
     while True:
         schedule.run_pending()
-        sleep_time = 30
+        sleep_time = 10
         print("Sleeping for {} seconds...".format(sleep_time))
         time.sleep(sleep_time)
 

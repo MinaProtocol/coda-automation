@@ -61,6 +61,8 @@ spec:
         command: ["bash"]
         args: ["-c", {{ range $.Values.agentCommand }} {{- . | quote }}, {{end}}]
         env: 
+          - name: AGENT_SEND_EVERY_MINUTES
+            value: "10"
           - name: CODA_PUBLIC_KEY
             valueFrom:
               secretKeyRef:

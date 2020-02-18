@@ -55,7 +55,10 @@ resource "google_container_node_pool" "west_primary_nodes" {
   location   = "us-west2"
   cluster    = google_container_cluster.coda_cluster_west.name
   node_count = local.num_nodes_per_zone
-
+  autoscaling {
+    min_node_count = 0
+    max_node_count = 8
+  }
   node_config {
     preemptible  = false
     machine_type = local.node_type

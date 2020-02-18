@@ -465,7 +465,8 @@ def generate_ledger(
 @k8s.command()
 @click.option('--key-dir', default=(SCRIPT_DIR / "seed_keys").absolute(), help='Location of Block Producer keys to Upload, a Directory.')
 @click.option('--namespace', default="coda-testnet", help='The namespace the Kubernetes secret should be uploaded to.')
-def upload_seed_keys(key_dir, namespace):
+@click.option('--cluster', default="", help='The cluster the Kubernetes secret should be uploaded to.')
+def upload_seed_keys(key_dir, namespace, cluster):
     """Upload LibP2P Keypairs to Kubernetes -- Ensure kubectl is properly configured!"""
     # Load all the public keys from seed_key_dir
     key_files = glob.glob(str(key_dir.absolute()) + "/*libp2p*")

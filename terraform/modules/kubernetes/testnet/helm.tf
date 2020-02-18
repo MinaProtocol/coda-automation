@@ -17,8 +17,8 @@ provider helm {
 
 locals {
   seed_peers = [
-    "/ip4/${module.seed_one.instance_external_ip}/tcp/10002/ipfs/${split(",", module.seed_one.discovery_keypair)[2]}",
-    "/ip4/${module.seed_two.instance_external_ip}/tcp/10002/ipfs/${split(",", module.seed_two.discovery_keypair)[2]}"
+    "/ip4/${module.seed_one.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_one.discovery_keypair)[2]}",
+    "/ip4/${module.seed_two.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_two.discovery_keypair)[2]}"
   ]
   whale_producer_vars = {
     numProducers            = var.num_whale_block_producers
