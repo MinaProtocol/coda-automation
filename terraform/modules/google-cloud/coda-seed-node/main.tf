@@ -1,5 +1,5 @@
 locals {
-  container_command = format("coda daemon -log-level Info -config-directory /root/.coda-config -client-port 8301 -rest-port 8304 -external-port 10001 -discovery-port 10002 -metrics-port 10000 -discovery-keypair %s %s", var.discovery_keypair, var.seed_peers)
+  container_command = format("coda daemon -log-level Info -config-directory /root/.coda-config -client-port 8301 -rest-port 8304 -external-port 10001 -metrics-port 10000 -discovery-keypair %s %s", var.discovery_keypair, var.seed_peers)
 }
 
 resource "google_compute_address" "external_ip" {
@@ -35,7 +35,7 @@ resource "google_compute_instance" "vm" {
     spec:
       containers:
         - name: ${var.instance_name}
-          image: 'codaprotocol/coda-daemon:0.0.11-beta1-release-0.0.12-beta-493b4c6'
+          image: ${var.coda_image}
           command:
             - /bin/bash
           args:

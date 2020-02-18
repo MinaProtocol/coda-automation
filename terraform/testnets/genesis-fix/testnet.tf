@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "terraform-genesis.tfstate"
+    key     = "terraform-genesis-fix.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -14,8 +14,8 @@ provider "aws" {
 }
 
 locals {
-  netname    = "genesis-redux"
-  coda_image = "codaprotocol/coda-daemon:0.0.13-beta-master-99d1e1f"
+  netname    = "genesis-test"
+  coda_image = "codaprotocol/coda-daemon:0.0.11-beta5-release-0.0.11-beta5-redux-9116312"
 }
 
 provider "google" {
