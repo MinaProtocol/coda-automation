@@ -20,6 +20,7 @@ spec:
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/path: '/metrics'
+        prometheus.io/port: '10000'
     spec:
       initContainers:
       - name: fix-perms
