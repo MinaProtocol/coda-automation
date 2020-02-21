@@ -29,7 +29,7 @@ spec:
             memory: 2.0Gi
             cpu: 1
         image: {{ $.Values.codaImage }}
-        command: ["/usr/bin/dumb-init", "/init_coda.sh"]
+        command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
         args: [ "daemon",
           "-log-level", "Trace",
           "-log-json",
