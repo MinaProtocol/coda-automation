@@ -13,8 +13,9 @@ module "testnet_east" {
   source                = "../../modules/kubernetes/testnet"
   cluster_name          = "coda-infra-east"
   cluster_region        = "us-east1"
-  testnet_name          = "regeneration"
+  testnet_name          = local.testnet_name
   coda_image            = local.coda_image
+  coda_agent_image = ""
 
   seed_zone = "us-east1-b"
   seed_region = "us-east1"
