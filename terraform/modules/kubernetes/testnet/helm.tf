@@ -40,7 +40,7 @@ locals {
     startingPorts           = var.block_producer_starting_host_port + var.num_whale_block_producers
     keySecretTemplatePrefix = "online-fish-account"
     blockProducerClass      = "fish"
-    agentImage              = "codaprotocol/coda-user-agent:0.1.3"
+    agentImage              = var.coda_agent_image
   }
   snark_worker_vars = {
     testnetName = var.testnet_name
