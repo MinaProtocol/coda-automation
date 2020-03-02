@@ -17,10 +17,10 @@ spec:
         testnet: {{ $.Values.testnetName }}
         role: block-producer
         class: {{ $.Values.blockProducerClass }}
+        version: {{ (split ":" $.Values.codaImage)._1 }}
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/path: '/metrics'
-        prometheus.io/port: '10000'
     spec:
       initContainers:
       - name: fix-perms
@@ -91,6 +91,7 @@ spec:
           "-config-directory", "/root/.coda-config",
           "-client-port", "$(DAEMON_CLIENT_PORT)",
           "-rest-port", "$(DAEMON_REST_PORT)",
+          "-insecure-rest-server",
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-block-producer-key", "/root/wallet-keys/key",

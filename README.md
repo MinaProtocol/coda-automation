@@ -8,25 +8,23 @@ If you have any issues setting up your testnet or have any other questions about
 # Code Structure
 ```
 coda-automation
-├── ansible
-│   ├── tasks
-│   └── wallet-keys
+├── helm
+│   ├── block-producer
+│   └── snark-worker
 ├── scripts
+├── services
 └── terraform
+    ├── infrastructure
     ├── modules
-    │   ├── coda-node
-    │   └── elasticsearch
     └── testnets
-        ├── testnet20190601
-        └── testnet20190613
 ```
 
 **Terraform:** Contains resource modules and live code to deploy a Coda Testnet. 
-- Note: Currently **ALL** modules only support AWS, multi-cloud support is on the roadmap.
-- *coda-node:* A Terraform module that encapsulates a single node.
-- *elasticsearch:* A Terraform module that deploys an elasticsearch cluster using the [AWS Elasticsearch service](https://aws.amazon.com/elasticsearch-service/). 
-*Ansible:* Contains runbooks that are designed to configure and run a set of Coda Daemons.
-*Scripts:* Scripts that are designed to be placed on a remote node and executed locally. 
+- Note: Currently most modules are written against Google Kubernetes Engine, multi-cloud support is on the roadmap.
+- *infrastructure:* The root module for infrastructure like K8s Clusters and Prometheus.
+- *kubernetes/testnet:* A Terraform module that encapsulates a Coda Testnet, including Seed Nodes, Block Producers and SNARK Workers.
+- *google-cloud/coda-seed-node:* A Terraform module that deploys a set of public Seed Nodes on Google Compute Engine in the configured region. 
+*Scripts:* Testnet utilities for key generation & storage, redelegation, etc. 
 
 # Prerequisites
 For the purposes of this README we are assuming the following: 

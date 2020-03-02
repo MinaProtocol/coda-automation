@@ -1,6 +1,0 @@
-logcapture
-inventory*
-keygrab
-*.retry
-*.gz
-ansible_vault_password

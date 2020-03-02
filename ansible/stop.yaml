@@ -1,5 +1,0 @@
----
-- hosts: "tag_testnet_{{ netname }}"
-  gather_facts: no
-  tasks:
-    - include: tasks/task-stop.yaml

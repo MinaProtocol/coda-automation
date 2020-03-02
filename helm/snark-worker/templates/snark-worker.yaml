@@ -15,6 +15,7 @@ spec:
         app: snark-worker-{{ trunc -6 .Values.publicKey | lower }}
         testnet: {{ $.Values.testnetName }}
         role: snark-worker
+        version: {{ (split ":" $.Values.codaImage)._1 }}
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/port: '10000'
