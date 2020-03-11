@@ -15,7 +15,6 @@ module "testnet_east" {
   cluster_region        = "us-east1"
   testnet_name          = local.testnet_name
   coda_image            = local.coda_image
-  coda_agent_image = ""
 
   seed_zone = "us-east1-b"
   seed_region = "us-east1"
@@ -26,7 +25,7 @@ module "testnet_east" {
   block_producer_starting_host_port = 10001
 
   snark_worker_replicas = 1
-  snark_worker_fee      = 10
+  snark_worker_fee      = 0.00000006         
   snark_worker_public_key = "4vsRCVQZ41uqXfVVfkBNUuNNS7PgSJGdMDNAyKGDdU1WkdxxyxQ7oMdFcjDRf45fiGKkdYKkLPBrE1KnxmyBuvaTW97A5C8XjNSiJmvo9oHa4AwyVsZ3ACaspgQ3EyxQXk6uujaxzvQhbLDx"
   snark_worker_host_port = 10400
 }
