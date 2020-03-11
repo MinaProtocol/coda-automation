@@ -10,4 +10,4 @@ RUN adduser --disabled-password --gecos '' unpriv
 RUN chown -R unpriv: /code
 WORKDIR /code
 
-CMD [ "python3", "agent.py" ]
+CMD [ "python3", "-u", "agent.py" ]

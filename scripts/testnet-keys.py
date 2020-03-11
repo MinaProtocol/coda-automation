@@ -343,7 +343,7 @@ def generate_ledger(
     #     "delegate": optional-public-key-string
     #     }
     # ]
-    ledger_total_currency = 12000000
+    ledger_total_currency = 12000000 * 10**9
     ledger = []
     annotated_ledger = []
 
@@ -377,7 +377,7 @@ def generate_ledger(
             ledger.append({
                 "pk": fish,
                 "sk": None,
-                "balance": int((.7 * ledger_total_currency) / num_fish_accounts - 1000),
+                "balance": int((.7 * ledger_total_currency) / num_fish_accounts - (1000 * 10**9)),
                 "delegate": ledger_public_keys["stakers"][index]["public_key"]
             })
             # each online staker key holds 1000 Coda to play with
@@ -385,14 +385,14 @@ def generate_ledger(
                 "pk": ledger_public_keys["stakers"][index]["public_key"],
                 "sk": None,
                 "delegate": None,
-                "balance": 1000
+                "balance": (1000 * 10**9)
             })
 
             # Create an annotated ledger with nicknames in it
             annotated_ledger.append({
                 "pk": fish,
                 "sk": None,
-                "balance": int((.7 * ledger_total_currency) / num_fish_accounts - 1000),
+                "balance": int((.7 * ledger_total_currency) / num_fish_accounts - (1000 * 10**9)),
                 "delegate": ledger_public_keys["stakers"][index]["public_key"],
                 "nickname": ledger_public_keys["stakers"][index]["nickname"]
             })
@@ -400,14 +400,14 @@ def generate_ledger(
             annotated_ledger.append({
                 "pk": ledger_public_keys["stakers"][index]["public_key"],
                 "sk": None,
-                "balance": 1000,
+                "balance": (1000 * 10**9),
                 "delegate": None,
                 "nickname": ledger_public_keys["stakers"][index]["nickname"]
             })
         # This will occur if there are less staker keys than there are fish keys
         except IndexError: 
             # Delegate remainder keys to block producer one
-            remainder_index = len(ledger_public_keys["fish_keys"]) - len(ledger_public_keys["stakers"]) - 1
+            remainder_index = len(ledger_public_keys["offline_fish_keys"]) - len(ledger_public_keys["stakers"]) - 1
             break
 
     # Check that there are enough whale keys for all block producers

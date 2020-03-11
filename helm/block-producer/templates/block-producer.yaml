@@ -71,6 +71,8 @@ spec:
                 key: pub
           - name: CODA_PRIVKEY_PASS
             value: {{ $.Values.codaPrivkeyPass | quote }}
+          - name: PYTHONUNBUFFERED
+            value: "1"
         ports: 
           - name: metrics
             containerPort: 8000
