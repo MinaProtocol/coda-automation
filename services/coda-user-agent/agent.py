@@ -65,8 +65,8 @@ class Agent(object):
             print(e)
             return None
         
-        tx_amount = random.randint(1, self.max_tx_amount)
-        fee_amount = random.randint(1, self.max_fee_amount)
+        tx_amount = random.randint(1, self.max_tx_amount) * 1000000000
+        fee_amount = random.randint(1, self.max_fee_amount) * 1000000000
         try: 
             response = self.coda.send_payment(to_account, self.public_key, tx_amount, fee_amount, memo="BeepBoop")
         except Exception as e: 
@@ -94,6 +94,6 @@ if __name__ == "__main__":
     print("Starting up...")
     start_http_server(AGENT_METRICS_PORT)
     print("Metrics on Port {}".format(AGENT_METRICS_PORT))
-    print("Sleeping for 20 minutes...")
-    time.sleep(60*20)
+    print("Sleeping for 2 minutes...")
+    time.sleep(60*2)
     main()

@@ -16,8 +16,15 @@ provider "aws" {
 locals {
   testnet_name = "gerald"
   coda_image   = var.coda_image
+  coda_agent_image = var.coda_agent_image
 }
+
 variable "coda_image" {
   type = string
-  default = "codaprotocol/coda-daemon:0.0.12-beta-qa-net-params-497d58d"
+  default = "codaprotocol/coda-daemon:0.0.12-beta-qa-net-params-1c42d65"
+}
+
+variable "coda_agent_image" {
+  type = string
+  default = "codaprotocol/coda-user-agent:0.1.3-gerald"
 }
