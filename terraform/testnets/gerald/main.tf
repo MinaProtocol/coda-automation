@@ -21,7 +21,7 @@ locals {
 
 variable "coda_image" {
   type = string
-  default = "codaprotocol/coda-daemon:0.0.12-beta-qa-net-params-1c42d65"
+  default = "codaprotocol/coda-daemon:0.0.12-beta-qa-net-params-fbad4d0"
 }
 
 variable "coda_agent_image" {
