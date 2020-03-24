@@ -17,7 +17,7 @@ variable "coda_image" {
 
 variable "coda_agent_image" {
   type    = string
-  default = "codaprotocol/coda-user-agent:0.1.3"
+  default = "codaprotocol/coda-user-agent:0.1.4"
 }
 
 variable "testnet_name" {
