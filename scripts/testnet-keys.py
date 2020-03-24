@@ -11,7 +11,7 @@ import natsort
 client = docker.from_env()
 p = inflect.engine()
 
-CODA_DAEMON_IMAGE = "codaprotocol/coda-daemon:0.0.11-beta1-release-0.0.12-beta-493b4c6"
+CODA_DAEMON_IMAGE = "codaprotocol/coda-daemon:0.0.12-beta-testnet-hangry-lobster-77257e1"
 SCRIPT_DIR = Path(__file__).parent.absolute()
 
 # Default output folders for various kinds of keys
@@ -68,7 +68,7 @@ def generate_service_keys(output_dir, privkey_pass):
         pubkey = client.containers.run(
             CODA_DAEMON_IMAGE,
             entrypoint="bash -c",  
-            command=["CODA_PRIVKEY_PASS='{}' coda client-old generate-keypair -privkey-path /keys/{}_service".format(privkey_pass, service)], 
+            command=["CODA_PRIVKEY_PASS='{}' coda advanced generate-keypair -privkey-path /keys/{}_service".format(privkey_pass, service)], 
             volumes={output_dir: {'bind': '/keys', 'mode': 'rw'}}
         )
         print(pubkey)
@@ -89,7 +89,7 @@ def generate_online_whale_keys(count, output_dir, privkey_pass):
         pubkey = client.containers.run(
             CODA_DAEMON_IMAGE,
             entrypoint="bash -c",  
-            command=["CODA_PRIVKEY_PASS='{}' coda client-old generate-keypair -privkey-path /keys/online_whale_account_{}".format(privkey_pass, whale_key)], 
+            command=["CODA_PRIVKEY_PASS='{}' coda advanced generate-keypair -privkey-path /keys/online_whale_account_{}".format(privkey_pass, whale_key)], 
             volumes={output_dir: {'bind': '/keys', 'mode': 'rw'}}
         )
         print(pubkey)
@@ -111,7 +111,7 @@ def generate_offline_whale_keys(count, output_dir, privkey_pass):
         pubkey = client.containers.run(
             CODA_DAEMON_IMAGE,
             entrypoint="bash -c",  
-            command=["CODA_PRIVKEY_PASS='{}' coda client-old generate-keypair -privkey-path /keys/offline_whale_account_{}".format(privkey_pass, i+1)], 
+            command=["CODA_PRIVKEY_PASS='{}' coda advanced generate-keypair -privkey-path /keys/offline_whale_account_{}".format(privkey_pass, i+1)], 
             volumes={output_dir: {'bind': '/keys', 'mode': 'rw'}}
         )
         print(pubkey)
@@ -132,7 +132,7 @@ def generate_offline_fish_keys(count, output_dir, privkey_pass):
         pubkey = client.containers.run(
             CODA_DAEMON_IMAGE,
             entrypoint="bash -c",  
-            command=["CODA_PRIVKEY_PASS='{}' coda client-old generate-keypair -privkey-path /keys/offline_fish_account_{}".format(privkey_pass, fish_number)], 
+            command=["CODA_PRIVKEY_PASS='{}' coda advanced generate-keypair -privkey-path /keys/offline_fish_account_{}".format(privkey_pass, fish_number)], 
             volumes={output_dir: {'bind': '/keys', 'mode': 'rw'}},
             detach=True
         )
@@ -154,7 +154,7 @@ def generate_online_fish_keys(count, output_dir, privkey_pass):
         pubkey = client.containers.run(
             CODA_DAEMON_IMAGE,
             entrypoint="bash -c",  
-            command=["CODA_PRIVKEY_PASS='{}' coda client-old generate-keypair -privkey-path /keys/online_fish_account_{}".format(privkey_pass, fish_number)], 
+            command=["CODA_PRIVKEY_PASS='{}' coda advanced generate-keypair -privkey-path /keys/online_fish_account_{}".format(privkey_pass, fish_number)], 
             volumes={output_dir: {'bind': '/keys', 'mode': 'rw'}},
             detach=True
         )
