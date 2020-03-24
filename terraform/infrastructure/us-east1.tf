@@ -13,6 +13,13 @@ locals {
             username = jsondecode(data.aws_secretsmanager_secret_version.current_prometheus_remote_write_config.secret_string)["remote_write_username"]
             password = jsondecode(data.aws_secretsmanager_secret_version.current_prometheus_remote_write_config.secret_string)["remote_write_password"]
           }
+          write_relabel_configs = [
+            {
+              source_labels: ["__name__"]
+              regex: "(container.*|Coda.*)"
+              action: "keep"
+            }
+          ]
         }
       ]
     }
@@ -57,7 +64,7 @@ resource "google_container_node_pool" "east_primary_nodes" {
   node_count = local.num_nodes_per_zone
   autoscaling {
     min_node_count = 0
-    max_node_count = 8
+    max_node_count = 11
   }
   node_config {
     preemptible  = false
