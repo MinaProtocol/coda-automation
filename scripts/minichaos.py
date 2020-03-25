@@ -37,6 +37,8 @@ def main():
                 # decrement because we aren't sleeping in this iteration
                 intervals_since_whale_killed -= 1 
                 continue
+            else:
+                intervals_since_whale_killed = 0
 
         print("Deleting pod %s ..." % random_pod.metadata.name)
 
