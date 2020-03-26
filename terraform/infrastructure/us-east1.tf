@@ -69,6 +69,7 @@ resource "google_container_node_pool" "east_primary_nodes" {
   node_config {
     preemptible  = false
     machine_type = local.node_type
+    disk_size_gb = 250
 
     metadata = {
       disable-legacy-endpoints = "true"

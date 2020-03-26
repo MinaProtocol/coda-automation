@@ -82,9 +82,12 @@ spec:
         resources:
           limits:
             memory: 6.0Gi
+            ephemeral-storage: 15.0Gi
           requests:
             memory: 2.0Gi
+            ephemeral-storage: 3.5Gi
             cpu: 1
+
         image: {{ $.Values.codaImage }}
         command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
         args: [ "daemon",
