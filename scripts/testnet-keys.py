@@ -426,27 +426,27 @@ def generate_ledger(
             ledger.append({
                 "pk": offline_whale,
                 "sk": None,
-                "balance": encode_microcodas(whale_offline_balance),
+                "balance": encode_nanocodas(whale_offline_balance),
                 "delegate": ledger_public_keys["online_whale_keys"][index]
             })
             ledger.append({
                 "pk": ledger_public_keys["online_whale_keys"][index],
                 "sk": None,
-                "balance": encode_microcodas(0),
+                "balance": encode_nanocodas(0),
                 "delegate": None
             })
 
             annotated_ledger.append({
                 "pk": offline_whale,
                 "sk": None,
-                "balance": encode_microcodas(whale_offline_balance),
+                "balance": encode_nanocodas(whale_offline_balance),
                 "delegate": ledger_public_keys["online_whale_keys"][index],
                 "delegate_discord_username": "CodaBP{}".format(index)
             })
             annotated_ledger.append({
                 "pk": ledger_public_keys["online_whale_keys"][index],
                 "sk": None,
-                "balance": encode_microcodas(0),
+                "balance": encode_nanocodas(0),
                 "delegate": None,
                 "discord_username": "CodaBP{}".format(index)
             })
