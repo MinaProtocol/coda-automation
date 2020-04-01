@@ -21,7 +21,7 @@ locals {
 
 variable "coda_image" {
   type = string
-  default = "codaprotocol/coda-daemon:0.0.13-beta-testnet-hangry-lobster-b3b9d23"
+  default = "codaprotocol/coda-daemon:0.0.12-beta-release-0.0.13-beta-cf92c69"
 }
 
 variable "coda_agent_image" {
