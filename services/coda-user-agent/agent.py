@@ -1,4 +1,4 @@
-from CodaClient import Client
+from CodaClient import Client, Currency
 import os
 import schedule
 import time
@@ -64,9 +64,9 @@ class Agent(object):
             print("Error unlocking wallet...")
             print(e)
             return None
-        
-        tx_amount = random.randint(2, self.max_tx_amount) * 1000000000
-        fee_amount = random.randint(2, self.max_fee_amount) * 1000000000
+
+        tx_amount = Currency(1, format=CurrencyFormat.NANO)
+        fee_amount = Currency("0.06")
         try: 
             response = self.coda.send_payment(to_account, self.public_key, tx_amount, fee_amount, memo="BeepBoop")
         except Exception as e: 
