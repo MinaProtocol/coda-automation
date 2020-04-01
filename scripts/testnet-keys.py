@@ -26,12 +26,12 @@ DEFAULT_STAKER_CSV_FILE = SCRIPT_DIR / "staker_public_keys.csv"
 
 # A list of services to add and the percentage of total stake they should be allocated
 DEFAULT_SERVICES = {
-    "faucet": 0.05,
-    "echo": 0.00005
+    "faucet": 100000 * (10 ** 9),
+    "echo": 100 * (10 ** 9)
 }
 
-def encode_microcodas(microcodas):
-    s = str(microcodas)
+def encode_nanocodas(nanocodas):
+    s = str(nanocodas)
     if len(s) > 9:
         return s[:-9] + '.' + s[-9:]
     else:
@@ -248,13 +248,13 @@ def generate_ledger(
     # load Service Key Contents
     for service_key_file in service_key_files:
         service_name = os.path.basename(service_key_file).split("_")[0]
-        service_ratio = DEFAULT_SERVICES[service_name]
+        service_balance = DEFAULT_SERVICES[service_name]
         fd = open(service_key_file, "r")
         service_public_key = fd.readline().strip()
         ledger_public_keys["service_keys"].append({
             "public_key": service_public_key,
             "service": service_name,
-            "ratio": service_ratio
+            "balance": service_balance
         })
         
         fd.close()
@@ -351,23 +351,22 @@ def generate_ledger(
     #     "delegate": optional-public-key-string
     #     }
     # ]
-    ledger_total_currency = 12000000 * 10**9
     ledger = []
     annotated_ledger = []
 
-    # Handle Service Keys first
+    # Service Accounts
     for service in ledger_public_keys["service_keys"]:
         ledger.append({
             "pk": service["public_key"],
             "sk": None,
-            "balance": encode_microcodas(int(ledger_total_currency * service["ratio"])),
+            "balance": encode_nanocodas(service["balance"]),
             "delegate": None
         })
 
         annotated_ledger.append({
             "pk": service["public_key"],
             "sk": None,
-            "balance": encode_microcodas(int(ledger_total_currency * service["ratio"])),
+            "balance": encode_nanocodas(service["balance"]),
             "delegate": None,
             "nickname": service["service"]
         })
@@ -377,38 +376,35 @@ def generate_ledger(
     if len(ledger_public_keys["offline_fish_keys"]) >= len(ledger_public_keys["online_staker_keys"]):
         print("There is a sufficient number of Fish Keys -- {} fish keys, {} stakers".format(num_fish_accounts, len(ledger_public_keys["online_staker_keys"])))
 
-    # Offline Fish Keys represent 70% of stake
-    # Each fish key should delegate to, at most, one staker
+    fish_offline_balance = encode_nanocodas(65500 * (10 ** 9))
+    fish_online_balance = encode_nanocodas(500 * (10 ** 9))
+
+    # Fish Accounts
     for index, fish in enumerate(ledger_public_keys["offline_fish_keys"]):
         try: 
-            # each offline fish key holds (70%/NUM_FISH_KEYS) of the total stake (70% total)
             ledger.append({
                 "pk": fish,
                 "sk": None,
-                "balance": encode_microcodas(int((.7 * ledger_total_currency) / num_fish_accounts - (1000 * 10**9))),
+                "balance": fish_offline_balance,
                 "delegate": ledger_public_keys["stakers"][index]["public_key"]
             })
-            # each online staker key holds 1000 Coda to play with
             ledger.append({
                 "pk": ledger_public_keys["stakers"][index]["public_key"],
                 "sk": None,
                 "delegate": None,
-                "balance": encode_microcodas(1000 * 10**9)
+                "balance": fish_online_balance
             })
-
-            # Create an annotated ledger with nicknames in it
             annotated_ledger.append({
                 "pk": fish,
                 "sk": None,
-                "balance": encode_microcodas(int((.7 * ledger_total_currency) / num_fish_accounts - (1000 * 10**9))),
+                "balance": fish_offline_balance,
                 "delegate": ledger_public_keys["stakers"][index]["public_key"],
                 "nickname": ledger_public_keys["stakers"][index]["nickname"]
             })
-            # each staker key holds 1000 Coda to play with
             annotated_ledger.append({
                 "pk": ledger_public_keys["stakers"][index]["public_key"],
                 "sk": None,
-                "balance": encode_microcodas(1000 * 10**9),
+                "balance": fish_online_balance,
                 "delegate": None,
                 "nickname": ledger_public_keys["stakers"][index]["nickname"]
             })
@@ -422,14 +418,15 @@ def generate_ledger(
     if len(ledger_public_keys["offline_whale_keys"]) >= len(ledger_public_keys["online_whale_keys"]):
         print("There is a sufficient number of Whale Keys -- {} offline whale keys, {} online whale keys".format(num_whale_accounts, len(ledger_public_keys["online_whale_keys"])))
 
-    # Offline Whale Keys represent 30% of stake
+    whale_offline_balance = 66000 * 175 * (10**9)
+
+    # Whale Accounts
     for index, offline_whale in enumerate(ledger_public_keys["offline_whale_keys"]):
         try:
-            # Each whale key holds (30%/NUM_WHALE_KEYS) of the total stake (30% total)
             ledger.append({
                 "pk": offline_whale,
                 "sk": None,
-                "balance": encode_microcodas(int((0.3 * ledger_total_currency) / num_whale_accounts)),
+                "balance": encode_microcodas(whale_offline_balance),
                 "delegate": ledger_public_keys["online_whale_keys"][index]
             })
             ledger.append({
@@ -442,7 +439,7 @@ def generate_ledger(
             annotated_ledger.append({
                 "pk": offline_whale,
                 "sk": None,
-                "balance": encode_microcodas(int((0.3 * ledger_total_currency) / num_whale_accounts)),
+                "balance": encode_microcodas(whale_offline_balance),
                 "delegate": ledger_public_keys["online_whale_keys"][index],
                 "delegate_discord_username": "CodaBP{}".format(index)
             })
