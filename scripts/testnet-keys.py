@@ -29,6 +29,14 @@ DEFAULT_SERVICES = {
     "faucet": 0.05,
     "echo": 0.00005
 }
+
+def encode_microcodas(microcodas):
+    s = str(microcodas)
+    if len(s) > 9:
+        return s[:-9] + '.' + s[-9:]
+    else:
+        return '0.' + ('0' * (9 - len(s))) + s
+
 @click.group()
 @click.option('--debug/--no-debug', default=False)
 def cli(debug):
@@ -352,14 +360,14 @@ def generate_ledger(
         ledger.append({
             "pk": service["public_key"],
             "sk": None,
-            "balance": int(ledger_total_currency * service["ratio"]),
+            "balance": encode_microcodas(int(ledger_total_currency * service["ratio"])),
             "delegate": None
         })
 
         annotated_ledger.append({
             "pk": service["public_key"],
             "sk": None,
-            "balance": int(ledger_total_currency * service["ratio"]),
+            "balance": encode_microcodas(int(ledger_total_currency * service["ratio"])),
             "delegate": None,
             "nickname": service["service"]
         })
@@ -377,7 +385,7 @@ def generate_ledger(
             ledger.append({
                 "pk": fish,
                 "sk": None,
-                "balance": int((.7 * ledger_total_currency) / num_fish_accounts - (1000 * 10**9)),
+                "balance": encode_microcodas(int((.7 * ledger_total_currency) / num_fish_accounts - (1000 * 10**9))),
                 "delegate": ledger_public_keys["stakers"][index]["public_key"]
             })
             # each online staker key holds 1000 Coda to play with
@@ -385,14 +393,14 @@ def generate_ledger(
                 "pk": ledger_public_keys["stakers"][index]["public_key"],
                 "sk": None,
                 "delegate": None,
-                "balance": (1000 * 10**9)
+                "balance": encode_microcodas(1000 * 10**9)
             })
 
             # Create an annotated ledger with nicknames in it
             annotated_ledger.append({
                 "pk": fish,
                 "sk": None,
-                "balance": int((.7 * ledger_total_currency) / num_fish_accounts - (1000 * 10**9)),
+                "balance": encode_microcodas(int((.7 * ledger_total_currency) / num_fish_accounts - (1000 * 10**9))),
                 "delegate": ledger_public_keys["stakers"][index]["public_key"],
                 "nickname": ledger_public_keys["stakers"][index]["nickname"]
             })
@@ -400,7 +408,7 @@ def generate_ledger(
             annotated_ledger.append({
                 "pk": ledger_public_keys["stakers"][index]["public_key"],
                 "sk": None,
-                "balance": (1000 * 10**9),
+                "balance": encode_microcodas(1000 * 10**9),
                 "delegate": None,
                 "nickname": ledger_public_keys["stakers"][index]["nickname"]
             })
@@ -421,27 +429,27 @@ def generate_ledger(
             ledger.append({
                 "pk": offline_whale,
                 "sk": None,
-                "balance": int((0.3 * ledger_total_currency) / num_whale_accounts),
+                "balance": encode_microcodas(int((0.3 * ledger_total_currency) / num_whale_accounts)),
                 "delegate": ledger_public_keys["online_whale_keys"][index]
             })
             ledger.append({
                 "pk": ledger_public_keys["online_whale_keys"][index],
                 "sk": None,
-                "balance": 0,
+                "balance": encode_microcodas(0),
                 "delegate": None
             })
 
             annotated_ledger.append({
                 "pk": offline_whale,
                 "sk": None,
-                "balance": int((0.3 * ledger_total_currency) / num_whale_accounts),
+                "balance": encode_microcodas(int((0.3 * ledger_total_currency) / num_whale_accounts)),
                 "delegate": ledger_public_keys["online_whale_keys"][index],
                 "delegate_discord_username": "CodaBP{}".format(index)
             })
             annotated_ledger.append({
                 "pk": ledger_public_keys["online_whale_keys"][index],
                 "sk": None,
-                "balance": 0,
+                "balance": encode_microcodas(0),
                 "delegate": None,
                 "discord_username": "CodaBP{}".format(index)
             })
