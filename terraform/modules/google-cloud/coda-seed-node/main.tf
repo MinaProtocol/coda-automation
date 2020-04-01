@@ -17,6 +17,7 @@ resource "google_compute_instance" "vm" {
   boot_disk {
     initialize_params {
       image = data.google_compute_image.coreos.self_link
+      size = 20
     }
   }
 
