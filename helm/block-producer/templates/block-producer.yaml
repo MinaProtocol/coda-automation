@@ -78,6 +78,39 @@ spec:
             containerPort: 8000
         imagePullPolicy: Always
       {{ end -}}
+      {{- if ne $.Values.botsImage "" }}
+      - name: bots
+        resources:
+          requests:
+            memory: 512m
+            cpu: 0.1
+        image: {{ $.Values.botsImage }}
+        env:
+          - name: CODA_GRAPHQL_HOST
+            value: "0.0.0.0"
+          - name: CODA_GRAPHQL_PORT
+            value: 3085
+          - name: ECHO_PUBLICKEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ $.Values.keySecretTemplatePrefix }}-echo-key
+                key: pub
+          - name: ECHO_PASSWORD
+            value: {{ $.Values.codaPrivkeyPass | quote }}
+          - name: FAUCET_PUBLICKEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ $.Values.keySecretTemplatePrefix }}-faucet-key
+                key: pub
+          - name: FAUCET_PASSWORD
+            value: {{ $.Values.codaPrivkeyPass | quote }}
+          - name: DISCORD_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: o1-discord-api-key
+                key: o1discord
+        imagePullPolicy: Always
+      {{ end -}}
       - name: coda
         resources:
           limits:
@@ -116,6 +149,8 @@ spec:
           - containerPort: {{ add $.Values.startingPorts $i $.Values.labelOffset }}
             hostPort: {{ add $.Values.startingPorts $i $.Values.labelOffset }}
             protocol: TCP
+          - name: graphql
+            containerPort: 3085
           - name: metrics
             containerPort: 10000
         imagePullPolicy: Always
