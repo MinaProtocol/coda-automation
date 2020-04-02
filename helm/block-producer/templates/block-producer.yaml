@@ -89,7 +89,7 @@ spec:
           - name: CODA_GRAPHQL_HOST
             value: "0.0.0.0"
           - name: CODA_GRAPHQL_PORT
-            value: 3085
+            value: "3085"
           - name: ECHO_PUBLICKEY
             valueFrom:
               secretKeyRef:
