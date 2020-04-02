@@ -18,6 +18,8 @@ locals {
   coda_image   = var.coda_image
   coda_agent_image = var.coda_agent_image
   coda_bots_image = var.coda_bots_image
+  coda_faucet_amount = var.coda_faucet_amount
+  coda_faucet_fee = var.coda_faucet_fee
 }
 
 variable "coda_image" {
@@ -44,4 +46,3 @@ variable "coda_faucet_fee" {
   type    = number
   default = 100000000
 }
-
