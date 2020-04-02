@@ -32,7 +32,8 @@ locals {
   }
   fish_producer_vars = {
     numProducers            = var.num_fish_block_producers
-    labelOffset = var.fish_block_producer_label_offset
+    labelOffset             = var.fish_block_producer_label_offset
+    blockProducersWithBots  = var.fish_block_producers_with_bots
     testnetName             = var.testnet_name
     codaImage               = var.coda_image
     seedPeers               = concat(var.additional_seed_peers, local.seed_peers)

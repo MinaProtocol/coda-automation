@@ -1,6 +1,8 @@
 numProducers: 3
 labelOffset: 0
 
+blockProducersWithBots: []
+
 testnetName: "coda-testnet"
 
 codaImage: codaprotocol/coda-daemon:0.0.12-beta-new-genesis-01eca9b

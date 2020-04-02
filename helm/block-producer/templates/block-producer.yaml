@@ -78,7 +78,7 @@ spec:
             containerPort: 8000
         imagePullPolicy: Always
       {{ end -}}
-      {{- if ne $.Values.botsImage "" }}
+      {{- if (has $i $.Values.blockProducersWithBots) }}
       - name: bots
         resources:
           requests:

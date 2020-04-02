@@ -91,6 +91,11 @@ variable "fish_block_producer_label_offset" {
   default = 0
 }
 
+variable "fish_block_producers_with_bots" {
+  type = list(number)
+  default = []
+}
+
 # Snark Worker Vars
 
 variable "snark_worker_replicas" {
@@ -112,4 +117,3 @@ variable "snark_worker_host_port" {
   type    = number
   default = 10400
 }
-
