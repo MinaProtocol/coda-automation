@@ -20,3 +20,5 @@ agentImage: ""
 agentCommand: ["python3 agent.py"]
 
 botsImage: ""
+faucetAmount: 10000000000
+faucetFee: 100000000

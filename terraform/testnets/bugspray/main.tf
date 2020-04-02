@@ -34,3 +34,14 @@ variable "coda_bots_image" {
   type = string
   default = "codaprotocol/coda-bots:0.0.13-beta-0"
 }
+
+variable "coda_faucet_amount" {
+  type    = number
+  default = 10000000000
+}
+
+variable "coda_faucet_fee" {
+  type    = number
+  default = 100000000
+}
+

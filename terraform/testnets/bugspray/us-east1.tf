@@ -17,6 +17,8 @@ module "testnet_east" {
   coda_image            = local.coda_image
   coda_agent_image      = local.coda_agent_image
   coda_bots_image       = local.coda_bots_image
+  coda_faucet_amount    = local.coda_faucet_amount
+  coda_faucet_fee       = local.coda_faucet_fee
 
   seed_zone = "us-east1-b"
   seed_region = "us-east1"

@@ -25,6 +25,16 @@ variable "coda_bots_image" {
   default = ""
 }
 
+variable "coda_faucet_amount" {
+  type    = number
+  default = 10000000000
+}
+
+variable "coda_faucet_fee" {
+  type    = number
+  default = 100000000
+}
+
 variable "testnet_name" {
   type    = string
   default = "coda-testnet"

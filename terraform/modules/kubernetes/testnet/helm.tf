@@ -42,6 +42,8 @@ locals {
     blockProducerClass      = "fish"
     agentImage              = var.coda_agent_image
     botsImage               = var.coda_bots_image
+    faucetAmount            = var.coda_faucet_amount
+    faucetFee               = var.coda_faucet_fee
   }
   snark_worker_vars = {
     testnetName = var.testnet_name
