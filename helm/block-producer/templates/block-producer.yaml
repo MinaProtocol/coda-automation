@@ -42,7 +42,7 @@ spec:
         command:
         - bash
         - -c
-        - coda advanced import -config-directory /root/.coda-config -privkey-path /root/wallet-keys/key
+        - coda accounts import -config-directory /root/.coda-config -privkey-path /root/wallet-keys/key
         volumeMounts:
         - name: wallet-keys
           mountPath: /root/wallet-keys
