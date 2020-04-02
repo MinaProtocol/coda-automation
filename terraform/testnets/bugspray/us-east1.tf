@@ -16,6 +16,7 @@ module "testnet_east" {
   testnet_name          = local.testnet_name
   coda_image            = local.coda_image
   coda_agent_image      = local.coda_agent_image
+  coda_bots_image       = local.coda_bots_image
 
   seed_zone = "us-east1-b"
   seed_region = "us-east1"

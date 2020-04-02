@@ -17,6 +17,7 @@ locals {
   testnet_name = "hangry-lobster"
   coda_image   = var.coda_image
   coda_agent_image = var.coda_agent_image
+  coda_bots_image = var.coda_bots_image
 }
 
 variable "coda_image" {
@@ -27,4 +28,9 @@ variable "coda_image" {
 variable "coda_agent_image" {
   type = string
   default = "codaprotocol/coda-user-agent:0.1.4-bugspray"
+}
+
+variable "coda_bots_image" {
+  type = string
+  default = "codaprotocol/coda-bots:0.0.13-beta-0"
 }

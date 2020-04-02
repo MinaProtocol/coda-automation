@@ -18,3 +18,5 @@ blockProducerClass: "whale" # Options "whale", "fish"
 
 agentImage: ""
 agentCommand: ["python3 agent.py"]
+
+botsImage: ""

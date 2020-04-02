@@ -41,6 +41,7 @@ locals {
     keySecretTemplatePrefix = "online-fish-account"
     blockProducerClass      = "fish"
     agentImage              = var.coda_agent_image
+    botsImage               = var.coda_bots_image
   }
   snark_worker_vars = {
     testnetName = var.testnet_name
