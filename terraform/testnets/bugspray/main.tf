@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "terraform-hangry-lobster.tfstate"
+    key     = "terraform-bugspray.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -14,7 +14,7 @@ provider "aws" {
 }
 
 locals {
-  testnet_name = "hangry-lobster"
+  testnet_name = "bugspray"
   coda_image   = var.coda_image
   coda_agent_image = var.coda_agent_image
   coda_bots_image = var.coda_bots_image
