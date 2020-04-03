@@ -93,14 +93,14 @@ spec:
           - name: ECHO_PUBLICKEY
             valueFrom:
               secretKeyRef:
-                name: {{ $.Values.keySecretTemplatePrefix }}-echo-key
+                name: echo-service-key
                 key: pub
           - name: ECHO_PASSWORD
             value: {{ $.Values.codaPrivkeyPass | quote }}
           - name: FAUCET_PUBLICKEY
             valueFrom:
               secretKeyRef:
-                name: {{ $.Values.keySecretTemplatePrefix }}-faucet-key
+                name: faucet-service-key
                 key: pub
           - name: FAUCET_PASSWORD
             value: {{ $.Values.codaPrivkeyPass | quote }}
