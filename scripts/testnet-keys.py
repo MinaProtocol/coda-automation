@@ -19,7 +19,7 @@ DEFAULT_ONLINE_WHALE_KEYS_DIR = SCRIPT_DIR / "online_whale_keys"
 DEFAULT_OFFLINE_WHALE_KEYS_DIR = SCRIPT_DIR / "offline_whale_keys"
 DEFAULT_OFFLINE_FISH_KEYS_DIR = SCRIPT_DIR / "offline_fish_keys"
 DEFAULT_ONLINE_FISH_KEYS_DIR = SCRIPT_DIR / "online_fish_keys"
-DEFAULT_SERVICE_KEY_DIR = SCRIPT_DIR / "online_service_keys"
+DEFAULT_SERVICE_KEY_DIR = SCRIPT_DIR / "service_keys"
 
 DEFAULT_SEED_KEY_DIR = SCRIPT_DIR / "seed_libp2p_keys"
 DEFAULT_STAKER_CSV_FILE = SCRIPT_DIR / "staker_public_keys.csv"
@@ -563,6 +563,8 @@ def upload_service_keys(key_dir, namespace, cluster):
     key_dir = Path(key_dir)
     # Load all the public keys from seed_key_dir
     key_files = glob.glob(str(key_dir.absolute()) + "/*.pub")
+    if len(key_files) == 0:
+      raise Exception('no service keys found')
     # iterate over each key and upload it to kubernetes
     for file in key_files: 
         service = os.path.basename(file).split(".")[0]
