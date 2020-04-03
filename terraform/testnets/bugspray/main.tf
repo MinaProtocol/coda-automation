@@ -38,11 +38,11 @@ variable "coda_bots_image" {
 }
 
 variable "coda_faucet_amount" {
-  type    = number
-  default = 10000000000
+  type    = string
+  default = "10000000000"
 }
 
 variable "coda_faucet_fee" {
-  type    = number
-  default = 100000000
+  type    = string
+  default = "100000000"
 }

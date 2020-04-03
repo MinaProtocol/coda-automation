@@ -25,14 +25,16 @@ variable "coda_bots_image" {
   default = ""
 }
 
+# this must be a string to avoid scientific notation truncation
 variable "coda_faucet_amount" {
-  type    = number
-  default = 10000000000
+  type    = string
+  default = "10000000000"
 }
 
+# this must be a string to avoid scientific notation truncation
 variable "coda_faucet_fee" {
-  type    = number
-  default = 100000000
+  type    = string
+  default = "100000000"
 }
 
 variable "testnet_name" {

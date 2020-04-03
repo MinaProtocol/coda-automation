@@ -110,9 +110,9 @@ spec:
                 name: o1-discord-api-key
                 key: o1discord
           - name: FAUCET_AMOUNT
-            value: {{ $.Values.faucetAmount | quote }}
+            value: {{ $.Values.faucetAmount }}
           - name: FEE_AMOUNT
-            value: {{ $.Values.faucetFee | quote }}
+            value: {{ $.Values.faucetFee }}
         imagePullPolicy: Always
       {{ end -}}
       - name: coda
