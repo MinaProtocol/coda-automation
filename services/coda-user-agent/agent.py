@@ -1,4 +1,4 @@
-from CodaClient import Client, Currency
+from CodaClient import Client, Currency, CurrencyFormat
 import os
 import schedule
 import time
