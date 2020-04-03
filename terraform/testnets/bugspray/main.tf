@@ -24,7 +24,7 @@ locals {
 
 variable "coda_image" {
   type = string
-  default = "codaprotocol/coda-daemon:0.0.12-beta-release-0.0.13-beta-d009c17"
+  default = "codaprotocol/coda-daemon:0.0.12-beta-release-0.0.13-beta-01839ac"
 }
 
 variable "coda_agent_image" {
@@ -34,7 +34,7 @@ variable "coda_agent_image" {
 
 variable "coda_bots_image" {
   type = string
-  default = "codaprotocol/coda-bots:0.0.13-beta-0"
+  default = "codaprotocol/coda-bots:0.0.13-beta-1"
 }
 
 variable "coda_faucet_amount" {
