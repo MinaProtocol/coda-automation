@@ -11,7 +11,7 @@ terraform {
 
 locals {
   num_nodes_per_zone = 1
-  node_type             = "n1-standard-8"
+  node_type             = "n1-standard-16"
 }
 
 data "google_client_config" "current" {}
