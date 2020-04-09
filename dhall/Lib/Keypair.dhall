@@ -1,0 +1,1 @@
+{publicKey: Text, privateKey: Text}
