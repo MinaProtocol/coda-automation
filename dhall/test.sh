@@ -22,4 +22,4 @@ export ROLE_CONFIGS=$(cat <<-END
 END
 )
 
-dhall-to-yaml --documents "$@" < CodaNetwork.dhall
+dhall-to-yaml --quoted --documents "$@" < CodaNetwork.dhall
