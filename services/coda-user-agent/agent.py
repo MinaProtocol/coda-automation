@@ -65,7 +65,7 @@ class Agent(object):
             print(e)
             return None
 
-        tx_amount = Currency(1, format=CurrencyFormat.NANO)
+        tx_amount = Currency("0.0015")
         fee_amount = Currency("0.06")
         try: 
             response = self.coda.send_payment(to_account, self.public_key, tx_amount, fee_amount, memo="BeepBoop")
