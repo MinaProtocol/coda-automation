@@ -60,6 +60,4 @@ let buildRoleDeployment : PortAssignedRoleConfig -> K.Deployment.Type =
     in merge handlers conf.roleConfig 
 
 {- Output -}
-in
-
-Prelude.List.map PortAssignedRoleConfig K.Deployment.Type buildRoleDeployment (assignPorts 13000 roleConfigs)
+in Prelude.List.map PortAssignedRoleConfig K.Deployment.Type buildRoleDeployment (assignPorts 13000 roleConfigs)
