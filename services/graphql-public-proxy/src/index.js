@@ -23,7 +23,6 @@ let graphqlUri = "http://" + CODA_GRAPHQL_HOST + ":" + CODA_GRAPHQL_PORT + CODA_
 const hiddenFields = [
   "trackedAccounts",
   "currentSnarkWorker",
-  "initialPeers",
   "wallet",
 ];
 
