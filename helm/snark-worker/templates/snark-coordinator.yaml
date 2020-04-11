@@ -1,0 +1,70 @@
+{{- if $.Values.coordinator.active }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+  labels:
+    app: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+spec:
+  replicas: {{ .Values.numReplicas }}
+  selector:
+    matchLabels:
+      app: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+  template:
+    metadata:
+      labels:
+        app: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+        testnet: {{ $.Values.testnetName }}
+        role: snark-coordinator
+        version: {{ (split ":" $.Values.coda.image)._1 }}
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '10000'
+        prometheus.io/path: '/metrics'
+    spec:
+      containers:
+      - name: coordinator
+        resources:
+          limits:
+            memory: 6.0Gi
+          requests:
+            memory: 2.0Gi
+            cpu: 1000m
+        image: {{ $.Values.coda.image }}
+        command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
+        args: [ "daemon",
+          "-log-level", "Trace",
+          "-log-json",
+          "-config-directory", "/root/.coda-config",
+          "-client-port", "$(DAEMON_CLIENT_PORT)",
+          "-rest-port", "$(DAEMON_REST_PORT)",
+          "-external-port", "$(DAEMON_EXTERNAL_PORT)",
+          "-metrics-port", "$(DAEMON_METRICS_PORT)",
+          "-run-snark-worker", "$(CODA_SNARK_KEY)", 
+          "-snark-worker-fee", "$(CODA_SNARK_FEE)",
+          "-work-selection", "$(WORK_SELECTION)",
+          {{- range $.Values.coda.seedPeers }}
+          "-peer", {{ . | quote }},
+          {{- end }}
+        ]
+        env:
+          - name: DAEMON_REST_PORT
+            value: "3085"
+          - name: DAEMON_CLIENT_PORT
+            value: {{ .Values.coordinator.rpcPort | quote }}
+          - name: DAEMON_METRICS_PORT
+            value: "10000"
+          - name: CODA_SNARK_KEY
+            value: {{ .Values.coordinator.publicKey | quote }}
+          - name: CODA_SNARK_FEE
+            value: {{ .Values.coordinator.snarkFee | quote }}
+          - name: DAEMON_EXTERNAL_PORT
+            value: {{ .Values.coordinator.hostPort | quote }}
+          - name: WORK_SELECTION
+            value: {{$.Values.coordinator.workSelectionAlgorithm | quote }}
+        ports:
+          - containerPort: {{ .Values.coordinator.hostPort }}
+            hostPort: {{ .Values.coordinator.hostPort }}
+            protocol: TCP
+        imagePullPolicy: Always
+{{- end }}

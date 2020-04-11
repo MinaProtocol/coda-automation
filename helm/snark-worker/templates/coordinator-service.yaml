@@ -1,0 +1,15 @@
+{{- if $.Values.coordinator.active }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+  labels:
+    app: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+spec:
+  clusterIP: None
+  ports:
+    - port: {{ $.Values.coordinator.rpcPort }}
+      name: rpc
+  selector:
+    app: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+{{ end }}
