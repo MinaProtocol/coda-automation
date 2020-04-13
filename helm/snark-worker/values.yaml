@@ -1,17 +1,21 @@
 testnetName: "coda-testnet"
+coda: 
+  image: codaprotocol/coda-daemon:0.0.12-beta-release-0.0.13-beta-573a55d
+  seedPeers: 
+    - /ip4/35.185.66.37/tcp/10105/ipfs/12D3KooWQ7Pz3SPizarzx9ZhCJ6jNmQ2iDPgHQxVzRzqYU2SgRSd     
+    - /ip4/35.237.214.144/tcp/10120/ipfs/12D3KooWGtjWnCcvkaSEbKuNbPivEogxqtLWcsJiQtURydptvrsA
 
-codaImage: codaprotocol/coda-daemon:0.0.13-beta-master-99d1e1f
+worker: 
+  active: true
+  numReplicas: 1
+  remoteCoordinatorHost: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+  remoteCoordinatorPort: 8301
 
-seedPeers: 
-  - /dns4/seed-one.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWP7fTKbyiUcYJGajQDpCFo2rDexgTHFJTxCH8jvcL1eAH
-  - /dns4/seed-two.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWL9ywbiXNfMBqnUKHSB1Q1BaHFNUzppu6JLMVn9TTPFSA
-
-numReplicas: 1
-
-publicKey: "4vsRCVadXwWMSGA9q81reJRX3BZ5ZKRtgZU7PtGsNq11w2V9tUNf4urZAGncZLUiP4SfWqur7AZsyhJKD41Ke7rJJ8yDibL41ePBeATLUnwNtMTojPDeiBfvTfgHzbAVFktD65vzxMNCvvAJ"
-snarkFee: 10
-workSelectionAlgorithm: seq # seq OR rand
-
-testnetName: "coda-testnet"
-
-hostPort: 10001
+coordinator: 
+  rpcPort: 8301
+  hostPort: 10001
+  deployService: true
+  active: true
+  publicKey: "4vsRCVadXwWMSGA9q81reJRX3BZ5ZKRtgZU7PtGsNq11w2V9tUNf4urZAGncZLUiP4SfWqur7AZsyhJKD41Ke7rJJ8yDibL41ePBeATLUnwNtMTojPDeiBfvTfgHzbAVFktD65vzxMNCvvAJ"
+  snarkFee: 10
+  workSelectionAlgorithm: seq # seq OR rand
