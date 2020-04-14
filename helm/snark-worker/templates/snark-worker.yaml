@@ -1,130 +1,38 @@
+{{- if $.Values.worker.active }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snark-worker-{{ trunc -6 .Values.publicKey | lower }}
+  name: {{tpl $.Values.worker.fullname .}}
   labels:
-    app: snark-worker-{{ trunc -6 .Values.publicKey | lower }}
+    app: {{tpl $.Values.worker.fullname .}}
 spec:
-  replicas: {{ .Values.numReplicas }}
+  replicas: {{ $.Values.worker.numReplicas }}
   selector:
     matchLabels:
-      app: snark-worker-{{ trunc -6 .Values.publicKey | lower }}
+      app: {{tpl $.Values.worker.fullname .}}
   template:
     metadata:
       labels:
-        app: snark-worker-{{ trunc -6 .Values.publicKey | lower }}
+        app: {{tpl $.Values.worker.fullname .}}
         testnet: {{ $.Values.testnetName }}
         role: snark-worker
-        version: {{ (split ":" $.Values.codaImage)._1 }}
+        version: {{ (split ":" $.Values.coda.image)._1 }}
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/port: '10000'
         prometheus.io/path: '/metrics'
     spec:
       containers:
-      - name: coordinator
-        resources:
-          limits:
-            memory: 6.0Gi
-          requests:
-            memory: 2.0Gi
-            cpu: 1000m
-        image: {{ $.Values.codaImage }}
-        command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
-        args: [ "daemon",
-          "-log-level", "Trace",
-          "-log-json",
-          "-config-directory", "/root/.coda-config",
-          "-client-port", "$(DAEMON_CLIENT_PORT)",
-          "-rest-port", "$(DAEMON_REST_PORT)",
-          "-external-port", "$(DAEMON_EXTERNAL_PORT)",
-          "-metrics-port", "$(DAEMON_METRICS_PORT)",
-          "-run-snark-worker", "$(CODA_SNARK_KEY)", 
-          "-snark-worker-fee", "$(CODA_SNARK_FEE)",
-          "-work-selection", "$(WORK_SELECTION)",
-          {{- range $.Values.seedPeers }}
-          "-peer", {{ . | quote }},
-          {{- end }}
-        ]
-        env:
-          - name: DAEMON_REST_PORT
-            value: "3085"
-          - name: DAEMON_CLIENT_PORT
-            value: "8301"
-          - name: DAEMON_METRICS_PORT
-            value: "10000"
-          - name: CODA_SNARK_KEY
-            value: {{ .Values.publicKey | quote }}
-          - name: CODA_SNARK_FEE
-            value: {{ .Values.snarkFee | quote }}
-          - name: DAEMON_EXTERNAL_PORT
-            value: {{ .Values.hostPort | quote }}
-          - name: CODA_PRIVKEY_PASS
-            value: {{ .Values.codaPrivkeyPass | quote }}
-          - name: WORK_SELECTION
-            value: {{$.Values.workSelectionAlgorithm | quote }}
-        ports:
-          - containerPort: {{ .Values.hostPort }}
-            hostPort: {{ .Values.hostPort }}
-            protocol: TCP
-        imagePullPolicy: Always
-      - name: worker-one
+      - name: worker
         resources:
           limits:
             memory: 3.0Gi
           requests:
             memory: 2.0Gi
             cpu: 1000m
-        image: {{ $.Values.codaImage }}
+        image: {{ $.Values.coda.image }}
         command: ["bash", "-c"]
-        args: [ "sleep 120 && coda internal snark-worker -daemon-address 'localhost:8301'" ]
+        args: [ "sleep 120 && coda internal snark-worker -daemon-address '{{ tpl $.Values.worker.remoteCoordinatorHost . }}:{{ $.Values.worker.remoteCoordinatorPort }}'" ]
         env:
         imagePullPolicy: Always
-      - name: worker-two
-        resources:
-          limits:
-            memory: 3.0Gi
-          requests:
-            memory: 2.0Gi
-            cpu: 1000m
-        image: {{ $.Values.codaImage }}
-        command: ["bash", "-c"]
-        args: [ "sleep 120 && coda internal snark-worker -daemon-address 'localhost:8301'" ]
-        env:
-        imagePullPolicy: Always
-      # - name: worker-three
-      #   resources:
-      #     limits:
-      #       memory: 3.0Gi
-      #     requests:
-      #       memory: 2.0Gi
-      #       cpu: 1
-      #   image: {{ $.Values.codaImage }}
-      #   command: ["bash", "-c"]
-      #   args: [ "sleep 120 && coda internal snark-worker -daemon-address 'localhost:8301'" ]
-      #   env:
-      #   imagePullPolicy: Always
-      # - name: worker-four
-      #   resources:
-      #     limits:
-      #       memory: 3.0Gi
-      #     requests:
-      #       memory: 2.0Gi
-      #       cpu: 1
-      #   image: {{ $.Values.codaImage }}
-      #   command: ["bash", "-c"]
-      #   args: [ "sleep 120 && coda internal snark-worker -daemon-address 'localhost:8301'" ]
-      #   env:
-      #   imagePullPolicy: Always
-      # - name: worker-five
-      #   resources:
-      #     limits:
-      #       memory: 3.0Gi
-      #     requests:
-      #       memory: 2.0Gi
-      #       cpu: 1
-      #   image: {{ $.Values.codaImage }}
-      #   command: ["bash", "-c"]
-      #   args: [ "sleep 120 && coda internal snark-worker -daemon-address 'localhost:8301'" ]
-      #   env:
-      #   imagePullPolicy: Always
+{{ end }}

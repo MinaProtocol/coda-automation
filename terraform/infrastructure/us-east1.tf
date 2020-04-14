@@ -6,6 +6,9 @@ locals {
           origin_prometheus = "east-prometheus"
         }
       }
+      persistentVolume = {
+        size = "50Gi"
+      }
       remoteWrite = [
         {
           url = jsondecode(data.aws_secretsmanager_secret_version.current_prometheus_remote_write_config.secret_string)["remote_write_uri"]
@@ -64,11 +67,12 @@ resource "google_container_node_pool" "east_primary_nodes" {
   node_count = local.num_nodes_per_zone
   autoscaling {
     min_node_count = 0
-    max_node_count = 11
+    max_node_count = 15
   }
   node_config {
     preemptible  = false
     machine_type = local.node_type
+    disk_size_gb = 500
 
     metadata = {
       disable-legacy-endpoints = "true"
