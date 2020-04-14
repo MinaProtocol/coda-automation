@@ -29,8 +29,8 @@ module "testnet_east" {
   block_producer_starting_host_port = 10001
   fish_block_producers_with_bots = [0]
 
-  snark_worker_replicas = 1
-  snark_worker_fee      = 2
+  snark_worker_replicas = 10
+  snark_worker_fee      = "0.025"
   snark_worker_public_key = "4vsRCVQZ41uqXfVVfkBNUuNNS7PgSJGdMDNAyKGDdU1WkdxxyxQ7oMdFcjDRf45fiGKkdYKkLPBrE1KnxmyBuvaTW97A5C8XjNSiJmvo9oHa4AwyVsZ3ACaspgQ3EyxQXk6uujaxzvQhbLDx"
   snark_worker_host_port = 10400
 }

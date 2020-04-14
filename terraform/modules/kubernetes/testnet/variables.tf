@@ -106,8 +106,8 @@ variable "snark_worker_replicas" {
 }
 
 variable "snark_worker_fee" {
-  type    = number
-  default = 10
+  type    = string
+  default = "0.025"
 }
 
 variable "snark_worker_public_key" {
