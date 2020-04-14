@@ -1,9 +1,12 @@
-let Keypair = ./Lib/Keypair.dhall
+let Keypair = ./Keypair.dhall
+let PodSidecar = ./PodSidecar.dhall
+let Contexts/CodaNode = ../Contexts/CodaNode.dhall
 
 let BlockProducerConfig = {
   class: Text,
   id: Natural,
-  keypair: Keypair
+  keypair: Keypair,
+  podSidecarSpecs: List (PodSidecar.Spec Contexts/CodaNode)
 }
 
 let SnarkWorkerConfig = {

@@ -7,11 +7,13 @@ let TextMap = Prelude.Map.Type Text Text
 let Config = {
   Type = {
     name: Text,
+    replicas: Natural,
     podLabels: TextMap,
     podAnnotations: TextMap,
     podSpec: K.PodSpec.Type
   },
   default = {
+    replicas = 1,
     podAnnotations = ([] : TextMap)
   }
 }
@@ -25,7 +27,7 @@ let build : Config.Type -> K.Deployment.Type =
         labels = Some baseLabels
       },
       spec = Some K.DeploymentSpec::{
-        replicas = Some 2,
+        replicas = Some conf.replicas,
         selector = K.LabelSelector::{
           matchLabels = Some baseLabels
         },
@@ -40,7 +42,4 @@ let build : Config.Type -> K.Deployment.Type =
       }
     }
 
-in {
-  Config = Config,
-  build = build
-}
+in {Config, build}

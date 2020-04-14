@@ -1,38 +1,37 @@
 let Prelude = ../External/Prelude.dhall
 let K = ../External/Kubernetes.dhall
 
+let Env = ../Lib/Env.dhall
+let Containers/Base = ./Base.dhall
+
 let Config = {
-  Type = {
-    name: Text,
-    image: Text,
+  Type = Containers/Base.CommandlessConfig.Type //\\ {
     command: Text,
-    volumeMounts: List K.VolumeMount.Type,
-    runAsRoot: Bool,
-    env: List K.EnvVar.Type
+    runAsRoot: Bool
   },
-  default = {
+  default = Containers/Base.CommandlessConfig.default /\ {
     image = "busybox",
-    volumeMounts = Prelude.List.empty K.VolumeMount.Type,
-    runAsRoot = False,
-    env = Prelude.List.empty K.EnvVar.Type
+    runAsRoot = False
   }
 }
 
-let build : Config.Type -> K.Container.Type =
-  \(conf : Config.Type) ->
-    let insecureContext = K.SecurityContext::{runAsUser = Some 0}
-    let securityContext = if conf.runAsRoot then Some insecureContext else None K.SecurityContext.Type
-    let optional = \(a : Type) -> \(ls : List a) -> if Prelude.List.null a ls then None (List a) else Some ls
-    in K.Container::{
-      name = conf.name,
-      image = Some conf.image,
-      command = Some ["bash", "-c", conf.command],
-      volumeMounts = optional K.VolumeMount.Type conf.volumeMounts,
-      securityContext = securityContext,
-      env = optional K.EnvVar.Type conf.env
-    }
+let build = \(conf : Config.Type) ->
+  let insecureContext = K.SecurityContext::{runAsUser = Some 0}
+  let securityContext =
+    if conf.runAsRoot then
+      let baseSecurityContext =
+        Prelude.Optional.default K.SecurityContext.Type
+          K.SecurityContext::{=}
+          conf.securityContext
+      in
+      Some (baseSecurityContext // insecureContext)
+    else
+      conf.securityContext
+  let baseConf = conf // {
+    command = Some ["bash"],
+    args = Some ["-c", conf.command],
+    securityContext
+  }
+  in Containers/Base.build baseConf.(Containers/Base.Config.Type)
 
-in {
-  Config = Config,
-  build = build
-}
+in {Config, build}

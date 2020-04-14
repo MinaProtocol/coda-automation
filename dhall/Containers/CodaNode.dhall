@@ -1,28 +1,32 @@
 let Prelude = ../External/Prelude.dhall
 let K = ../External/Kubernetes.dhall
 
+let Constants = ../Lib/Constants.dhall
+let Env = ../Lib/Env.dhall
 let Volume = ../Lib/Volume.dhall
+let Containers/Base = ./Base.dhall
 
 let Config = {
   Type = {
+    image : Text,
     externalPort: Natural,
     seedPeers: List Text,
-    codaImage: Text,
     codaConfigVolume: Volume.Type,
-    volumeMounts: List K.VolumeMount.Type,
     privateKeyPassword: Text,
     blockProducerKey: Optional Text,
     snarkWorkerKey: Optional Text,
+    volumeMounts: List K.VolumeMount.Type,
     memoryLimit: Text,
     memoryRequest: Text,
-    cpuRequest: Text
+    cpuRequest: Double
   },
   default = {
     blockProducerKey = None Text,
     snarkWorkerKey = None Text,
     memoryLimit = "6.0Gi",
     memoryRequest = "2.0Gi",
-    cpuRequest = "1"
+    cpuRequest = 1.0,
+    volumeMounts = ([] : List K.VolumeMount.Type)
   }
 }
 
@@ -33,22 +37,20 @@ let Ports = {
   external: Natural
 }
 
-let codaConfigPath = "/root/.coda-config"
-
 let buildPorts : Config.Type -> Ports =
   \(conf : Config.Type) ->
     {
-      client = 3085,
-      rest = 8301,
+      client = 8301,
+      rest = 3085,
       metrics = 10000,
       external = conf.externalPort
     }
 
-let buildArgs : Config.Type -> Ports -> List Text =
+let buildArgs =
   \(conf : Config.Type) -> \(ports : Ports) ->
     let baseArgs = [
       "daemon",
-      "-config-directory", codaConfigPath,
+      "-config-directory", Constants.codaConfigPath,
       "-client-port", "${Natural/show ports.client}",
       "-rest-port", "${Natural/show ports.rest}",
       "-insecure-rest-server",
@@ -58,7 +60,7 @@ let buildArgs : Config.Type -> Ports -> List Text =
     let optFlag = \(flag : Text) -> \(opt : Optional Text) -> 
       Optional/fold Text opt (List Text)
         (\(value : Text) -> [flag, value])
-        (Prelude.List.empty Text)
+        ([] : List Text)
     in Prelude.List.concat Text [
       baseArgs,
       optFlag "-block-producer-key" conf.blockProducerKey,
@@ -67,31 +69,24 @@ let buildArgs : Config.Type -> Ports -> List Text =
 
 let build : Config.Type -> K.Container.Type =
   \(conf : Config.Type) ->
-    let envVar = \(name : Text) -> \(value : Text) -> K.EnvVar::{name = name, value = Some value}
     let ports = buildPorts conf
-    in K.Container::{
+    in Containers/Base.build Containers/Base.Config::{
       name = "coda",
-      image = Some conf.codaImage,
-      imagePullPolicy = Some "Always",
-      resources = Some K.ResourceRequirements::{
-        limits = Some (toMap {
-          memory = conf.memoryLimit
-        }),
-        requests = Some (toMap {
-          memory = conf.memoryRequest,
-          cpu = conf.cpuRequest
-        })
-      },
+      image = conf.image,
       command = Some ["/usr/bin/dumb-init", "/root/init_coda.sh"],
       args = Some (buildArgs conf ports),
-      env = Some [
-        envVar "DAEMON_REST_PORT" (Natural/show ports.rest),
-        envVar "DAEMON_CLIENT_PORT" (Natural/show ports.client),
-        envVar "DAEMON_METRICS_PORT" (Natural/show ports.metrics),
-        envVar "DAEMON_EXTERNAL_PORT" (Natural/show ports.external),
-        envVar "CODA_PRIVKEY_PASS" conf.privateKeyPassword
-      ],
-      ports = Some [
+      memoryLimit = Some conf.memoryLimit,
+      memoryRequest = Some conf.memoryRequest,
+      cpuRequest = Some conf.cpuRequest,
+      volumeMounts = [Volume.mount conf.codaConfigVolume Constants.codaConfigPath] # conf.volumeMounts,
+      env = toMap {
+        DAEMON_REST_PORT = Env.Var.Constant (Natural/show ports.rest),
+        DAEMON_CLIENT_PORT = Env.Var.Constant (Natural/show ports.client),
+        DAEMON_METRICS_PORT = Env.Var.Constant (Natural/show ports.metrics),
+        DAEMON_EXTERNAL_PORT = Env.Var.Constant (Natural/show ports.external),
+        CODA_PRIVKEY_PASS = Env.Var.Constant conf.privateKeyPassword
+      },
+      ports = [
         K.ContainerPort::{
           name = Some "external",
           protocol = Some "TCP",
@@ -106,12 +101,7 @@ let build : Config.Type -> K.Container.Type =
           name = Some "metrics",
           containerPort = 10000
         }
-      ],
-      volumeMounts = Some ([Volume.mount conf.codaConfigVolume codaConfigPath] # conf.volumeMounts)
+      ]
     }
 
-in {
-  Config = Config,
-  build = build,
-  codaConfigPath = codaConfigPath
-}
+in {Config, build}
