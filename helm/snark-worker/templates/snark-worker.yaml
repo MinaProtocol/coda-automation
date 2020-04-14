@@ -2,18 +2,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snark-worker-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+  name: {{tpl $.Values.worker.fullname .}}
   labels:
-    app: snark-worker-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+    app: {{tpl $.Values.worker.fullname .}}
 spec:
   replicas: {{ $.Values.worker.numReplicas }}
   selector:
     matchLabels:
-      app: snark-worker-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+      app: {{tpl $.Values.worker.fullname .}}
   template:
     metadata:
       labels:
-        app: snark-worker-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+        app: {{tpl $.Values.worker.fullname .}}
         testnet: {{ $.Values.testnetName }}
         role: snark-worker
         version: {{ (split ":" $.Values.coda.image)._1 }}
@@ -32,7 +32,7 @@ spec:
             cpu: 1000m
         image: {{ $.Values.coda.image }}
         command: ["bash", "-c"]
-        args: [ "sleep 120 && coda internal snark-worker -daemon-address '{{ tpl $.Values.worker.remoteCoordinatorHost .}}:{{$.Values.worker.remoteCoordinatorPort}}'" ]
+        args: [ "sleep 120 && coda internal snark-worker -daemon-address '{{ tpl $.Values.worker.remoteCoordinatorHost . }}:{{ $.Values.worker.remoteCoordinatorPort }}'" ]
         env:
         imagePullPolicy: Always
 {{ end }}

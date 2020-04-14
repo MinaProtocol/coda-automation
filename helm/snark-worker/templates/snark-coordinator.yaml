@@ -2,18 +2,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+  name: {{tpl $.Values.coordinator.fullname .}}
   labels:
-    app: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+    app: {{tpl $.Values.coordinator.fullname .}}
 spec:
   replicas: {{ .Values.numReplicas }}
   selector:
     matchLabels:
-      app: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+      app: {{tpl $.Values.coordinator.fullname .}}
   template:
     metadata:
       labels:
-        app: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+        app: {{tpl $.Values.coordinator.fullname .}}
         testnet: {{ $.Values.testnetName }}
         role: snark-coordinator
         version: {{ (split ":" $.Values.coda.image)._1 }}
@@ -54,6 +54,8 @@ spec:
             value: {{ .Values.coordinator.rpcPort | quote }}
           - name: DAEMON_METRICS_PORT
             value: "10000"
+          - name: CODA_CLIENT_TRUSTLIST
+            value: "10.0.0.0/8"
           - name: CODA_SNARK_KEY
             value: {{ .Values.coordinator.publicKey | quote }}
           - name: CODA_SNARK_FEE
@@ -67,4 +69,14 @@ spec:
             hostPort: {{ .Values.coordinator.hostPort }}
             protocol: TCP
         imagePullPolicy: Always
+{{- if $.Values.coda.genesis.active }}
+        volumeMounts:
+          - name: genesis-config
+            mountPath: "/root/.coda-config/genesis_config.json"
+            subPath: "genesis_config.json"
+      volumes:
+        - name: genesis_constants
+        configMap:
+          name: {{ template "coordinator.fullname" . }}
+{{- end -}}
 {{- end }}
