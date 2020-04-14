@@ -1,17 +1,25 @@
 testnetName: "coda-testnet"
 coda: 
+  genesis: 
+    active: true
+    k: 10
+    delta: 3
+    txpool_max_size: 3000
+    genesis_state_timestamp: "2020-02-25 10:00:00-07:00"   
   image: codaprotocol/coda-daemon:0.0.12-beta-release-0.0.13-beta-573a55d
   seedPeers: 
     - /ip4/35.185.66.37/tcp/10105/ipfs/12D3KooWQ7Pz3SPizarzx9ZhCJ6jNmQ2iDPgHQxVzRzqYU2SgRSd     
     - /ip4/35.237.214.144/tcp/10120/ipfs/12D3KooWGtjWnCcvkaSEbKuNbPivEogxqtLWcsJiQtURydptvrsA
 
 worker: 
+  fullname: "snark-worker-{{ trunc -6 .Values.coordinator.publicKey | lower }}"
   active: true
   numReplicas: 1
-  remoteCoordinatorHost: snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}
+  remoteCoordinatorHost: "{{ tpl $.Values.coordinator.fullname . }}.{{ $.Values.testnetName }}"
   remoteCoordinatorPort: 8301
 
 coordinator: 
+  fullname: "snark-coordinator-{{ trunc -6 .Values.coordinator.publicKey | lower }}"
   rpcPort: 8301
   hostPort: 10001
   deployService: true

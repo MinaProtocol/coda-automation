@@ -44,12 +44,24 @@ locals {
   }
   snark_worker_vars = {
     testnetName = var.testnet_name
-    numReplicas = var.snark_worker_replicas
-    publicKey   = var.snark_worker_public_key
-    snarkFee    = var.snark_worker_fee
-    codaImage   = var.coda_image
-    seedPeers   = concat(var.additional_seed_peers, local.seed_peers)
-    hostPort    = var.snark_worker_host_port
+    coda = {
+      genesis = {
+        active = false
+      }
+      image = var.coda_image
+      seedPeers = concat(var.additional_seed_peers, local.seed_peers)
+    }
+    worker = {
+      active = true
+      numReplicas = var.snark_worker_replicas
+    }
+    coordinator = {
+      active = true
+      deployService = true
+      publicKey   = var.snark_worker_public_key
+      snarkFee    = var.snark_worker_fee
+      hostPort    = var.snark_worker_host_port
+    }
   }
 }
 
