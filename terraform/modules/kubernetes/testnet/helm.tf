@@ -26,6 +26,7 @@ locals {
     codaImage               = var.coda_image
     seedPeers               = concat(var.additional_seed_peers, local.seed_peers)
     codaPrivkeyPass         = var.block_producer_key_pass
+    codaLogLevel            = var.whale_block_producer_log_level
     startingPorts           = var.block_producer_starting_host_port
     keySecretTemplatePrefix = "online-whale-account"
     blockProducerClass      = "whale"
@@ -38,6 +39,7 @@ locals {
     codaImage               = var.coda_image
     seedPeers               = concat(var.additional_seed_peers, local.seed_peers)
     codaPrivkeyPass         = var.block_producer_key_pass
+    codaLogLevel            = var.fish_block_producer_log_level
     startingPorts           = var.block_producer_starting_host_port + var.num_whale_block_producers
     keySecretTemplatePrefix = "online-fish-account"
     blockProducerClass      = "fish"
