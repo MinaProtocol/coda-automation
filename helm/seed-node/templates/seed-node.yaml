@@ -1,21 +1,21 @@
-{{- if $.Values.coordinator.active }}
+{{- if $.Values.seed.active }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{tpl $.Values.coordinator.fullname .}}
+  name: {{tpl $.Values.seed.fullname .}}
   labels:
-    app: {{tpl $.Values.coordinator.fullname .}}
+    app: {{tpl $.Values.seed.fullname .}}
 spec:
-  replicas: {{ .Values.numReplicas }}
+  replicas: 1
   selector:
     matchLabels:
-      app: {{tpl $.Values.coordinator.fullname .}}
+      app: {{tpl $.Values.seed.fullname .}}
   template:
     metadata:
       labels:
-        app: {{tpl $.Values.coordinator.fullname .}}
+        app: {{tpl $.Values.seed.fullname .}}
         testnet: {{ $.Values.testnetName }}
-        role: snark-coordinator
+        role: seed
         version: {{ (split ":" $.Values.coda.image)._1 }}
       annotations:
         prometheus.io/scrape: 'true'
@@ -23,7 +23,7 @@ spec:
         prometheus.io/path: '/metrics'
     spec:
       containers:
-      - name: coordinator
+      - name: seed
         resources:
           limits:
             memory: 6.0Gi
@@ -40,9 +40,8 @@ spec:
           "-rest-port", "$(DAEMON_REST_PORT)",
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
-          "-run-snark-worker", "$(CODA_SNARK_KEY)", 
-          "-snark-worker-fee", "$(CODA_SNARK_FEE)",
-          "-work-selection", "$(WORK_SELECTION)",
+          "-seed",
+          "-discovery-keypair", "{{ $.Values.seed.discoveryKeypair }}",
           {{- if $.Values.coda.genesis.active }}
           "-genesis-constants", "/genesis_constants/genesis_constants.json",
           {{- end }}
@@ -54,23 +53,17 @@ spec:
           - name: DAEMON_REST_PORT
             value: "3085"
           - name: DAEMON_CLIENT_PORT
-            value: {{ .Values.coordinator.rpcPort | quote }}
+            value: {{ .Values.seed.rpcPort | quote }}
           - name: DAEMON_METRICS_PORT
             value: "10000"
           - name: CODA_CLIENT_TRUSTLIST
             value: "10.0.0.0/8"
-          - name: CODA_SNARK_KEY
-            value: {{ .Values.coordinator.publicKey | quote }}
-          - name: CODA_SNARK_FEE
-            value: {{ .Values.coordinator.snarkFee | quote }}
           - name: DAEMON_EXTERNAL_PORT
-            value: {{ .Values.coordinator.hostPort | quote }}
-          - name: WORK_SELECTION
-            value: {{$.Values.coordinator.workSelectionAlgorithm | quote }}
+            value: {{ .Values.seed.hostPort | quote }}
         ports:
-          - containerPort: {{ .Values.coordinator.hostPort }}
-            hostPort: {{ .Values.coordinator.hostPort }}
-            protocol: TCP
+        - containerPort: {{ .Values.seed.hostPort }}
+          hostPort: {{ .Values.seed.hostPort }}
+          protocol: TCP
         imagePullPolicy: Always
       {{- if $.Values.coda.genesis.active }}
         volumeMounts:
@@ -79,6 +72,6 @@ spec:
       volumes:
       - name: genesis-constants
         configMap:
-          name: {{ tpl $.Values.coordinator.fullname . }}-genesis-config
+          name: {{ tpl $.Values.seed.fullname . }}-genesis-config
       {{- end -}}
 {{- end }}
