@@ -1,31 +1,37 @@
-numProducers: 3
-labelOffset: 0
-
 blockProducersWithBots: []
 
 testnetName: "coda-testnet"
+coda:
+  genesis:
+    active: true
+    k: 10
+    delta: 3
+    txpool_max_size: 3000
+    genesis_state_timestamp: "2020-04-20 11:00:00-07:00"
+  image: codaprotocol/coda-daemon:0.0.12-beta-develop-589b507
+  seedPeers:
+    - /ip4/35.185.66.37/tcp/10105/ipfs/12D3KooWQ7Pz3SPizarzx9ZhCJ6jNmQ2iDPgHQxVzRzqYU2SgRSd
+    - /ip4/35.237.214.144/tcp/10120/ipfs/12D3KooWGtjWnCcvkaSEbKuNbPivEogxqtLWcsJiQtURydptvrsA
+  logLevel: "Trace"
+  logReceivedBlocks: false
 
-codaImage: codaprotocol/coda-daemon:0.0.12-beta-new-genesis-01eca9b
+blockProducer:
+  fullname: "{{ $.Values.blockProducer.class }}-block-producer"
+  numProducers: 3
+  codaPrivkeyPass: naughty blue worm
+  startingPorts:  10600
+  keySecretTemplatePrefix: "online-whale-account"
+  class: "whale" # Options "whale", "fish"
+  labelOffset: 0
 
-seedPeers: 
-  - /dns4/seed-one.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWP7fTKbyiUcYJGajQDpCFo2rDexgTHFJTxCH8jvcL1eAH
-  - /dns4/seed-two.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWL9ywbiXNfMBqnUKHSB1Q1BaHFNUzppu6JLMVn9TTPFSA
-
-codaPrivkeyPass: naughty blue worm
-codaLogLevel: "Trace"
-logReceivedBlocks: false
-
-startingPorts:  10600
-
-keySecretTemplatePrefix: "online-whale-account"
-blockProducerClass: "whale" # Options "whale", "fish"
-
-agentImage: ""
-agentCommand: ["python3 agent.py"]
-agentMinFee: ""
-agentMaxFee: ""
-agentMinTx: ""
-agentMaxTx: ""
+agent:
+  active: false
+  image: ""
+  command: ["python3 agent.py"]
+  minFee: ""
+  maxFee: ""
+  minTx: ""
+  maxTx: ""
 
 botsImage: ""
 faucetAmount: "10000000000"

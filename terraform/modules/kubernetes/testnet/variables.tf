@@ -52,6 +52,10 @@ variable "additional_seed_peers" {
   default = []
 }
 
+variable "genesis_timestamp" {
+  type = string
+}
+
 # Seed Vars
 
 variable "seed_region" {

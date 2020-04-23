@@ -1,0 +1,16 @@
+{{ if $.Values.coda.genesis.active -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ tpl $.Values.seed.fullname . }}-genesis-config
+  labels:
+    app: {{ tpl $.Values.seed.fullname . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+data:
+  genesis_constants.json: |-
+    {
+        "txpool_max_size": {{ $.Values.coda.genesis.txpool_max_size }},
+        "genesis_state_timestamp": {{ $.Values.coda.genesis.genesis_state_timestamp | quote}}
+    }
+{{- end}}
