@@ -24,6 +24,9 @@ from best_tip_trie import Block, BestTipTrie
 
 import CodaClient
 
+import sys
+sys.setrecursionlimit(1500)
+
 @click.command()
 @click.option('--namespace', default="regeneration", help='Namespace to Query.')
 @click.option('--remote-graphql-port', default=3085, help='Remote GraphQL Port to Query.')
@@ -86,11 +89,11 @@ def check(namespace, remote_graphql_port):
 
       return (chain, pod)
       
-  with ThreadPoolExecutor(max_workers=8) as pool:
+  with ThreadPoolExecutor(max_workers=12) as pool:
     for result in pool.map(process_pod, enumerate(items)):
       if result:
         chain, pod = result
-        best_tip_trie.insert(chain, pod.metadata.name)
+        best_tip_trie.insert(chain, pod.metadata.name[:-16])
 
   forks = list((key, node.children) for (key, node) in best_tip_trie.forks())
   items = list(([hash[-8:] for hash in key], node.value) for (key, node) in best_tip_trie.items())
@@ -98,10 +101,10 @@ def check(namespace, remote_graphql_port):
   trie_root = best_tip_trie.root
   print(trie_root)
   
-  print(prefix)
-  print("Items:")
-  for item in items:
-    print(item)
+  # print(prefix)
+  # print("Items:")
+  # for item in items:
+  #   print(item)
   print("Processing Forks...")
   graph = Digraph(comment='The Round Table', format='png', strict=True)
   # Create graph root
@@ -112,7 +115,7 @@ def check(namespace, remote_graphql_port):
   render_fork(graph, trie_root)
   #Connect fork root to graph root
   graph.edge("root", trie_root.hash)
-  print(graph.source)
+  #print(graph.source)
   graph.view()
 
 
@@ -120,10 +123,10 @@ def check(namespace, remote_graphql_port):
 
 def render_fork(graph, root):
   color = "white"
-  if len(root.value) > 0:
-    for value in root.value:
-      graph.node(value, value, color="blue")
-      graph.edge(value, root.hash, color="blue")
+  if len(root.labels) > 0:
+    for label in root.labels:
+      graph.node(label, label, color="blue")
+      graph.edge(label, root.hash, color="blue")
     color = "blue"
   if root.hash == None:
     root.hash = "root"
