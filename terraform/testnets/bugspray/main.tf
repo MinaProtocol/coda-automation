@@ -29,7 +29,7 @@ variable "coda_image" {
 
 variable "coda_agent_image" {
   type = string
-  default = "codaprotocol/coda-user-agent:0.1.5-bugspray"
+  default = "codaprotocol/coda-user-agent:0.1.5"
 }
 
 variable "coda_bots_image" {
