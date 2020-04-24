@@ -70,6 +70,22 @@ spec:
         command: ["bash"]
         args: ["-c", {{ range $.Values.agentCommand }} {{- . | quote }}, {{end}}]
         env: 
+          {{ if ne $.Values.agentMinFee "" }
+          - name: AGENT_MIN_FEE
+            value: {{ $.Values.agentMinFee }}
+          {{ end -}}
+          {{ if ne $.Values.agentMaxFee "" }
+          - name: AGENT_MAX_FEE
+            value: {{ $.Values.agentMaxFee }}
+          {{ end -}}
+          {{ if ne $.Values.agentMinTx "" }
+          - name: AGENT_MIN_TX
+            value: {{ $.Values.agentMinTx }}
+          {{ end -}}
+          {{ if ne $.Values.agentMaxTx "" }
+          - name: AGENT_MAX_TX
+            value: {{ $.Values.agentMaxTx }}
+          {{ end -}}
           - name: AGENT_SEND_EVERY_MINUTES
             value: "10"
           - name: CODA_PUBLIC_KEY
@@ -135,7 +151,9 @@ spec:
         args: [ "daemon",
           "-log-level", {{ $.Values.codaLogLevel }},
           "-log-json",
+          {{- if $.Values.logReceivedBlocks }}
           "-log-received-blocks", "true",
+          {{- end }}
           "-config-directory", "/root/.coda-config",
           "-client-port", "$(DAEMON_CLIENT_PORT)",
           "-rest-port", "$(DAEMON_REST_PORT)",

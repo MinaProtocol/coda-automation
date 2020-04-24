@@ -27,13 +27,19 @@ module "testnet_east" {
   num_fish_block_producers = 200
   block_producer_key_pass = "naughty blue worm"
   block_producer_starting_host_port = 10001
-  whale_block_producer_log_level = "Spam"
+  whale_block_producer_log_received_blocks = true
+  fish_block_producer_log_received_blocks = true
   fish_block_producers_with_bots = [0]
 
   snark_worker_replicas = 10
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "4vsRCVQZ41uqXfVVfkBNUuNNS7PgSJGdMDNAyKGDdU1WkdxxyxQ7oMdFcjDRf45fiGKkdYKkLPBrE1KnxmyBuvaTW97A5C8XjNSiJmvo9oHa4AwyVsZ3ACaspgQ3EyxQXk6uujaxzvQhbLDx"
   snark_worker_host_port = 10400
+
+  agent_min_fee = "0.06"
+  agent_max_fee = "0.06"
+  agent_min_tx = "0.0015"
+  agent_max_tx = "0.0015"
 }
 
 # Seed DNS

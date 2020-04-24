@@ -13,6 +13,7 @@ seedPeers:
 
 codaPrivkeyPass: naughty blue worm
 codaLogLevel: "Trace"
+logReceivedBlocks: false
 
 startingPorts:  10600
 
@@ -21,6 +22,10 @@ blockProducerClass: "whale" # Options "whale", "fish"
 
 agentImage: ""
 agentCommand: ["python3 agent.py"]
+agentMinFee: ""
+agentMaxFee: ""
+agentMinTx: ""
+agentMaxTx: ""
 
 botsImage: ""
 faucetAmount: "10000000000"

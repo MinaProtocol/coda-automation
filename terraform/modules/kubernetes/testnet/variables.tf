@@ -93,9 +93,19 @@ variable "whale_block_producer_log_level" {
   default = "Trace"
 }
 
+variable "whale_block_producer_log_received_blocks" {
+  type    = boolean
+  default = false
+}
+
 variable "fish_block_producer_log_level" {
   type    = string
   default = "Trace"
+}
+
+variable "fish_block_producer_log_received_blocks" {
+  type    = boolean
+  default = false
 }
 
 variable "fish_block_producer_label_offset" {
@@ -128,4 +138,24 @@ variable "snark_worker_public_key" {
 variable "snark_worker_host_port" {
   type    = number
   default = 10400
+}
+
+variable "agent_min_fee" {
+  type    = string
+  default = ""
+}
+
+variable "agent_max_fee" {
+  type    = string
+  default = ""
+}
+
+variable "agent_min_tx" {
+  type    = string
+  default = ""
+}
+
+variable "agent_max_tx" {
+  type    = string
+  default = ""
 }

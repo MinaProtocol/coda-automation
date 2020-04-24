@@ -27,6 +27,7 @@ locals {
     seedPeers               = concat(var.additional_seed_peers, local.seed_peers)
     codaPrivkeyPass         = var.block_producer_key_pass
     codaLogLevel            = var.whale_block_producer_log_level
+    logReceivedBlocks       = var.whale_block_producer_log_received_blocks
     startingPorts           = var.block_producer_starting_host_port
     keySecretTemplatePrefix = "online-whale-account"
     blockProducerClass      = "whale"
@@ -40,13 +41,19 @@ locals {
     seedPeers               = concat(var.additional_seed_peers, local.seed_peers)
     codaPrivkeyPass         = var.block_producer_key_pass
     codaLogLevel            = var.fish_block_producer_log_level
+    logReceivedBlocks       = var.fish_block_producer_log_received_blocks
     startingPorts           = var.block_producer_starting_host_port + var.num_whale_block_producers
     keySecretTemplatePrefix = "online-fish-account"
     blockProducerClass      = "fish"
     agentImage              = var.coda_agent_image
+    agentMinFee             = var.coda_agent_min_fee
+    agentMaxFee             = var.coda_agent_max_fee
+    agentMinTx              = var.coda_agent_min_tx
+    agentMaxTx              = var.coda_agent_max_tx
     botsImage               = var.coda_bots_image
     faucetAmount            = var.coda_faucet_amount
     faucetFee               = var.coda_faucet_fee
+    myNewCliOption          = var.my_new_cli_option
   }
   snark_worker_vars = {
     testnetName = var.testnet_name
