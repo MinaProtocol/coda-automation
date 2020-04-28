@@ -22,8 +22,8 @@ locals {
   ]
   whale_producer_vars = {
     numProducers             = var.num_whale_block_producers
-    blockProducersWithBots   = var.fish_block_producers_with_bots
-    blockProducersWithPoints = var.fish_block_producers_with_points
+    blockProducersWithBots   = var.whale_block_producers_with_bots
+    blockProducersWithPoints = var.whale_block_producers_with_points
     testnetName              = var.testnet_name
     codaImage                = var.coda_image
     botsImage                = var.coda_bots_image

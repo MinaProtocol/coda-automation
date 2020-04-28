@@ -139,7 +139,7 @@ spec:
             value: {{ $.Values.faucetFee | quote }}
         imagePullPolicy: Always
       {{ end -}}
-      {{- if has (float64 $i) $.Values.blockProducersWithBots }}
+      {{- if has (float64 $i) $.Values.blockProducersWithPoints }}
       - name: points
         resources:
           requests:
