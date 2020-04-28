@@ -70,21 +70,21 @@ spec:
         command: ["bash"]
         args: ["-c", {{ range $.Values.agentCommand }} {{- . | quote }}, {{end}}]
         env: 
-          {{ if ne $.Values.agentMinFee "" }
+          {{ if ne $.Values.agentMinFee "" -}}
           - name: AGENT_MIN_FEE
-            value: {{ $.Values.agentMinFee }}
+            value: {{ $.Values.agentMinFee | quote }}
           {{ end -}}
-          {{ if ne $.Values.agentMaxFee "" }
+          {{- if ne $.Values.agentMaxFee "" -}}
           - name: AGENT_MAX_FEE
-            value: {{ $.Values.agentMaxFee }}
+            value: {{ $.Values.agentMaxFee | quote }}
           {{ end -}}
-          {{ if ne $.Values.agentMinTx "" }
+          {{- if ne $.Values.agentMinTx "" -}}
           - name: AGENT_MIN_TX
-            value: {{ $.Values.agentMinTx }}
+            value: {{ $.Values.agentMinTx | quote }}
           {{ end -}}
-          {{ if ne $.Values.agentMaxTx "" }
+          {{- if ne $.Values.agentMaxTx "" -}}
           - name: AGENT_MAX_TX
-            value: {{ $.Values.agentMaxTx }}
+            value: {{ $.Values.agentMaxTx | quote }}
           {{ end -}}
           - name: AGENT_SEND_EVERY_MINUTES
             value: "10"
@@ -137,6 +137,25 @@ spec:
             value: {{ $.Values.faucetAmount | quote }}
           - name: FEE_AMOUNT
             value: {{ $.Values.faucetFee | quote }}
+        imagePullPolicy: Always
+      {{ end -}}
+      {{- if has (float64 $i) $.Values.blockProducersWithBots }}
+      - name: points
+        resources:
+          requests:
+            memory: 512m
+            cpu: 0.1
+        image: {{ $.Values.pointsImage }}
+        env:
+          - name: CODA_GRAPHQL_HOST
+            value: "0.0.0.0"
+          - name: CODA_GRAPHQL_PORT
+            value: "3085"
+          - name: GOOGLE_CLOUD_STORAGE_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: o1-google-cloud-storage-api-key
+                key: o1google
         imagePullPolicy: Always
       {{ end -}}
       - name: coda

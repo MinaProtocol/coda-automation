@@ -25,6 +25,11 @@ variable "coda_bots_image" {
   default = ""
 }
 
+variable "coda_points_image" {
+  type    = string
+  default = ""
+}
+
 # this must be a string to avoid scientific notation truncation
 variable "coda_faucet_amount" {
   type    = string
@@ -94,9 +99,20 @@ variable "whale_block_producer_log_level" {
 }
 
 variable "whale_block_producer_log_received_blocks" {
-  type    = boolean
+  type    = bool
   default = false
 }
+
+variable "whale_block_producers_with_bots" {
+  type = list(number)
+  default = []
+}
+
+variable "whale_block_producers_with_points" {
+  type = list(number)
+  default = []
+}
+
 
 variable "fish_block_producer_log_level" {
   type    = string
@@ -104,7 +120,7 @@ variable "fish_block_producer_log_level" {
 }
 
 variable "fish_block_producer_log_received_blocks" {
-  type    = boolean
+  type    = bool
   default = false
 }
 
@@ -114,6 +130,11 @@ variable "fish_block_producer_label_offset" {
 }
 
 variable "fish_block_producers_with_bots" {
+  type = list(number)
+  default = []
+}
+
+variable "fish_block_producers_with_points" {
   type = list(number)
   default = []
 }

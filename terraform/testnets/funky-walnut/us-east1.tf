@@ -17,6 +17,7 @@ module "testnet_east" {
   coda_image            = local.coda_image
   coda_agent_image      = local.coda_agent_image
   coda_bots_image       = local.coda_bots_image
+  coda_points_image     = local.coda_points_image
   coda_faucet_amount    = local.coda_faucet_amount
   coda_faucet_fee       = local.coda_faucet_fee
 
@@ -24,14 +25,15 @@ module "testnet_east" {
   seed_region = "us-east1"
 
   num_whale_block_producers = 5
-  num_fish_block_producers = 200
+  num_fish_block_producers = 5
   block_producer_key_pass = "naughty blue worm"
   block_producer_starting_host_port = 10001
   whale_block_producer_log_received_blocks = true
   fish_block_producer_log_received_blocks = true
-  fish_block_producers_with_bots = [0]
+  whale_block_producers_with_bots = [0]
+  whale_block_producers_with_points = [1, 2, 3]
 
-  snark_worker_replicas = 128
+  snark_worker_replicas = 2
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "4vsRCVQZ41uqXfVVfkBNUuNNS7PgSJGdMDNAyKGDdU1WkdxxyxQ7oMdFcjDRf45fiGKkdYKkLPBrE1KnxmyBuvaTW97A5C8XjNSiJmvo9oHa4AwyVsZ3ACaspgQ3EyxQXk6uujaxzvQhbLDx"
   snark_worker_host_port = 10400
