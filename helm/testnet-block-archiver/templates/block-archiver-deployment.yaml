@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testnet-points-block-archiver
+  labels:
+    app: testnet-points-block-archiver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testnet-points-block-archiver
+  template:
+    metadata:
+      labels:
+        app: testnet-points-block-archiver
+        testnet: rising-phoenix
+        role: testnet-points-block-archiver
+    #   annotations:
+    #     prometheus.io/scrape: 'true'
+    #     prometheus.io/port: '10003'
+    #     prometheus.io/path: '/metrics'
+    spec:
+      initContainers:
+      - name: migrate-tables
+        image: gcr.io/o1labs-192920/testnet-points-api:0.0.1
+        env:
+          - name: DJANGO_SECRET_KEY
+            value: {{ $.Values.djangoSecretKey }}
+          - name: DATABASE_URL
+            value: {{ $.Values.databaseUrl }}
+        command:
+        - bash
+        - -c
+        - ./manage.py migrate 
+        securityContext:
+          runAsUser: 0
+      containers:
+      - name: api
+        resources:
+          limits:
+            memory: 2Gi
+          requests:
+            memory: 512Mi
+        image: gcr.io/o1labs-192920/testnet-points-block-archiver:0.0.1
+        command: ["bash", "-c"]
+        args: ["./manage.py collectstatic --noinput && ./manage.py migrate && gunicorn --bind 0.0.0.0:8000 --access-logfile - block_archiver.wsgi:application"]
+        env:
+          - name: DJANGO_SECRET_KEY
+            value: {{ $.Values.djangoSecretKey }}
+          - name: DATABASE_URL
+            value: {{ $.Values.databaseUrl }}
+          - name: DJANGO_AWS_ACCESS_KEY_ID
+            value: {{ $.Values.djangoAddessKeyID }}
+          - name: DJANGO_AWS_SECRET_ACCESS_KEY
+            value: {{ $.Values.djangoSecretAccessKey }}
+          - name: DJANGO_CONFIGURATION
+            value: {{ $.Values.djangoConfiguration }}
+          - name: DJANGO_SETTINGS_MODULE
+            value: block_archiver.config
+          - name: DJANGO_AWS_STORAGE_BUCKET_NAME
+            value: testnet-points-block-archiver-{{ $.Values.testnet }}-static
+        ports:
+          - containerPort: 8000
+            protocol: TCP
+        readinessProbe:
+          httpGet:
+            port: 8000
+            path: /api/v1/health-check/
+        imagePullPolicy: Always
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.16
+        command: ["/cloud_sql_proxy",
+                  "-instances=o1labs-192920:us-west1:testnet-points-block-archiver-db=tcp:5432",
+                  # If running on a VPC, the Cloud SQL proxy can connect via Private IP. See:
+                  # https://cloud.google.com/sql/docs/mysql/private-ip for more info.
+                  # "-ip_address_types=PRIVATE",
+                  "-credential_file=/secrets/cloudsql/credentials.json"]
+        securityContext:
+          runAsUser: 2  # non-root user
+          allowPrivilegeEscalation: false
+        volumeMounts:
+          - name: testnet-points-api-sql-instance-credentials
+            mountPath: /secrets/cloudsql/credentials.json
+            subPath: sql-instance-credentials.json
+            readOnly: true
+      volumes:
+        - name: testnet-points-api-sql-instance-credentials
+          secret:
+            secretName: testnet-points-api-sql-instance-credentials

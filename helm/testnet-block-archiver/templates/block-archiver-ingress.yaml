@@ -1,0 +1,21 @@
+---
+apiVersion: networking.gke.io/v1beta1
+kind: ManagedCertificate
+metadata:
+  name: blocks-o1test-net
+spec:
+  domains:
+    - blocks.o1test.net
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: testnet-points-block-archiver-ingress
+  namespace: coda-testnet
+  annotations:
+    networking.gke.io/managed-certificates: blocks-o1test-net
+    kubernetes.io/ingress.global-static-ip-name: testnet-points-block-archiver-ip
+spec:
+  backend:
+    serviceName: testnet-points-block-archiver
+    servicePort: 443
