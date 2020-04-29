@@ -28,11 +28,19 @@ spec:
         command:
         - sh
         - -c
-        - /bin/cp /keys/* /wallet-keys && /bin/chmod 0700 /wallet-keys
+        - for dir in keys echo-keys faucet-keys; do [ -d /$dir ] && /bin/cp /$dir/* /wallet-keys; done; /bin/chmod 0700 /wallet-keys
         volumeMounts:
         - name: private-keys
           mountPath: "/keys/"
           readOnly: true
+        {{ if has (float64 $i) $.Values.blockProducersWithBots }}
+        - name: echo-service-key
+          mountPath: "/echo-keys/"
+          readOnly: true
+        - name: faucet-service-key
+          mountPath: "/faucet-keys/"
+          readOnly: true
+        {{ end -}}
         - name: wallet-keys
           mountPath: /wallet-keys
         securityContext:
@@ -42,7 +50,7 @@ spec:
         command:
         - bash
         - -c
-        - coda advanced import -config-directory /root/.coda-config -privkey-path /root/wallet-keys/key
+        - for key in key echo-key faucet-key; do [ ! -f /root/wallet-keys/$key ] || coda accounts import -config-directory /root/.coda-config -privkey-path /root/wallet-keys/$key; done
         volumeMounts:
         - name: wallet-keys
           mountPath: /root/wallet-keys
@@ -62,6 +70,22 @@ spec:
         command: ["bash"]
         args: ["-c", {{ range $.Values.agentCommand }} {{- . | quote }}, {{end}}]
         env: 
+          {{ if ne $.Values.agentMinFee "" -}}
+          - name: AGENT_MIN_FEE
+            value: {{ $.Values.agentMinFee | quote }}
+          {{ end -}}
+          {{- if ne $.Values.agentMaxFee "" -}}
+          - name: AGENT_MAX_FEE
+            value: {{ $.Values.agentMaxFee | quote }}
+          {{ end -}}
+          {{- if ne $.Values.agentMinTx "" -}}
+          - name: AGENT_MIN_TX
+            value: {{ $.Values.agentMinTx | quote }}
+          {{ end -}}
+          {{- if ne $.Values.agentMaxTx "" -}}
+          - name: AGENT_MAX_TX
+            value: {{ $.Values.agentMaxTx | quote }}
+          {{ end -}}
           - name: AGENT_SEND_EVERY_MINUTES
             value: "10"
           - name: CODA_PUBLIC_KEY
@@ -78,6 +102,62 @@ spec:
             containerPort: 8000
         imagePullPolicy: Always
       {{ end -}}
+      {{- if has (float64 $i) $.Values.blockProducersWithBots }}
+      - name: bots
+        resources:
+          requests:
+            memory: 512m
+            cpu: 0.1
+        image: {{ $.Values.botsImage }}
+        env:
+          - name: CODA_GRAPHQL_HOST
+            value: "0.0.0.0"
+          - name: CODA_GRAPHQL_PORT
+            value: "3085"
+          - name: ECHO_PUBLICKEY
+            valueFrom:
+              secretKeyRef:
+                name: echo-service-key
+                key: pub
+          - name: ECHO_PASSWORD
+            value: {{ $.Values.codaPrivkeyPass | quote }}
+          - name: FAUCET_PUBLICKEY
+            valueFrom:
+              secretKeyRef:
+                name: faucet-service-key
+                key: pub
+          - name: FAUCET_PASSWORD
+            value: {{ $.Values.codaPrivkeyPass | quote }}
+          - name: DISCORD_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: o1-discord-api-key
+                key: o1discord
+          - name: FAUCET_AMOUNT
+            value: {{ $.Values.faucetAmount | quote }}
+          - name: FEE_AMOUNT
+            value: {{ $.Values.faucetFee | quote }}
+        imagePullPolicy: Always
+      {{ end -}}
+      {{- if has (float64 $i) $.Values.blockProducersWithPoints }}
+      - name: points
+        resources:
+          requests:
+            memory: 512m
+            cpu: 0.1
+        image: {{ $.Values.pointsImage }}
+        env:
+          - name: CODA_GRAPHQL_HOST
+            value: "0.0.0.0"
+          - name: CODA_GRAPHQL_PORT
+            value: "3085"
+          - name: GOOGLE_CLOUD_STORAGE_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: o1-google-cloud-storage-api-key
+                key: o1google
+        imagePullPolicy: Always
+      {{ end -}}
       - name: coda
         resources:
           limits:
@@ -88,8 +168,11 @@ spec:
         image: {{ $.Values.codaImage }}
         command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
         args: [ "daemon",
-          "-log-level", "Trace",
+          "-log-level", {{ $.Values.codaLogLevel }},
           "-log-json",
+          {{- if $.Values.logReceivedBlocks }}
+          "-log-received-blocks", "true",
+          {{- end }}
           "-config-directory", "/root/.coda-config",
           "-client-port", "$(DAEMON_CLIENT_PORT)",
           "-rest-port", "$(DAEMON_REST_PORT)",
@@ -116,6 +199,8 @@ spec:
           - containerPort: {{ add $.Values.startingPorts $i $.Values.labelOffset }}
             hostPort: {{ add $.Values.startingPorts $i $.Values.labelOffset }}
             protocol: TCP
+          - name: graphql
+            containerPort: 3085
           - name: metrics
             containerPort: 10000
         imagePullPolicy: Always
@@ -134,6 +219,26 @@ spec:
             path: key
           - key: pub
             path: key.pub
+      {{ if has (float64 $i) $.Values.blockProducersWithBots }}
+      - name: echo-service-key
+        secret:
+          secretName: echo-service-key
+          defaultMode: 256
+          items:
+          - key: key
+            path: echo-key
+          - key: pub
+            path: echo-key.pub
+      - name: faucet-service-key
+        secret:
+          secretName: faucet-service-key
+          defaultMode: 256
+          items:
+          - key: key
+            path: faucet-key
+          - key: pub
+            path: faucet-key.pub
+      {{ end -}}
       - name: wallet-keys
         emptyDir: {}
       - name: config-dir

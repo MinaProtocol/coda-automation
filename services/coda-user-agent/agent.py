@@ -1,4 +1,4 @@
-from CodaClient import Client
+from CodaClient import Client, Currency, CurrencyFormat
 import os
 import schedule
 import time
@@ -9,8 +9,10 @@ from prometheus_client import Counter, start_http_server
 
 CODA_PUBLIC_KEY = os.getenv("CODA_PUBLIC_KEY", "4vsRCVyVkSRs89neWnKPrnz4FRPmXXrWtbsAQ31hUTSi41EkbptYaLkzmxezQEGCgZnjqY2pQ6mdeCytu7LrYMGx9NiUNNJh8XfJYbzprhhJmm1ZjVbW9ZLRvhWBXRqes6znuF7fWbECrCpQ").strip()
 CODA_PRIVKEY_PASS = os.getenv("CODA_PRIVKEY_PASS", "naughty blue worm")
-AGENT_MAX_FEE = os.getenv("AGENT_MAX_FEE", random.randint(2, 20))
-AGENT_MAX_TX = os.getenv("AGENT_MAX_TX", random.randint(2,100))
+AGENT_MIN_FEE = os.getenv("AGENT_MIN_FEE") or Currency.random(Currency("0.06"), Currency("0.1"))
+AGENT_MAX_FEE = os.getenv("AGENT_MAX_FEE") or Currency.random(AGENT_MIN_FEE, AGENT_MIN_FEE + Currency("0.2"))
+AGENT_MIN_TX = os.getenv("AGENT_MIN_TX") or Currency.random(Currency("0.0015"), Currency("0.005"))
+AGENT_MAX_TX = os.getenv("AGENT_MAX_TX") or Currency.random(AGENT_MIN_TX, AGENT_MIN_TX + Currency("0.01"))
 AGENT_SEND_EVERY_MINS = os.getenv("AGENT_SEND_EVERY_MINS", random.randint(1, 5))
 AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
 
@@ -64,9 +66,9 @@ class Agent(object):
             print("Error unlocking wallet...")
             print(e)
             return None
-        
-        tx_amount = random.randint(2, self.max_tx_amount) * 1000000000
-        fee_amount = random.randint(2, self.max_fee_amount) * 1000000000
+
+        tx_amount = Currency.random(self.min_tx_amount, self.max_tx_amount)
+        fee_amount = Currency.random(self.min_fee_amount, self.max_fee_amount)
         try: 
             response = self.coda.send_payment(to_account, self.public_key, tx_amount, fee_amount, memo="BeepBoop")
         except Exception as e: 
