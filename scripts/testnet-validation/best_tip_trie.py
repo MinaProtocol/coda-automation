@@ -1,9 +1,12 @@
 from dataclasses import dataclass, field
+from typing import Dict
 
 @dataclass
 class Block:
     hash: str
+    labels: list = field(default_factory=str)
     value: list = field(default_factory=list)
+    metadata: dict = field(default_factory=dict)
     children: dict = field(default_factory=dict)
 
     def getChild(self, hashPart):
@@ -13,6 +16,7 @@ class Block:
         if hashPart not in self.children:
             self.children[hashPart] = Block(
                 hash=hashPart,
+                labels=[],
                 value=[]
             )
 
@@ -37,7 +41,28 @@ class Block:
 @dataclass
 class BestTipTrie:
     # Empty root node, for empty keys
-    root: Block = Block(hash=None, value=[])
+    root: Block = field(default_factory=lambda: Block(hash=None, value=[]))
+    blocks: Dict[str, Block] = field(default_factory=dict)
+
+    def insertLink(self, parent: str, child: str, value=None):
+        if parent in self.blocks:
+            childNode = self.blocks[parent].insertChild(child)
+            self.blocks[child] = childNode
+            if value:
+                childNode.value.append(value)
+        elif child in self.blocks:
+            # Save child node 
+            childNode = self.root.children[child]
+            # Delete it from the root's children
+            del self.root.children[child]
+            # Add the new parent as a child of the root
+            parentNode = self.root.insertChild(parent)
+            self.blocks[parent] = parentNode
+            parentNode.children[childNode.hash] = childNode
+            if value:
+                childNode.value.append(value)
+        else:
+            self.insert([parent, child], value)
 
     def get(self, chain):
         node = self.root
@@ -45,12 +70,18 @@ class BestTipTrie:
             node = node.getChild(hashPart)
         return node.value
 
+    # TODO should not assume chain begins at the root, should learn to
+    # splice the chain into the existing tree like insertLink
     # ([str], value)
-    def insert(self, chain, value):
-        node = self.root
+    def insert(self, chain, label):
+        if chain[-1] in self.blocks:
+            node = self.blocks[chain[-1]]
+        else:
+            node = self.root
         for hashPart in chain:
             node = node.insertChild(hashPart)
-        node.value.append(value)
+            self.blocks[hashPart] = node
+        node.labels.append(label)
 
     def prefix(self):
         key = []
