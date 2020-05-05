@@ -98,6 +98,11 @@ variable "whale_block_producer_log_level" {
   default = "Trace"
 }
 
+variable "whale_block_producer_log_txn_pool_gossip" {
+  type    = bool
+  default = false
+}
+
 variable "whale_block_producer_log_received_blocks" {
   type    = bool
   default = false
@@ -119,6 +124,11 @@ variable "fish_block_producer_log_level" {
   default = "Trace"
 }
 
+variable "fish_block_producer_log_txn_pool_gossip" {
+  type    = bool
+  default = false
+}
+
 variable "fish_block_producer_log_received_blocks" {
   type    = bool
   default = false
@@ -127,6 +137,11 @@ variable "fish_block_producer_log_received_blocks" {
 variable "fish_block_producer_label_offset" {
   type = number
   default = 0
+}
+
+variable "fish_block_producers_with_user_agents" {
+  type = list(number)
+  default = []
 }
 
 variable "fish_block_producers_with_bots" {

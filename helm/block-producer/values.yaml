@@ -2,6 +2,8 @@ numProducers: 3
 labelOffset: 0
 
 blockProducersWithBots: []
+blockProducersWithPoints: []
+blockProducersWithUserAgents: []
 
 testnetName: "coda-testnet"
 
@@ -14,6 +16,8 @@ seedPeers:
 codaPrivkeyPass: naughty blue worm
 codaLogLevel: "Trace"
 logReceivedBlocks: false
+logTxnPoolGossip: false
+enableGossipFlooding: false
 
 startingPorts:  10600
 
