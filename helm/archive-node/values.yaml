@@ -1,13 +1,14 @@
 testnetName: "coda-testnet"
 
 seedPeers: 
-  - /ip4/35.196.112.167/tcp/10001/ipfs/12D3KooWAFFq2yEQFFzhU5dt64AWqawRuomG9hL8rSmm5vxhAsgr
-  - /ip4/35.196.148.252/tcp/10001/ipfs/12D3KooWB79AmjiywL1kMGeKHizFNQE9naThM2ooHgwFcUzt6Yt
+  - /ip4/35.227.48.78/tcp/10001/ipfs/12D3KooWAFFq2yEQFFzhU5dt64AWqawRuomG9hL8rSmm5vxhAsgr
+  - /ip4/35.237.59.209/tcp/10001/ipfs/12D3KooWB79AmjiywL1kMGeKHizFNQE9naThM2ooHgwFcUzt6Yt
 
-codaImage: codaprotocol/coda-daemon:0.0.12-beta-release-0.0.13-beta-376d2ab
+codaImage: codaprotocol/coda-daemon:0.0.12-beta-test-jiawei-testnet-5f69977
+
 hostPort: "10909"
 
-archiveImage: codaprotocol/coda-archive:0.0.12-beta-fix-archive-debs-62bae52
+archiveImage: codaprotocol/coda-archive:0.0.12-beta-test-jiawei-testnet-5f69977
 archiveListenPort: "3086"
 archiveNodeName: "dev"
 remoteSchemaFile: "https://raw.githubusercontent.com/CodaProtocol/coda/master/src/app/archive/create_schema.sql"
