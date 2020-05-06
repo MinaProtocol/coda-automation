@@ -20,6 +20,28 @@ variable "coda_agent_image" {
   default = "codaprotocol/coda-user-agent:0.1.4"
 }
 
+variable "coda_bots_image" {
+  type    = string
+  default = ""
+}
+
+variable "coda_points_image" {
+  type    = string
+  default = ""
+}
+
+# this must be a string to avoid scientific notation truncation
+variable "coda_faucet_amount" {
+  type    = string
+  default = "10000000000"
+}
+
+# this must be a string to avoid scientific notation truncation
+variable "coda_faucet_fee" {
+  type    = string
+  default = "100000000"
+}
+
 variable "testnet_name" {
   type    = string
   default = "coda-testnet"
@@ -71,9 +93,50 @@ variable "num_fish_block_producers" {
   default = 5
 }
 
+variable "whale_block_producer_log_level" {
+  type    = string
+  default = "Trace"
+}
+
+variable "whale_block_producer_log_received_blocks" {
+  type    = bool
+  default = false
+}
+
+variable "whale_block_producers_with_bots" {
+  type = list(number)
+  default = []
+}
+
+variable "whale_block_producers_with_points" {
+  type = list(number)
+  default = []
+}
+
+
+variable "fish_block_producer_log_level" {
+  type    = string
+  default = "Trace"
+}
+
+variable "fish_block_producer_log_received_blocks" {
+  type    = bool
+  default = false
+}
+
 variable "fish_block_producer_label_offset" {
   type = number
   default = 0
+}
+
+variable "fish_block_producers_with_bots" {
+  type = list(number)
+  default = []
+}
+
+variable "fish_block_producers_with_points" {
+  type = list(number)
+  default = []
 }
 
 # Snark Worker Vars
@@ -84,8 +147,8 @@ variable "snark_worker_replicas" {
 }
 
 variable "snark_worker_fee" {
-  type    = number
-  default = 10
+  type    = string
+  default = "0.025"
 }
 
 variable "snark_worker_public_key" {
@@ -98,3 +161,22 @@ variable "snark_worker_host_port" {
   default = 10400
 }
 
+variable "agent_min_fee" {
+  type    = string
+  default = ""
+}
+
+variable "agent_max_fee" {
+  type    = string
+  default = ""
+}
+
+variable "agent_min_tx" {
+  type    = string
+  default = ""
+}
+
+variable "agent_max_tx" {
+  type    = string
+  default = ""
+}
