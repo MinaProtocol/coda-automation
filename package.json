@@ -14,11 +14,11 @@
     "start": "node index.js"
   },
   "devDependencies": {
-    "bs-platform": "^5.0",
+    "bs-platform": "^6.2",
     "gentype": "^3.22.0"
   },
   "peerDependencies": {
-    "bs-platform": "^5.0 || ^4.0"
+    "bs-platform": "^6.2"
   },
   "dependencies": {
     "@elliottcable/bs-cmdliner": "^10.2.2",
