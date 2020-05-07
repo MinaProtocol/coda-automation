@@ -1,0 +1,27 @@
+{
+  "name": "coda-network",
+  "version": "0.1.0-alpha",
+  "description": "Utility for spinning up Coda testnets.",
+  "main": "index.js",
+  "bin": "index.js",
+  "repository": "git@github.com:CodaProtocol/coda-automation.git",
+  "author": "Carey Janecka <careyjanecka@gmail.com>",
+  "license": "Apache-2.0",
+  "scripts": {
+    "clean": "bsb -clean-world",
+    "build": "bsb -make-world",
+    "dev": "bsb -w -make-world",
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "bs-platform": "^5.0",
+    "gentype": "^3.22.0"
+  },
+  "peerDependencies": {
+    "bs-platform": "^5.0 || ^4.0"
+  },
+  "dependencies": {
+    "@elliottcable/bs-cmdliner": "^10.2.2",
+    "@o1labs/client-sdk": "^0.1.2"
+  }
+}
