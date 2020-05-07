@@ -1,5 +1,3 @@
-open Belt;
-
 module CodaSDK = O1labsClientSdk.CodaSDK;
 
 type keypair = {
