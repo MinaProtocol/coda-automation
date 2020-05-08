@@ -128,7 +128,7 @@ resource "helm_release" "snark_workers" {
 }
 
 resource "helm_release" "archive_node" {
-  name      = "${var.testnet_name}-archive_node"
+  name      = "${var.testnet_name}-archive-node"
   chart     = "../../../helm/archive-node"
   namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
