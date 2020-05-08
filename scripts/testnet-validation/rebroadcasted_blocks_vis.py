@@ -28,103 +28,178 @@ from kubernetes.stream import stream
 from graphviz import Digraph
 
 from best_tip_trie import BestTipTrie
+from logs import fetch_logs
 import time 
+
+import networkx as nx
+import matplotlib.pyplot as plt
+
 
 import sys
 sys.setrecursionlimit(1500)
 
-@click.command()
+@click.group()
 @click.option('--namespace',
               default="hangry-lobster",
               help='Namespace to Query.')
 @click.option('--hours-ago',
               default="1",
               help='Consider logs generated between <hours-ago> and now.')
+@click.option('--max-entries',
+              default=1000,
+              help='Maximum number of log entries to load.')
 @click.option('--cache-logs/--no-cache',
               default=False,
               help='Consider logs generated between <hours-ago> and now.')
-@click.option('--count-best-tips/--no-best-tips',
-              default=True,
-              help='Consider best tips of each node when computing graph.')
 @click.option('--cache-file',
                 default="./cached-logs.json",
                 help="File location to write download logs to")
 @click.option('--in-file',
                 default=None,
                 help="Load logs from this file instead of querying Stackdriver")
-@click.option('--remote-graphql-port', default=3085, help='Remote GraphQL Port to Query.')
+@click.pass_context
+def cli(ctx, namespace, hours_ago, cache_logs, cache_file, in_file, max_entries):
+    ctx.ensure_object(dict)
 
-def check(namespace, hours_ago, cache_logs, cache_file, count_best_tips, in_file, remote_graphql_port):
+    ctx.obj['namespace'] = namespace
+    ctx.obj['hours_ago'] = hours_ago
+    ctx.obj['cache_logs'] = cache_logs
+    ctx.obj['cache_file'] = cache_file
+    ctx.obj['in_file'] = in_file
+    ctx.obj['max_entries'] = max_entries
+
+
+@cli.command()
+@click.pass_context
+def visualize_gossip_net(ctx):
     # Python Logging Config
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     logger = logging.getLogger()
-    
-    if cache_logs:
-        outfile = open(cache_file, "w")
 
-    if not in_file:
-        #Stackdriver Client
-        stackdriver_client = glogging.Client()
+    if ctx.obj["cache_logs"]:
+        outfile = open(ctx.obj["cache_file"], "w")
+
+    if ctx.obj["in_file"] == None:
+        RECEIVED_BLOCK_FILTER = ' "Received a block $block from $sender"'
+        log_iterator = fetch_logs(namespace=ctx.obj["namespace"], hours_ago=ctx.obj["hours_ago"], log_filter=RECEIVED_BLOCK_FILTER)
+    else:
+        fd = open(ctx.obj["in_file"], "r")
+        log_iterator = map(lambda x: json.loads(x), fd.readlines())
+
+    network_graph = nx.Graph()
+
+    nBlocks = 0
+    for entry in log_iterator:  # API call(s)
+        if ctx.obj["cache_logs"] and ctx.obj["in_file"] == None:
+            outfile.write(json.dumps(entry, default=str) + "\n")
+        json_payload = entry[-1]
+        labels = entry[1]
+        metadata = json_payload["metadata"]
+        sender = metadata["sender"]["Remote"]
+        receiver = {
+            "peer_id": metadata["peer_id"],
+            "host": metadata["host"]
+        }
+        state_hash = metadata["state_hash"]
+        #print(json.dumps(metadata,indent=1))
         
-        # K8s Config
-        config.load_kube_config()
+        # if we haven't seen this sender before
+        if sender["peer_id"] not in network_graph:
+            network_graph.add_node(sender["peer_id"])
+        # if we haven't seen this receiver before
+        if receiver["peer_id"] not in network_graph:
+            network_graph.add_node(receiver["peer_id"])
+        # if the sender has sent a node to the receiver before
+        if receiver["peer_id"] in network_graph[sender["peer_id"]]:
+            # increase the edge weight
+            print(f'increasing weight: {network_graph[sender["peer_id"]][receiver["peer_id"]]["weight"]}')
+            network_graph[sender["peer_id"]][receiver["peer_id"]]["weight"] += 1
+        else:
+            # else, just create an edge of width=1
+            network_graph.add_edge(sender["peer_id"], receiver["peer_id"], weight=1)
 
-        # Get all the pods in the specified namespace
-        v1 = client.CoreV1Api()
-        pods = v1.list_namespaced_pod(namespace)
-        items = pods.items
 
-        # Create some filter expressions 
-        earliest_timestamp = datetime.now() - timedelta(hours=int(hours_ago))
-        earliest_timestamp_formatted = earliest_timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")
-        FILTER_COMMON = """
-        timestamp >= "{}"
-        resource.type="k8s_container"
-        resource.labels.namespace_name="{}"
-        (resource.labels.pod_name:"fish-block-producer" OR 
-        resource.labels.pod_name:"whale-block-producer")
-        """.format(earliest_timestamp_formatted, namespace)
 
-        logger.debug("Common Filter: \n{}".format(FILTER_COMMON))
 
+        nBlocks += 1
+        if ctx.obj["in_file"] == None:
+            time.sleep(.04)
+        if nBlocks % 100 == 0:
+            logger.info(f"Processing {nBlocks}")
+        if nBlocks == ctx.obj["max_entries"]:
+            break
+
+    edges = network_graph.edges()
+    edgelist = []
+    for u,v in edges:
+        if network_graph[u][v]["weight"] > 2:
+            edgelist.append((u,v))
+    #colors = [G[u][v]['color'] for u,v in edges]
+    #print (edgelist)
+    weights = [network_graph[u][v]['weight'] for u,v in list(edgelist)]
+    degree = network_graph.degree()
+
+    print(degree)
+
+    nx.draw_shell(network_graph, width=weights, edgelist=edgelist)
+    plt.show()
+
+
+
+
+
+@cli.command()
+@click.pass_context
+@click.option('--count-best-tips/--no-best-tips',
+              default=False,
+              help='Consider best tips of each node when computing graph.')
+@click.option('--remote-graphql-port', default=3085, help='Remote GraphQL Port to Query.')
+def visualize_blockchain(ctx, count_best_tips, remote_graphql_port):
+    # Python Logging Config
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    logger = logging.getLogger()
+
+    if ctx.obj["cache_logs"]:
+        outfile = open(ctx.obj["cache_file"], "w")
+
+    if ctx.obj["in_file"] == None:
         REBROADCAST_FILTER = ' "Rebroadcasting $state_hash"'
-
-        logger.info("Checking Logs for {} -- Past {} Hours".format(namespace, hours_ago))
-        
-        # Query for rebroadcasted blocks and insert them into the trie
-        logger.debug("Filter: \n{}".format(REBROADCAST_FILTER))
-        log_iterator = stackdriver_client.list_entries(filter_=FILTER_COMMON + REBROADCAST_FILTER)
+        log_iterator = fetch_logs(namespace=ctx.obj["namespace"], hours_ago=ctx.obj["hours_ago"], log_filter=REBROADCAST_FILTER)
     else: 
-        fd = open(in_file, "r")
+        fd = open(ctx.obj["in_file"], "r")
         log_iterator = map(lambda x: json.loads(x), fd.readlines())
 
     the_blockchain = BestTipTrie()
 
     nBlocks = 0
     for entry in log_iterator:  # API call(s)
-        if cache_logs and not in_file:
+        if ctx.obj["cache_logs"] and ctx.obj["in_file"] == None:
             outfile.write(json.dumps(entry, default=str) + "\n")
+
+        #print(json.dumps(entry, indent=2, default=str))
+
         block = entry[-1]["metadata"]
         labels = entry[1]
         state_hash = block["state_hash"]
-        parent_hash = block["external_transition"]["data"]["protocol_state"]["previous_state_hash"]
+        parent_hash = block["external_transition"]["protocol_state"]["previous_state_hash"]
+
         logger.debug(json.dumps(block, indent=2, default=str))
         nBlocks += 1
 
         the_blockchain.insertLink(child=state_hash, parent=parent_hash, value=labels["k8s-pod/app"])
-        if not in_file:
-            time.sleep(.025)
+        if ctx.obj["in_file"] == None:
+            time.sleep(.03)
         if nBlocks % 100 == 0:
             logger.info(f"Processing {nBlocks}")
-        if nBlocks == 100000: 
+        if nBlocks == ctx.obj["max_entries"]:
             break
 
     logger.info("{} Blocks During the inspected timespan.".format(nBlocks))
-
-    print("loading")
-    config.load_kube_config()
     
     if count_best_tips:
+        print("Loading Best Tips...")
+        config.load_kube_config()
+
         # Load Best Tips
         v1 = client.CoreV1Api()
         pods = v1.list_namespaced_pod(namespace)
@@ -176,31 +251,24 @@ def check(namespace, hours_ago, cache_logs, cache_file, count_best_tips, in_file
         with ThreadPoolExecutor(max_workers=8) as pool:
             for result in pool.map(process_pod, enumerate(items)):
                 if result:
-                    print(result)
+                    #print(result)
                     chain, pod = result
                     the_blockchain.insert(chain, pod.metadata.name[:-16])
 
+    # Render It!
 
     items = list(([hash[-8:] for hash in key], node.value) for (key, node) in the_blockchain.items())
     forks = list((key, node.children) for (key, node) in the_blockchain.forks())
     prefix = the_blockchain.prefix()
     trie_root = the_blockchain.root
-    #print(trie_root)
 
-    # print(prefix)
-    # print("Items:")
-    # for item in items:
-    #     print(item)
-    print("Processing Forks...")
     graph = Digraph(comment='The Round Table', format='png', strict=True)
     # Create graph root
     graph.node("root", "root", color="black")
     graph.edge_attr.update(dir="back")
-    print(len(forks))
 
     render_fork(graph, trie_root)
     #Connect fork root to graph root
-    graph.edge("root", trie_root.hash)
     graph.view()
 
 
@@ -257,4 +325,4 @@ def terminate_process(proc):
 
 
 if __name__ == "__main__":
-    check()
+    cli(obj={})
