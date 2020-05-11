@@ -11,7 +11,7 @@ provider helm {
 
 data "helm_repository" "buildkite_helm_repo" {
   name = "buildkite-helm-repo"
-  url  = var.buildkite_helm_repo
+  url  = var.helm_repo
 }
 
 # Helm Buildkite Agent Spec
@@ -28,7 +28,7 @@ locals {
     agentMeta                 =   var.agent_meta
 
     # Using Buildkite's config-setting <=> env-var mapping, convert all k,v's stored within agent config as extra environment variables
-    # in order to specify custom configuration 
+    # in order to specify custom configuration (see: https://buildkite.com/docs/agent/v3/configuration#configuration-settings)
     extraEnv                  =   [for key, value in var.agent_config : {"name": "BUILDKITE_${upper(replace(name, '-', '_'))}", "value": value}]
     
     dind = {
