@@ -96,5 +96,5 @@ variable "dind_enabled" {
   type    = bool
 
   description = "Whether to enable a preset Docker-in-Docker(DinD) pod configuration"
-  default = false
+  default = true
 }

@@ -22,10 +22,15 @@ locals {
       tag                     =   var.agent_version
       pullPolicy              =   var.image_pullPolicy
     }
+
     agentToken                =   var.agent_token
     privateSshKey             =   var.agent_vcs_privkey
     agentMeta                 =   var.agent_meta
+
+    # Using Buildkite's config-setting <=> env-var mapping, convert all k,v's stored within agent config as extra environment variables
+    # in order to specify custom configuration 
     extraEnv                  =   [for key, value in var.agent_config : {"name": "BUILDKITE_${upper(replace(name, '-', '_'))}", "value": value}]
+    
     dind = {
       enabled                 =   var.dind_enabled
     }
@@ -34,7 +39,7 @@ locals {
 
 resource "helm_release" "buildkite_agents" {
   name       = "${var.cluster_name}-buildkite"
-  repository = "${var.helm_repository}"
+  repository = "${data.helm_repository.buildkite_helm_repo}"
   chart      = "${var.helm_chart}"
   namespace  = kubernetes_namespace.cluster_namespace.metadata[0].name
   values     = [
