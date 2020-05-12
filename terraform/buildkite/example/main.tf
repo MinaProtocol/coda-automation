@@ -1,7 +1,7 @@
 terraform {
     required_version = "~> 0.12.0"
     backend "s3" {
-        key     = "terraform-bkexperimental.tfstate"
+        key     = "terraform-bkexample.tfstate"
         encrypt = true
         region  = "us-west-2"
         bucket  = "o1labs-terraform-state"
@@ -31,8 +31,8 @@ module "buildkite_east" {
     k8s_cluster_region      =   "us-east1"
     k8s_provider            =   var.k8s_provider
 
-    cluster_name            =   "experimental"
-    cluster_namespace       =   "experimental"
+    cluster_name            =   "example"
+    cluster_namespace       =   "example"
     agent_token             =   var.agent_token
     agent_vcs_privkey       =   var.agent_vcs_privkey
     agent_meta              =   "queue=default,queue=coda"
