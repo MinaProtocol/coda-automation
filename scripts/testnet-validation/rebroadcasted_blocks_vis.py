@@ -76,11 +76,15 @@ def visualize_gossip_net(ctx):
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     logger = logging.getLogger()
 
+    broadcasting_block_logs = {}
+    received_block_logs = {}
+    rebroadcasting_block_logs = {}
+    
     if ctx.obj["cache_logs"]:
         outfile = open(ctx.obj["cache_file"], "w")
 
     if ctx.obj["in_file"] == None:
-        RECEIVED_BLOCK_FILTER = ' "Received a block $block from $sender"'
+        BLOCK_LOG_FILTER = ' "Received a block $block from $sender" OR "Rebroadcasting $state_hash" OR "Broadcasting new state over gossip net"'
         log_iterator = fetch_logs(namespace=ctx.obj["namespace"], hours_ago=ctx.obj["hours_ago"], log_filter=RECEIVED_BLOCK_FILTER)
     else: 
         fd = open(ctx.obj["in_file"], "r")
@@ -89,38 +93,37 @@ def visualize_gossip_net(ctx):
     network_graph = nx.Graph()
 
     nBlocks = 0
+    # Sort entries into Rebroadcast and Received logs
     for entry in log_iterator:  # API call(s)
         if ctx.obj["cache_logs"] and ctx.obj["in_file"] == None:
             outfile.write(json.dumps(entry, default=str) + "\n")
+        
         json_payload = entry[-1]
         labels = entry[1]
+        message = json_payload["message"]
         metadata = json_payload["metadata"]
-        sender = metadata["sender"]["Remote"]
-        receiver = {
-            "peer_id": metadata["peer_id"],
-            "host": metadata["host"]
-        }
         state_hash = metadata["state_hash"]
-        #print(json.dumps(metadata,indent=1))
-        
-        # if we haven't seen this sender before
-        if sender["peer_id"] not in network_graph:
-            network_graph.add_node(sender["peer_id"])
-        # if we haven't seen this receiver before
-        if receiver["peer_id"] not in network_graph:
-            network_graph.add_node(receiver["peer_id"])
-        # if the sender has sent a node to the receiver before
-        if receiver["peer_id"] in network_graph[sender["peer_id"]]:
-            # increase the edge weight
-            print(f'increasing weight: {network_graph[sender["peer_id"]][receiver["peer_id"]]["weight"]}')
-            network_graph[sender["peer_id"]][receiver["peer_id"]]["weight"] += 1
-        else:
-            # else, just create an edge of width=1
-            network_graph.add_edge(sender["peer_id"], receiver["peer_id"], weight=1)
 
+        print(json.dumps(message,indent=1))
         
+        if "Broadcasting new state" in message: 
+            if state_hash in received_block_logs:
+                broadcasting_block_logs[state_hash].append(json_payload)
+            else:
+                broadcasting_block_logs[state_hash] = [json_payload]
+
+        if "Received" in message: 
+            if state_hash in received_block_logs:
+                received_block_logs[state_hash].append(json_payload)
+            else:
+                received_block_logs[state_hash] = [json_payload]
         
-        
+        elif "Rebroadcasting" in message: 
+            if state_hash in rebroadcasting_block_logs:
+                rebroadcasting_block_logs[state_hash].append(json_payload)
+            else:
+                rebroadcasting_block_logs[state_hash] = [json_payload]
+
         nBlocks += 1
         if ctx.obj["in_file"] == None:
             time.sleep(.04)
@@ -128,25 +131,89 @@ def visualize_gossip_net(ctx):
             logger.info(f"Processing {nBlocks}")
         if nBlocks == ctx.obj["max_entries"]: 
             break
-
-    edges = network_graph.edges()
-    edgelist = []
-    for u,v in edges:
-        if network_graph[u][v]["weight"] > 2:
-            edgelist.append((u,v))
-    #colors = [G[u][v]['color'] for u,v in edges]
-    #print (edgelist)
-    weights = [network_graph[u][v]['weight'] for u,v in list(edgelist)]
-    degree = network_graph.degree()
-
-    print(degree)
     
-    nx.draw_shell(network_graph, width=weights, edgelist=edgelist)
-    plt.show()
+
+    # process Broadcasting block logs for each block
+    for key in broadcasting_block_logs.keys():
+        # Register the original block broadcast
+        for entry in broadcasting_block_logs[key]:
+            message = json_payload["message"]
+            metadata = json_payload["metadata"]
+            state_hash = metadata["state_hash"]
+
+            # Mark the originator node as the block creator
+        
+        # Build all the edges
+        for entry in received_block_logs[key]:
+            message = json_payload["message"]
+            metadata = json_payload["metadata"]
+            state_hash = metadata["state_hash"]
+
+            sender = metadata["sender"]["Remote"]
+            receiver = {
+                "host": metadata["host"],
+                "peer_id": metadata["peer_id"]
+            }
+
+            # Get corresponding Broadcast or Rebroadcast log
+            #   i.e. a rebroadcast log with the current `state_hash` and the sender's peer_id
+            # if it exists, edge_weight = received_timestamp - broadcast_timestamp
 
 
+    # process rebroadcasting block logs for each block
+    for key in rebroadcasting_block_logs.keys():
+        for entry in rebroadcasting_block_logs[key]:
+            message = json_payload["message"]
+            metadata = json_payload["metadata"]
+            state_hash = metadata["state_hash"]
+
+            # Insert the rebroadcast event into the graph
+
+    
+
+    
+    # Load Rebroadcasting Block Logs as Node Color
+    # Load Received Block Logs as Edges
+        # # if we haven't seen this sender before
+        # if sender["peer_id"] not in network_graph:
+        #     network_graph.add_node(sender["peer_id"])
+        # # if we haven't seen this receiver before
+        # if receiver["peer_id"] not in network_graph:
+        #     network_graph.add_node(receiver["peer_id"])
+        # # if the sender has sent a node to the receiver before
+        # if receiver["peer_id"] in network_graph[sender["peer_id"]]:
+        #     # increase the edge weight
+        #     print(f'increasing weight: {network_graph[sender["peer_id"]][receiver["peer_id"]]["weight"]}')
+        #     network_graph[sender["peer_id"]][receiver["peer_id"]]["weight"] += 1
+        # else:
+        #     # else, just create an edge of width=1
+        #     network_graph.add_edge(sender["peer_id"], receiver["peer_id"], weight=1)
+
+        
+        
+        
+        
+
+    print(received_block_logs.keys())
+    # edges = network_graph.edges()
+    # edgelist = []
+    # for u,v in edges:
+    #     if network_graph[u][v]["weight"] > 2:
+    #         edgelist.append((u,v))
+    # #colors = [G[u][v]['color'] for u,v in edges]
+    # #print (edgelist)
+    # weights = [network_graph[u][v]['weight'] for u,v in list(edgelist)]
+    # degree = network_graph.degree()
+
+    # print(degree)
+    
+    # nx.draw_shell(network_graph, width=weights, edgelist=edgelist)
+    # plt.show()
 
 
+def insert_node(graph, label):
+    if label not in graph:
+        graph.add_node(label)
 
 @cli.command()
 @click.pass_context
