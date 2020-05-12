@@ -1,5 +1,12 @@
 # K8s Cluster Vars
 
+variable "google_app_credentials" {
+  type = string
+
+  description = "Google application credentials for enabling upload/download to GCS"
+  default     = ""
+}
+
 variable "k8s_cluster_name" {
   type = string
 
@@ -63,6 +70,12 @@ variable "agent_config" {
 }
 
 # Module Vars: Helm Chart
+variable "helm_chart" {
+  type    = string
+
+  description = "Identifier of Buildkite helm chart."
+  default = "buildkite/agent"
+}
 
 variable "helm_repo" {
   type    = string
@@ -83,6 +96,13 @@ variable "cluster_namespace" {
 
   description = "K8s namespace to install the cluster release into"
   default = "default"
+}
+
+variable "k8s_provider" {
+  type = string
+
+  description = "K8s resource provider"
+  default = "minikube"
 }
 
 variable "image_pullPolicy" {

@@ -8,5 +8,6 @@ resource "google_service_account" "gcp_buildkite_account" {
 }
 
 resource "google_service_account_key" "buildkite_svc_key" {
-    service_account_id = "${google_service_account.gcp_buildkite_account.name}"
+    service_account_id = google_service_account.gcp_buildkite_account.name
 }
+
