@@ -9,13 +9,9 @@ provider helm {
   }
 }
 
-data "helm_repository" "buildkite_helm_repo" {
-  name = "buildkite-helm-repo"
-  url  = var.helm_repo
-}
-
 # Helm Buildkite Agent Spec
 locals {
+  # set Google Cloud application credentials created for this cluster to inject into agent runtime
   google_access_config = [
     {
       "name": "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON",
@@ -48,13 +44,13 @@ locals {
 
 resource "helm_release" "buildkite_agents" {
   name       = "${var.cluster_name}-buildkite"
-  repository = "${data.helm_repository.buildkite_helm_repo}"
+  repository = "${var.helm_repo}"
   chart      = "${var.helm_chart}"
   namespace  = kubernetes_namespace.cluster_namespace.metadata[0].name
 
   values     = [
     yamlencode(local.buildkite_agent_vars)
   ]
-  
+
   wait       = false
 }
