@@ -27,14 +27,14 @@ module "buildkite_east" {
     source                  = "../../modules/kubernetes/buildkite-agent"
 
     google_app_credentials  =   var.google_credentials
-    k8s_cluster_name        = "coda-infra-east"
-    k8s_cluster_region      = "us-east1"
-    k8s_provider            = var.k8s_provider
+    k8s_cluster_name        =   "coda-infra-east"
+    k8s_cluster_region      =   "us-east1"
+    k8s_provider            =   var.k8s_provider
 
-    cluster_name            = "experimental"
-    cluster_namespace       = "experimental"
-    agent_token             = var.agent_token
-    agent_vcs_privkey       = var.agent_vcs_privkey
-    agent_meta              = "queue=default,queue=coda"
-    num_agents              = 10
+    cluster_name            =   "experimental"
+    cluster_namespace       =   "experimental"
+    agent_token             =   var.agent_token
+    agent_vcs_privkey       =   var.agent_vcs_privkey
+    agent_meta              =   "queue=default,queue=coda"
+    num_agents              =   1
 }
