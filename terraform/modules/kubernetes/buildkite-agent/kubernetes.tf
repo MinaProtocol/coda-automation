@@ -26,6 +26,7 @@ resource "kubernetes_secret" "google_application_credentials" {
       "kubernetes.io/service-account.name" = "google-application-credentials"
     }
   }
+  
   data = {
     "credentials_json" = base64decode(google_service_account_key.buildkite_svc_key.private_key)
   }
@@ -36,6 +37,7 @@ resource "kubernetes_secret" "buildkite_agent_token" {
     name = "buildkite-agent-token"
     namespace = kubernetes_namespace.cluster_namespace.metadata[0].name
   }
+
   data = {
     "agent_token" = base64decode(var.agent_token)
   }

@@ -16,6 +16,14 @@ data "helm_repository" "buildkite_helm_repo" {
 
 # Helm Buildkite Agent Spec
 locals {
+  google_access_config = [
+    {
+      "name": "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON",
+      "value": base64decode(google_service_account_key.buildkite_svc_key.private_key)
+    }
+  ]
+}
+locals {
   buildkite_agent_vars = {
     numAgents                 =   var.num_agents
     image = {
@@ -29,7 +37,8 @@ locals {
 
     # Using Buildkite's config-setting <=> env-var mapping, convert all k,v's stored within agent config as extra environment variables
     # in order to specify custom configuration (see: https://buildkite.com/docs/agent/v3/configuration#configuration-settings)
-    extraEnv                  =   [for key, value in var.agent_config : {"name": "BUILDKITE_${upper(replace(name, '-', '_'))}", "value": value}]
+    extraEnv                  =   concat(google_access_config,
+                                  [for key, value in var.agent_config : {"name": "BUILDKITE_${upper(replace(name, '-', '_'))}", "value": value}])
     
     dind = {
       enabled                 =   var.dind_enabled
@@ -42,8 +51,10 @@ resource "helm_release" "buildkite_agents" {
   repository = "${data.helm_repository.buildkite_helm_repo}"
   chart      = "${var.helm_chart}"
   namespace  = kubernetes_namespace.cluster_namespace.metadata[0].name
+
   values     = [
     yamlencode(local.buildkite_agent_vars)
   ]
+  
   wait       = false
 }
