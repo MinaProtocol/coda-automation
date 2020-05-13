@@ -1,4 +1,3 @@
-![Coda Logo](https://github.com/CodaProtocol/coda/blob/develop/frontend/website/public/static/img/coda-logo%403x.png)
 <a href="https://codaprotocol.com">
 	<img width="200" src="https://github.com/CodaProtocol/coda/blob/develop/frontend/website/public/static/img/coda-logo@3x.png" alt="Coda Logo" />
 </a>
