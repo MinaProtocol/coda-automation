@@ -22,7 +22,6 @@ variable "k8s_provider" {
   default     = "minikube"
 }
 
-
 # Local variables for parameterizing cluster topology
 # TODO: Make use of for_each expression to parameterize module build
 # once available (see: https://www.hashicorp.com/blog/hashicorp-terraform-0-12-preview-for-and-for-each/)
