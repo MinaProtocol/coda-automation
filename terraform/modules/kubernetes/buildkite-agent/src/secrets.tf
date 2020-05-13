@@ -8,7 +8,7 @@ resource "kubernetes_secret" "google_application_credentials" {
   }
 
   data = {
-    "credentials_json" = "value"
+    "credentials_json" = google_service_account_key.buildkite_svc_key.private_key
   }
 }
 
