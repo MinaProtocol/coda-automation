@@ -1,4 +1,8 @@
 ![Coda Logo](https://github.com/CodaProtocol/coda/blob/develop/frontend/website/public/static/img/coda-logo%403x.png)
+<a href="https://codaprotocol.com">
+	<img width="200" src="https://github.com/CodaProtocol/coda/blob/develop/frontend/website/public/static/img/coda-logo@3x.png" alt="Coda Logo" />
+</a>
+<hr/>
 
 # Repository Purpose 
 This repository is designed to show an opinionated example on how to operate a network of Coda Daemons. It implements the entire node lifecycle using a modern Infrastructure as Code toolset. Community contributions are warmly encouraged, please see the [contribution guidelines](#to-do) for more details. The code is designed to be as modular as possible, allowing the end-user to "pick and choose" the parts they would like to incorporate into their own infrastructure stack. 
