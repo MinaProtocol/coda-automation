@@ -69,6 +69,13 @@ variable "agent_config" {
   default     = {}
 }
 
+variable "agent_resources" {
+  type        = map(string)
+
+  description = "Buildkite agent compute resource request and limits (see: https://github.com/buildkite/charts/blob/master/stable/agent/values.yaml#L74)"
+  default     = {}
+}
+
 # Module Vars: Helm Chart
 variable "helm_chart" {
   type    = string

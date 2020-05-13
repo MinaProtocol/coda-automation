@@ -29,6 +29,7 @@ locals {
     }
     privateSshKey             =   var.agent_vcs_privkey
 
+    resources                 =   var.agent_resources
     # Using Buildkite's config-setting <=> env-var mapping, convert all k,v's stored within agent config as extra environment variables
     # in order to specify custom configuration (see: https://buildkite.com/docs/agent/v3/configuration#configuration-settings)
     extraEnv                  =   concat(local.google_access_config,
