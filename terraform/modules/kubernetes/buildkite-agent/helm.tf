@@ -10,33 +10,33 @@ locals {
   # set Google Cloud application credentials created for this cluster to inject into agent runtime
   google_access_config = [
     {
-      "name": "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON",
-      "value": var.k8s_provider == "google" ? google_service_account_key.buildkite_svc_key.private_key : var.google_app_credentials
+      "name" : "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON",
+      "value" : var.k8s_provider == "google" ? google_service_account_key.buildkite_svc_key.private_key : var.google_app_credentials
     }
   ]
 }
 locals {
   buildkite_agent_vars = {
-    replicaCount              =   var.num_agents
+    replicaCount = var.num_agents
     image = {
-      tag                     =   var.agent_version
-      pullPolicy              =   var.image_pullPolicy
+      tag        = var.agent_version
+      pullPolicy = var.image_pullPolicy
     }
 
     agent = {
-      token                   =   var.agent_token
-      meta                    =   var.agent_meta
+      token = var.agent_token
+      meta  = var.agent_meta
     }
-    privateSshKey             =   var.agent_vcs_privkey
+    privateSshKey = var.agent_vcs_privkey
 
-    resources                 =   var.agent_resources
+    resources = var.agent_resources
     # Using Buildkite's config-setting <=> env-var mapping, convert all k,v's stored within agent config as extra environment variables
     # in order to specify custom configuration (see: https://buildkite.com/docs/agent/v3/configuration#configuration-settings)
-    extraEnv                  =   concat(local.google_access_config,
-                                  [for key, value in var.agent_config : {"name": "BUILDKITE_$(upper(key))", "value": value}])
-    
+    extraEnv = concat(local.google_access_config,
+    [for key, value in var.agent_config : { "name" : "BUILDKITE_$(upper(key))", "value" : value }])
+
     dind = {
-      enabled                 =   var.dind_enabled
+      enabled = var.dind_enabled
     }
   }
 }
@@ -52,9 +52,9 @@ resource "helm_release" "buildkite_agents" {
   chart      = var.helm_chart
   namespace  = kubernetes_namespace.cluster_namespace.metadata[0].name
 
-  values     = [
+  values = [
     yamlencode(local.buildkite_agent_vars)
   ]
 
-  wait       = false
+  wait = false
 }

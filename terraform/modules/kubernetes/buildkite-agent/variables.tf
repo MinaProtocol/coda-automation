@@ -30,40 +30,40 @@ variable "cluster_name" {
 }
 
 variable "agent_token" {
-  type    = string
+  type = string
 
   description = "Agent registration token for connection with Buildkite server"
 }
 
 variable "agent_vcs_privkey" {
-  type    = string
+  type = string
 
   description = "Agent SSH private key for access to (Github) version control system"
 }
 
 variable "agent_meta" {
-  type    = string
+  type = string
 
   description = "Agent metadata or labels used to managed job scheduling"
-  default = "role=agent"
+  default     = "role=agent"
 }
 
 variable "agent_version" {
-  type    = string
+  type = string
 
   description = "Version of Buildkite agent to launch"
-  default = "3"
+  default     = "3"
 }
 
 variable "num_agents" {
-  type    = number
+  type = number
 
   description = "Number of Buildkite agents to provision"
-  default = 1
+  default     = 1
 }
 
 variable "agent_config" {
-  type        = map(string)
+  type = map(string)
 
   description = "Buildkite agent configuration options (see: https://github.com/buildkite/charts/blob/master/stable/agent/README.md#configuration)"
   default     = {}
@@ -76,50 +76,50 @@ variable "agent_resources" {
 
 # Module Vars: Helm Chart
 variable "helm_chart" {
-  type    = string
+  type = string
 
   description = "Identifier of Buildkite helm chart."
-  default = "buildkite/agent"
+  default     = "buildkite/agent"
 }
 
 variable "helm_repo" {
-  type    = string
+  type = string
 
   description = "Repository URL where to locate the requested chart Buildkite chart."
-  default = "https://buildkite.github.io/charts/"
+  default     = "https://buildkite.github.io/charts/"
 }
 
 variable "chart_version" {
-  type    = string
+  type = string
 
   description = "Buildkite chart version to provision"
-  default = "0.3.14"
+  default     = "0.3.14"
 }
 
 variable "cluster_namespace" {
   type = string
 
   description = "K8s namespace to install the cluster release into"
-  default = "default"
+  default     = "default"
 }
 
 variable "k8s_provider" {
   type = string
 
   description = "K8s resource provider"
-  default = "minikube"
+  default     = "minikube"
 }
 
 variable "image_pullPolicy" {
-  type    = string
+  type = string
 
   description = "Agent container image pull policy"
-  default = "IfNotPresent"
+  default     = "IfNotPresent"
 }
 
 variable "dind_enabled" {
-  type    = bool
+  type = bool
 
   description = "Whether to enable a preset Docker-in-Docker(DinD) pod configuration"
-  default = true
+  default     = true
 }
