@@ -1,5 +1,5 @@
 <p><img src="https://www.thepracticalsysadmin.com/wp-content/uploads/2020/03/terraform1.png" alt="Terraform logo" title="terraform" align="left" height="60" /></p>
-<p><img src="https://buildkite.com/docs/assets/integrations/github_enterprise/buildkite-square-58030b96d33965fef1e4ea8c6d954f6422a2489e25b6b670b521421fcaa92088.png" alt="buildkite logo" title="buildkite" align="right" height="100" /></p>
+<p><img src="https://buildkite.com/docs/assets/integrations/github_enterprise/buildkite-square-58030b96d33965fef1e4ea8c6d954f6422a2489e25b6b670b521421fcaa92088.png" alt="buildkite logo" title="buildkite" align="right" height="70" /></p>
 
 # Buildkite Agent Terraform Module (K8s/GKE)
 
@@ -21,7 +21,7 @@
 | agent\_meta | Agent metadata or labels used to managed job scheduling (comma-separated list) | `string` | `role=agent` | no |
 | agent\_version | Version of Buildkite agent to launch | `string` | 3 | no |
 | num\_agents | Number of agents to provision within cluster | `number` | `1` | no |
-| agent\_config | `Buildkite agent configuration options (see: https://github.com/buildkite/charts/blob/master/stable/agent/README.md#configuration)` | `map(string)` | `{}` | no |
+| agent\_config | Buildkite agent configuration options (see: https://github.com/buildkite/charts/blob/master/stable/agent/README.md#configuration) | `map(string)` | `{}` | no |
 | helm\_repo | Repository URL where to locate the requested chart Buildkite chart. | `string` | `https://buildkite.github.io/charts/` | no |
 | chart\_version | Buildkite chart version to provision | `string` | `0.3.14` | no |
 | cluster\_namespace | K8s namespace to install the cluster release into | `string` | `default` | no |
