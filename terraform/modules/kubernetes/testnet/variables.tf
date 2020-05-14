@@ -97,12 +97,12 @@ variable "num_fish_block_producers" {
   default = 5
 }
 
-variable "whale_block_producer_log_level" {
+variable "log_level" {
   type    = string
   default = "Trace"
 }
 
-variable "whale_block_producer_log_received_blocks" {
+variable "log_received_blocks" {
   type    = bool
   default = false
 }
@@ -115,17 +115,6 @@ variable "whale_block_producers_with_bots" {
 variable "whale_block_producers_with_points" {
   type = list(number)
   default = []
-}
-
-
-variable "fish_block_producer_log_level" {
-  type    = string
-  default = "Trace"
-}
-
-variable "fish_block_producer_log_received_blocks" {
-  type    = bool
-  default = false
 }
 
 variable "fish_block_producer_label_offset" {
