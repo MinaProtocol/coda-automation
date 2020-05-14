@@ -52,7 +52,7 @@ locals {
 
 # Main resource entrypoint
 module "buildkite-east-small" {
-  source = "../../modules/kubernetes/buildkite-agent"
+  source = "../../modules/kubernetes/buildkite-agent/src"
 
   google_app_credentials = var.google_credentials
   k8s_cluster_name       = "coda-infra-east"
@@ -70,7 +70,7 @@ module "buildkite-east-small" {
 }
 
 module "buildkite-east-large" {
-  source = "../../modules/kubernetes/buildkite-agent"
+  source = "../../modules/kubernetes/buildkite-agent/src"
 
   google_app_credentials = var.google_credentials
   k8s_cluster_name       = "coda-infra-east"
