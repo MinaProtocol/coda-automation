@@ -17,7 +17,7 @@
 |------|-------------|------|---------|:-----:|
 | cluster\_name | Name of K8s Buildkite Agent cluster to provision | `string` | n/a | yes |
 | agent\_token | Agent registration token for connection with Buildkite server | `string` | n/a | yes |
-| agent\_vcs\_privkey | Agent SSH private key for access to (Github) version control system | `string` | n/a | no |
+| agent\_vcs\_privkey | Agent SSH private key for access to (Github) version control system | `string` | n/a | yes |
 | agent\_meta | Agent metadata or labels used to managed job scheduling (comma-separated list) | `string` | `role=agent` | no |
 | agent\_version | Version of Buildkite agent to launch | `string` | 3 | no |
 | num\_agents | Number of agents to provision within cluster | `number` | `1` | no |
