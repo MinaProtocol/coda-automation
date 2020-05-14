@@ -11,7 +11,7 @@ locals {
   google_access_config = [
     {
       "name" : "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON",
-      "value" : var.k8s_provider == "google" ? google_service_account_key.buildkite_svc_key.private_key : var.google_app_credentials
+      "value" : var.k8s_provider == local.gke_context ? google_service_account_key.buildkite_svc_key[0].private_key : var.google_app_credentials
     }
   ]
 }
