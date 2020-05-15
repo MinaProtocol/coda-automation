@@ -6,10 +6,24 @@ var $$Storage = require("@google-cloud/storage");
 var client = new $$Storage.Storage();
 
 function upload(bucket, filename, contents) {
-  client.bucket(bucket).file(filename).save(contents, /* record */[/* resumable */false]);
+  client.bucket(bucket).file(filename).save(contents, /* record */[/* resumable */false], (function (err) {
+          console.log(err);
+          return /* () */0;
+        }));
   return /* () */0;
 }
 
+function list(bucket, cb) {
+  return client.bucket(bucket).getFiles(cb);
+}
+
+var keypairBucket = "network-keypairs";
+
+var keysetBucket = "network-keysets";
+
 exports.client = client;
+exports.keypairBucket = keypairBucket;
+exports.keysetBucket = keysetBucket;
 exports.upload = upload;
+exports.list = list;
 /* client Not a pure module */

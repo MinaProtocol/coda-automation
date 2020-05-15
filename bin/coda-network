@@ -5,7 +5,7 @@ var lib;
 try {
   lib = require("../src/Index.js");
 } catch (err) {
-  console.error(err);
+  if (process.env.DEBUG) console.error(err);
   console.log("\n\nUnable to load library, please run `yarn build`.");
 }
 

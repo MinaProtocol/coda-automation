@@ -8,13 +8,7 @@ var keypairsDir = "/usr/local/var/coda-network/keypairs/";
 
 var keysetsDir = "/usr/local/var/coda-network/keysets/";
 
-var keypairBucket = "network-keypairs";
-
-var keysetBucket = "network-keysets";
-
 exports.baseDir = baseDir;
 exports.keypairsDir = keypairsDir;
 exports.keysetsDir = keysetsDir;
-exports.keypairBucket = keypairBucket;
-exports.keysetBucket = keysetBucket;
 /* No side effect */

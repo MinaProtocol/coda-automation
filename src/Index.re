@@ -2,20 +2,37 @@ open Cmdliner;
 %raw
 "process.argv.shift()";
 
-let createKey = () =>
-  print_endline(
-    "Created key: " ++ Key.(create(~nickname=None)->publicKeyGet),
-  );
+/**
+ * Keypair commands.
+ */
+
+let createKey = () => {
+  open Keypair;
+  let keypair = create(~nickname=None);
+  print_endline("Created key: " ++ keypair->publicKeyGet);
+  write(keypair);
+  print_endline("Saved to disk");
+};
 let createKey_t = Term.(const(createKey) $ const());
 
-let usage = () => print_endline("Please provide a COMMAND");
-let usage_t = Term.(const(usage) $ const());
+/**
+ * Keyset commands.
+ */
 
 let createKeyset = () => {
-  Keyset.(create("testset") |> write);
+  open Keyset;
+  let keyset = create("testset");
+  write(keyset);
   ();
 };
 let createKeyset_t = Term.(const(createKeyset) $ const());
+
+/**
+ * Usage command.
+ */
+
+let usage = () => print_endline("Please provide a COMMAND");
+let usage_t = Term.(const(usage) $ const());
 
 let commands = [
   (createKey_t, Term.info("keypair")),

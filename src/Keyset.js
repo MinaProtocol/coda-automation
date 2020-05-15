@@ -2,6 +2,7 @@
 'use strict';
 
 var Fs = require("fs");
+var Cache$CodaNetwork = require("./Cache.js");
 var Config$CodaNetwork = require("./Config.js");
 var Storage$CodaNetwork = require("./Storage.js");
 
@@ -13,9 +14,8 @@ function create(name) {
 }
 
 function write(keyset) {
-  var filename = Config$CodaNetwork.keysetsDir + keyset.name;
-  Fs.writeFileSync(filename, JSON.stringify(keyset), "utf8");
-  return /* () */0;
+  var filename = keyset.name;
+  return Cache$CodaNetwork.write(/* Keyset */1, filename, JSON.stringify(keyset));
 }
 
 function load(name) {
@@ -44,7 +44,7 @@ function appendKeypair(keyset, keypair) {
 }
 
 function upload(keyset) {
-  return Storage$CodaNetwork.upload(Config$CodaNetwork.keysetBucket, keyset.name, JSON.stringify(keyset));
+  return Storage$CodaNetwork.upload(Storage$CodaNetwork.keysetBucket, keyset.name, JSON.stringify(keyset));
 }
 
 exports.create = create;

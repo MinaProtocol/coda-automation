@@ -22,13 +22,8 @@ let create = name => t(~name, ~entries=[]);
  * Writes a keyset to disk.
  */
 let write = keyset => {
-  let filename = Config.keysetsDir ++ keyset->nameGet;
-  Node.Fs.writeFileSync(
-    filename,
-    Js.Json.stringify(keyset |> toJson),
-    `utf8,
-  );
-  ();
+  let filename = keyset->nameGet;
+  Cache.write(Cache.Keyset, ~filename, Js.Json.stringify(keyset |> toJson));
 };
 
 /**
@@ -64,10 +59,13 @@ let appendKeypair = (keyset, keypair) =>
     ~nickname=keypair->nicknameGet,
   );
 
+/**
+ * Uploads a serialized keyset to Storage.
+ */
 let upload: t => unit =
   keyset => {
     Storage.upload(
-      ~bucket=Config.keysetBucket,
+      ~bucket=Storage.keysetBucket,
       ~filename=keyset->nameGet,
       Js.Json.stringify(keyset |> toJson),
     );

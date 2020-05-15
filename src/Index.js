@@ -3,18 +3,29 @@
 
 var Curry = require("bs-platform/lib/js/curry.js");
 var Cmdliner = require("@elliottcable/bs-cmdliner/src/cmdliner.bs.js");
-var Key$CodaNetwork = require("./Key.js");
 var Keyset$CodaNetwork = require("./Keyset.js");
+var Keypair$CodaNetwork = require("./Keypair.js");
 
 process.argv.shift()
 ;
 
 function createKey(param) {
-  console.log("Created key: " + Key$CodaNetwork.create(undefined).publicKey);
+  var keypair = Keypair$CodaNetwork.create(undefined);
+  console.log("Created key: " + keypair.publicKey);
+  Keypair$CodaNetwork.write(keypair);
+  console.log("Saved to disk");
   return /* () */0;
 }
 
 var createKey_t = Cmdliner.Term.$(Cmdliner.Term.$$const(createKey), Cmdliner.Term.$$const(/* () */0));
+
+function createKeyset(param) {
+  var keyset = Keyset$CodaNetwork.create("testset");
+  Keyset$CodaNetwork.write(keyset);
+  return /* () */0;
+}
+
+var createKeyset_t = Cmdliner.Term.$(Cmdliner.Term.$$const(createKeyset), Cmdliner.Term.$$const(/* () */0));
 
 function usage(param) {
   console.log("Please provide a COMMAND");
@@ -22,13 +33,6 @@ function usage(param) {
 }
 
 var usage_t = Cmdliner.Term.$(Cmdliner.Term.$$const(usage), Cmdliner.Term.$$const(/* () */0));
-
-function createKeyset(param) {
-  Keyset$CodaNetwork.write(Keyset$CodaNetwork.create("testset"));
-  return /* () */0;
-}
-
-var createKeyset_t = Cmdliner.Term.$(Cmdliner.Term.$$const(createKeyset), Cmdliner.Term.$$const(/* () */0));
 
 var commands_000 = /* tuple */[
   createKey_t,
@@ -89,9 +93,9 @@ var arg = Cmdliner.Term.exit;
 
 exports.createKey = createKey;
 exports.createKey_t = createKey_t;
-exports.usage = usage;
-exports.usage_t = usage_t;
 exports.createKeyset = createKeyset;
 exports.createKeyset_t = createKeyset_t;
+exports.usage = usage;
+exports.usage_t = usage_t;
 exports.commands = commands;
 /*  Not a pure module */
