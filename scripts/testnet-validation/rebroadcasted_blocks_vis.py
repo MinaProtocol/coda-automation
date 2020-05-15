@@ -15,6 +15,7 @@ import time
 import logging
 import random
 import backoff 
+import mpld3
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -76,10 +77,7 @@ def retrieve_log(logs: list, key: str, value: str, subkey: str = "metadata"):
             return log
     return None
 
-@cli.command()
-@click.pass_context
-def visualize_gossip_net(ctx):
-    # Python Logging Config
+def _process_log_iterator(ctx, log_iterator):
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     logger = logging.getLogger()
 
@@ -87,29 +85,39 @@ def visualize_gossip_net(ctx):
     received_block_logs = {}
     rebroadcasting_block_logs = {}
 
+    nBlocks = 0
+
     if ctx.obj["cache_logs"]:
         outfile = open(ctx.obj["cache_file"], "w")
 
-    if ctx.obj["in_file"] == None:
-        BLOCK_LOG_FILTER = ' "Received a block $block from $sender" OR "Rebroadcasting $state_hash" OR "Broadcasting new state over gossip net"'
-        log_iterator = fetch_logs(namespace=ctx.obj["namespace"], hours_ago=ctx.obj["hours_ago"], log_filter=BLOCK_LOG_FILTER)
-    else:
-        fd = open(ctx.obj["in_file"], "r")
-        log_iterator = map(lambda x: json.loads(x), fd.readlines())
-
-
-
-    nBlocks = 0
     # Sort entries into Rebroadcast and Received logs
     for entry in log_iterator:  # API call(s)
         if ctx.obj["cache_logs"] and ctx.obj["in_file"] == None:
             outfile.write(json.dumps(entry, default=str) + "\n")
 
+        nBlocks += 1
+        if ctx.obj["in_file"] == None:
+            time.sleep(.04)
+        if nBlocks % 100 == 0:
+            logger.info(f"Processing {nBlocks}")
+        if nBlocks == ctx.obj["max_entries"]:
+            break
+
         json_payload = entry[-1]
         labels = entry[1]
         message = json_payload["message"]
         metadata = json_payload["metadata"]
-        state_hash = metadata["state_hash"]
+        try:
+            #print(message)
+            state_hash = metadata["state_hash"]
+        # In case we get old incompatible logs
+        except KeyError:
+            # EJECT!!
+            #print(json.dumps(metadata, indent=2))
+            continue
+
+        if labels == None:
+            continue
 
         if "Broadcasting new state" in message:
             if state_hash in broadcasting_block_logs:
@@ -129,77 +137,71 @@ def visualize_gossip_net(ctx):
             else:
                 rebroadcasting_block_logs[state_hash] = [{**json_payload, **labels}]
 
-        nBlocks += 1
-        if ctx.obj["in_file"] == None:
-            time.sleep(.04)
-        if nBlocks % 100 == 0:
-            logger.info(f"Processing {nBlocks}")
-        if nBlocks == ctx.obj["max_entries"]:
-            break
-
-
     # process Broadcasting block logs for each block
-    for index, key in enumerate(broadcasting_block_logs.keys()):
+    #print(rebroadcasting_block_logs.keys())
+    for index, key in enumerate(rebroadcasting_block_logs.keys()):
         network_graph = nx.DiGraph()
-        print(key)
+        #print(key)
         # Register the original block broadcast
-        for entry in broadcasting_block_logs[key]:
-            message = entry["message"]
-            metadata = entry["metadata"]
-            state_hash = metadata["state_hash"]
-            peer_id = metadata["peer_id"]
+        # for entry in broadcasting_block_logs[key]:
+        #     message = entry["message"]
+        #     metadata = entry["metadata"]
+        #     state_hash = metadata["state_hash"]
+        #     peer_id = metadata["peer_id"]
 
-            # Mark the originator node as the block creator
-            network_graph.add_node(peer_id, color="orange", label=entry["k8s-pod/app"])
+        #     # Mark the originator node as the block creator
+        #     network_graph.add_node(peer_id, color="orange", label=entry["k8s-pod/app"])
 
         # Build all the edges
-        for receive_log in received_block_logs[key]:
-            message = receive_log["message"]
-            metadata = receive_log["metadata"]
-            state_hash = metadata["state_hash"]
+        if key in received_block_logs:
+            for receive_log in received_block_logs[key]:
+                message = receive_log["message"]
+                metadata = receive_log["metadata"]
+                state_hash = metadata["state_hash"]
 
-            sender = metadata["sender"]["Remote"]
-            receiver = {
-                "host": metadata["host"],
-                "peer_id": metadata["peer_id"]
-            }
+                sender = metadata["sender"]["Remote"]
+                receiver = {
+                    "host": metadata["host"],
+                    "peer_id": metadata["peer_id"]
+                }
 
-            # Get corresponding Broadcast or Rebroadcast log
-            broadcast_log = retrieve_log(broadcasting_block_logs[key], "peer_id", sender["peer_id"])
-            rebroadcast_log = retrieve_log(rebroadcasting_block_logs[key], "peer_id", sender["peer_id"])
-            #   i.e. a rebroadcast log with the current `state_hash` and the sender's peer_id
-            # if it exists, edge_weight = received_timestamp - broadcast_timestamp
-            import dateutil.parser
+                # Get corresponding Broadcast or Rebroadcast log
+                broadcast_log = None# retrieve_log(broadcasting_block_logs[key], "peer_id", sender["peer_id"])
+                rebroadcast_log = retrieve_log(rebroadcasting_block_logs[key], "peer_id", sender["peer_id"])
+                #   i.e. a rebroadcast log with the current `state_hash` and the sender's peer_id
+                # if it exists, edge_weight = received_timestamp - broadcast_timestamp
+                import dateutil.parser
 
-            if broadcast_log:
-                send_time = broadcast_log["timestamp"]
-                print("Broadcast Log")
-            elif rebroadcast_log:
-                send_time = rebroadcast_log["timestamp"]
-                print("Rebroadcast Log")
-            else:
-                # No log found, can't make an edge
-                print("No Sender log found...")
-                if sender["peer_id"] not in network_graph:
-                    network_graph.add_node(sender["peer_id"], color="white", label=sender["peer_id"][0:12])
-                if receiver["peer_id"] not in network_graph:
-                    network_graph.add_node(receiver["peer_id"], label=receive_log["k8s-pod/app"])
-                network_graph.add_edge(sender["peer_id"], receiver["peer_id"], weight=-1)
-                continue
+                if broadcast_log:
+                    send_time = broadcast_log["timestamp"]
+                    #print("Broadcast Log")
+                elif rebroadcast_log:
+                    send_time = rebroadcast_log["timestamp"]
+                    #print("Rebroadcast Log")
+                else:
+                    # No log found, can't make an edge
+                    #print("No Sender log found...")
+                    if sender["peer_id"] not in network_graph:
+                        network_graph.add_node(sender["peer_id"], color="white", label=sender["peer_id"][0:12])
+                    if receiver["peer_id"] not in network_graph:
+                        #print(receive_log["k8s-pod/app"].replace("-block-producer-", "-"))
+                        network_graph.add_node(receiver["peer_id"], label=receive_log["k8s-pod/app"].replace("-block-producer-", "-"))
+                    network_graph.add_edge(sender["peer_id"], receiver["peer_id"], weight=-1)
+                    continue
 
-            send_datetime = dateutil.parser.isoparse(send_time)
-            receive_datetime = dateutil.parser.isoparse(receive_log["timestamp"])
+                send_datetime = dateutil.parser.isoparse(send_time)
+                receive_datetime = dateutil.parser.isoparse(receive_log["timestamp"])
 
-            edge_weight = (receive_datetime - send_datetime).microseconds / 1000
+                edge_weight = (receive_datetime - send_datetime).microseconds / 1000
 
-            network_graph.add_node(receiver["peer_id"], label=receive_log["k8s-pod/app"])
-            network_graph.add_edge(sender["peer_id"], receiver["peer_id"], weight=edge_weight)
+                network_graph.add_node(receiver["peer_id"], label=receive_log["k8s-pod/app"].replace("-block-producer-", "-"))
+                network_graph.add_edge(sender["peer_id"], receiver["peer_id"], weight=edge_weight)
 
-            # print(f"Sender: {sender['peer_id']}")
-            # print(f"Receiver: {receiver['peer_id']}")
-            # print(f"Sent: {send_datetime}")
-            # print(f"Rece: {receive_datetime}")
-            # print(edge_weight)
+                # print(f"Sender: {sender['peer_id']}")
+                # print(f"Receiver: {receiver['peer_id']}")
+                # print(f"Sent: {send_datetime}")
+                # print(f"Rece: {receive_datetime}")
+                # print(edge_weight)
 
 
 
@@ -222,16 +224,40 @@ def visualize_gossip_net(ctx):
         degree = network_graph.degree()
 
 
-        pos=nx.planar_layout(network_graph)
-        blockchain_length = broadcasting_block_logs[key][0]["metadata"]["message"][1]["protocol_state"]["body"]["consensus_state"]["blockchain_length"]
-        plt.figure(index, figsize=(15,8))
-        plt.title(f"Block: {key[0:8]}, Height: {blockchain_length}")
-        nx.draw(network_graph, pos, node_color=color_map, labels=labels, node_size=500)
-        edge_labels=dict([((u,v,),str(d['weight']) + " ms")
-             for u,v,d in network_graph.edges(data=True)])
-        nx.draw_networkx_edge_labels(network_graph,pos,edge_labels=edge_labels)
 
-    plt.show()
+#        blockchain_length = broadcasting_block_logs[key][0]["metadata"]["message"][1]["protocol_state"]["body"]["consensus_state"]["blockchain_length"]
+        pos=nx.nx_agraph.graphviz_layout(network_graph, prog="dot", args="-Nk=30")
+        plt.figure(figsize=(100,20))
+        plt.title(f"Block: {key[0:8]} ") #Height: {blockchain_length}")
+        nx.draw(network_graph, pos)
+        # edge_labels=dict([((u,v,),str(d['weight']) + " ms")
+        #  for u,v,d in network_graph.edges(data=True)])
+#            nx.draw_networkx_edge_labels(network_graph,edge_labels=edge_labels)
+        plt.show()
+
+@cli.command()
+@click.pass_context
+def visualize_gossip_net(ctx):
+    # Python Logging Config
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    logger = logging.getLogger()
+
+    if ctx.obj["cache_logs"]:
+        outfile = open(ctx.obj["cache_file"], "w")
+
+    if ctx.obj["in_file"] == None:
+        #BROADCAST_LOG_FILTER = ' "Broadcasting new state over gossip net" AND jsonPayload.metadata.state_hash:""'
+        BLOCK_LOG_FILTER = ' "Broadcasting new state over gossip net" OR "Rebroadcasting $state_hash" OR "Received a block $block from $sender" AND jsonPayload.metadata.state_hash:"" AND jsonPayload.metadata.state_hash:""'
+        #broadcast_log_iterator = fetch_logs(namespace=ctx.obj["namespace"], hours_ago=ctx.obj["hours_ago"], log_filter=BROADCAST_LOG_FILTER)
+        log_iterator = fetch_logs(namespace=ctx.obj["namespace"], hours_ago=ctx.obj["hours_ago"], log_filter=BLOCK_LOG_FILTER)
+    else:
+        fd = open(ctx.obj["in_file"], "r")
+        log_iterator = map(lambda x: json.loads(x), fd.readlines())
+
+    _process_log_iterator(ctx, log_iterator)
+
+
+
 
 
         # # process rebroadcasting block logs for each block
