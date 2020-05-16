@@ -34,3 +34,16 @@ let write = keypair => {
     Belt.Option.getWithDefault(keypair->nicknameGet, keypair->publicKeyGet);
   Cache.write(Cache.Keypair, ~filename, toJson(keypair)->Js.Json.stringify);
 };
+
+/**
+ * Writes the serialized keypair to disk.
+ */
+let uplaod = keypair => {
+  let filename =
+    Belt.Option.getWithDefault(keypair->nicknameGet, keypair->publicKeyGet);
+  Storage.upload(
+    ~bucket=Storage.keypairBucket,
+    ~filename,
+    toJson(keypair)->Js.Json.stringify,
+  );
+};

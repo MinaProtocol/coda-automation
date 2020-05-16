@@ -21,7 +21,7 @@ var createKey_t = Cmdliner.Term.$(Cmdliner.Term.$$const(createKey), Cmdliner.Ter
 
 function createKeyset(param) {
   var keyset = Keyset$CodaNetwork.create("testset");
-  Keyset$CodaNetwork.write(keyset);
+  Keyset$CodaNetwork.upload(keyset);
   return /* () */0;
 }
 

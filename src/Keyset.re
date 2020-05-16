@@ -64,9 +64,14 @@ let appendKeypair = (keyset, keypair) =>
  */
 let upload: t => unit =
   keyset => {
+    let filename = keyset->nameGet;
     Storage.upload(
       ~bucket=Storage.keysetBucket,
-      ~filename=keyset->nameGet,
+      ~filename,
       Js.Json.stringify(keyset |> toJson),
+      (err) => switch (Js.Exn.message(err)) {
+        | Some(msg) => Js.log({j|Error $msg|j})
+        | None => Js.log({j|An unkown error occured while uploading keyset $filename.|j})
+        }
     );
   };

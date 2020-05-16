@@ -22,7 +22,7 @@ let createKey_t = Term.(const(createKey) $ const());
 let createKeyset = () => {
   open Keyset;
   let keyset = create("testset");
-  write(keyset);
+  upload(keyset);
   ();
 };
 let createKeyset_t = Term.(const(createKeyset) $ const());

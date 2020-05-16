@@ -29,11 +29,23 @@ let client = create();
 let keypairBucket = "network-keypairs";
 let keysetBucket = "network-keysets";
 
-let upload = (~bucket, ~filename, contents) => {
-  client
-  ->getBucket(bucket)
-  ->getFile(filename)
-  ->save(contents, {resumable: false}, err => Js.log(err));
+let upload = (~bucket, ~filename, contents, onError) => {
+  Js.log({j|Uploading $filename|j});
+  try (
+    client
+    ->getBucket(bucket)
+    ->getFile(filename)
+    ->save(contents, {resumable: false}, onError)
+  ) {
+  | Js.Exn.Error(e) =>
+    switch (Js.Exn.message(e)) {
+    | Some(msg) => Js.log({j|Error: $msg|j})
+    | None =>
+      Js.log(
+        {j|An unknown error occured while uploading file $filename to $bucket.|j},
+      )
+    }
+  };
 };
 
 let list = (~bucket, cb) => {

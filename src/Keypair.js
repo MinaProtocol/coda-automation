@@ -4,6 +4,7 @@
 var Js_dict = require("bs-platform/lib/js/js_dict.js");
 var Belt_Option = require("bs-platform/lib/js/belt_Option.js");
 var Cache$CodaNetwork = require("./Cache.js");
+var Storage$CodaNetwork = require("./Storage.js");
 var CodaSDK$O1labsClientSdk = require("@o1labs/client-sdk/src/CodaSDK.bs.js");
 
 function create(nickname) {
@@ -20,9 +21,18 @@ function write(keypair) {
   return Cache$CodaNetwork.write(/* Keypair */0, filename, JSON.stringify(keypair));
 }
 
+function uplaod(keypair) {
+  var filename = Belt_Option.getWithDefault(keypair.nickname, keypair.publicKey);
+  var partial_arg = JSON.stringify(keypair);
+  return (function (param) {
+      return Storage$CodaNetwork.upload(Storage$CodaNetwork.keypairBucket, filename, partial_arg, param);
+    });
+}
+
 var CodaSDK = 0;
 
 exports.CodaSDK = CodaSDK;
 exports.create = create;
 exports.write = write;
+exports.uplaod = uplaod;
 /* Cache-CodaNetwork Not a pure module */

@@ -44,7 +44,17 @@ function appendKeypair(keyset, keypair) {
 }
 
 function upload(keyset) {
-  return Storage$CodaNetwork.upload(Storage$CodaNetwork.keysetBucket, keyset.name, JSON.stringify(keyset));
+  var filename = keyset.name;
+  return Storage$CodaNetwork.upload(Storage$CodaNetwork.keysetBucket, filename, JSON.stringify(keyset), (function (err) {
+                var match = err.message;
+                if (match !== undefined) {
+                  console.log("Error " + (String(match) + ""));
+                  return /* () */0;
+                } else {
+                  console.log("An unkown error occured while uploading keyset " + (String(filename) + "."));
+                  return /* () */0;
+                }
+              }));
 }
 
 exports.create = create;
