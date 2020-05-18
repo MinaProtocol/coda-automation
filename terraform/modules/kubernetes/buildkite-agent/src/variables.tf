@@ -39,6 +39,7 @@ variable "agent_vcs_privkey" {
   type = string
 
   description = "Agent SSH private key for access to (Github) version control system"
+  default     = ""
 }
 
 variable "agent_meta" {

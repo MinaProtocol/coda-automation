@@ -9,10 +9,29 @@ terraform {
   }
 }
 
-# Required input variables -- recommended to express as environment vars (e.g. TF_VAR_***)
+#
+# REQUIRED: input variables -- recommended to express as environment vars (e.g. TF_VAR_***)
+#
 variable "agent_token" {}
-variable "agent_vcs_privkey" {}
-variable "google_credentials" {}
+
+#
+# OPTIONAL: input variables
+#
+# Set to override service account privileges with custom profile
+variable "agent_vcs_privkey" {
+  type = string
+
+  description = "version control private key for secured repository access"
+  default     = ""
+}
+
+# Set to override service account privileges with custom profile
+variable "google_credentials" {
+  type = string
+
+  description = "custom operator Google Cloud Platform access credentials"
+  default     = ""
+}
 
 # Determines k8s resource provider context
 variable "k8s_provider" {
@@ -35,7 +54,7 @@ locals {
           memory = "1G"
         }
       }
-      count = 1
+      count = 10
     }
     large = {
       name = "large"
@@ -45,7 +64,7 @@ locals {
           memory = "5G"
         }
       }
-      count = 1
+      count = 5
     }
   }
 }

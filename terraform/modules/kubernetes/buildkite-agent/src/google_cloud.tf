@@ -2,6 +2,7 @@ data "google_client_config" "current" {}
 
 locals {
   gke_context = "gke"
+  gke_project = "o1labs-192920"
 }
 
 resource "google_service_account" "gcp_buildkite_account" {
@@ -10,7 +11,7 @@ resource "google_service_account" "gcp_buildkite_account" {
   account_id   = "buildkite-${var.cluster_name}"
   display_name = "Buildkite Agent Cluster (${var.cluster_name}) service account"
   description  = "GCS service account for Buildkite cluster ${var.cluster_name}"
-  project      = "o1labs-192920"
+  project      = local.gke_project
 }
 
 resource "google_service_account_key" "buildkite_svc_key" {

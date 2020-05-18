@@ -1,9 +1,4 @@
-provider helm {
-  kubernetes {
-    config_context         = var.k8s_provider
-    config_context_cluster = var.k8s_provider
-  }
-}
+provider helm {}
 
 # Helm Buildkite Agent Spec
 locals {
