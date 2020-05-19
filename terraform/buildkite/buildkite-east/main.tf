@@ -9,10 +9,29 @@ terraform {
   }
 }
 
-# Required input variables -- recommended to express as environment vars (e.g. TF_VAR_***)
+#
+# REQUIRED: input variables -- recommended to express as environment vars (e.g. TF_VAR_***)
+#
 variable "agent_token" {}
-variable "agent_vcs_privkey" {}
-variable "google_credentials" {}
+
+#
+# OPTIONAL: input variables
+#
+# Set to override service account privileges with custom profile
+variable "agent_vcs_privkey" {
+  type = string
+
+  description = "version control private key for secured repository access"
+  default     = ""
+}
+
+# Set to override service account privileges with custom profile
+variable "google_credentials" {
+  type = string
+
+  description = "custom operator Google Cloud Platform access credentials"
+  default     = ""
+}
 
 # Determines k8s resource provider context
 variable "k8s_provider" {
@@ -35,7 +54,7 @@ locals {
           memory = "1G"
         }
       }
-      count = 1
+      count = 10
     }
     large = {
       name = "large"
@@ -45,7 +64,7 @@ locals {
           memory = "5G"
         }
       }
-      count = 1
+      count = 5
     }
   }
 }
@@ -59,12 +78,12 @@ module "buildkite-east-small" {
   k8s_cluster_region     = "us-east1"
   k8s_provider           = var.k8s_provider
 
-  cluster_name      = "buildkite-east-small"
+  cluster_name      = "gke-east-small"
   cluster_namespace = "bk-${local.cluster_types.small.name}"
 
   agent_token       = var.agent_token
   agent_vcs_privkey = var.agent_vcs_privkey
-  agent_meta        = "cluster=buildkite-east,size=${local.cluster_types.small.name},queue=default"
+  agent_meta        = "cluster=gke-east,size=${local.cluster_types.small.name},queue=default"
   num_agents        = local.cluster_types.small.count
   agent_resources   = local.cluster_types.small.resources
 }
@@ -77,12 +96,12 @@ module "buildkite-east-large" {
   k8s_cluster_region     = "us-east1"
   k8s_provider           = var.k8s_provider
 
-  cluster_name      = "buildkite-east-large"
+  cluster_name      = "gke-east-large"
   cluster_namespace = "bk-${local.cluster_types.large.name}"
 
   agent_token       = var.agent_token
   agent_vcs_privkey = var.agent_vcs_privkey
-  agent_meta        = "cluster=buildkite-east,size=${local.cluster_types.large.name},queue=default"
+  agent_meta        = "cluster=gke-east,size=${local.cluster_types.large.name},queue=default"
   num_agents        = local.cluster_types.large.count
   agent_resources   = local.cluster_types.large.resources
 }

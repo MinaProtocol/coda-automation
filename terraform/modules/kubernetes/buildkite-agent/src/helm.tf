@@ -1,20 +1,20 @@
-provider helm {
-  kubernetes {
-    config_context         = var.k8s_provider
-    config_context_cluster = var.k8s_provider
-  }
-}
+provider helm {}
 
 # Helm Buildkite Agent Spec
 locals {
+  google_access_config = jsonencode({
+    type = "service_account"
+    private_key = ""
+  })
   # set Google Cloud application credentials created for this cluster to inject into agent runtime
-  google_access_config = [
+  buildkite_config_envs = [
     {
-      "name" : "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON",
-      "value" : var.k8s_provider == local.gke_context ? google_service_account_key.buildkite_svc_key[0].private_key : var.google_app_credentials
+      "name" = "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON"
+      "value" = var.k8s_provider != local.gke_context ? var.google_app_credentials : base64decode(google_service_account_key.buildkite_svc_key[0].private_key)
     }
   ]
 }
+
 locals {
   buildkite_agent_vars = {
     replicaCount = var.num_agents
@@ -32,7 +32,7 @@ locals {
     resources = var.agent_resources
     # Using Buildkite's config-setting <=> env-var mapping, convert all k,v's stored within agent config as extra environment variables
     # in order to specify custom configuration (see: https://buildkite.com/docs/agent/v3/configuration#configuration-settings)
-    extraEnv = concat(local.google_access_config,
+    extraEnv = concat(local.buildkite_config_envs,
     [for key, value in var.agent_config : { "name" : "BUILDKITE_$(upper(key))", "value" : value }])
 
     dind = {
