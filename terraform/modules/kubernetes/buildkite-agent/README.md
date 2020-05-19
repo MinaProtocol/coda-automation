@@ -17,7 +17,7 @@
 |------|-------------|------|---------|:-----:|
 | cluster\_name | Name of K8s Buildkite Agent cluster to provision | `string` | n/a | yes |
 | agent\_token | Agent registration token for connection with Buildkite server | `string` | n/a | yes |
-| agent\_vcs\_privkey | Agent SSH private key for access to (Github) version control system | `string` | n/a | yes |
+| agent\_vcs\_privkey | Agent SSH private key for access to (Github) version control system | `string` | n/a | no |
 | agent\_meta | Agent metadata or labels used to managed job scheduling (comma-separated list) | `string` | `role=agent` | no |
 | agent\_version | Version of Buildkite agent to launch | `string` | 3 | no |
 | num\_agents | Number of agents to provision within cluster | `number` | `1` | no |
@@ -41,7 +41,7 @@
 ## Example Apply
 
 ```bash
-$ TF_VAR_agent_token=<bk-agent-token> TF_VAR_k8s_provider=gke terraform apply
+$ TF_VAR_agent_token=<bk-agent-token> TF_VAR_cluster_name=example TF_VAR_k8s_provider=gke terraform apply
 
 # Note: TF_VAR_k8s_provider expects a 'gke' context to exist within the operator's .kube config if set
 $ kubectl config rename-context <existing-gke-context> gke
