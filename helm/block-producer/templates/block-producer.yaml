@@ -1,5 +1,17 @@
 {{ range $i, $e := until (.Values.numProducers | int)}}
 apiVersion: apps/v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $.Values.blockProoducerClass }}-block-producer-pvc-{{ add $i 1 $.Values.labelOffset }}
+spec:
+  storageClassName: ?
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1 $.Values.labelOffset }}
@@ -242,7 +254,9 @@ spec:
       - name: wallet-keys
         emptyDir: {}
       - name: config-dir
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: {{ $.Values.blockProducerClass }}-block-producer-pvc-{{ add $i 1 $.Values.labelOffset }}
+        
 ---
 {{ end }}
 ---
