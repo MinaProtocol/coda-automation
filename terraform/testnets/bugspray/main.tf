@@ -25,7 +25,7 @@ locals {
 
 variable "coda_image" {
   type = string
-default = "codaprotocol/coda-daemon:0.0.12-beta-feature-bump-genesis-timestamp-0548420"
+  default = "codaprotocol/coda-daemon:0.0.12-beta-feature-bump-genesis-timestamp-81d1f1f"
 }
 
 variable "coda_agent_image" {
@@ -40,7 +40,7 @@ variable "coda_bots_image" {
 
 variable "coda_points_image" {
   type = string
-  default = "codaprotocol/coda-points-hack:32b.1"
+  default = "codaprotocol/coda-points-hack:32b.3"
 }
 
 variable "coda_faucet_amount" {

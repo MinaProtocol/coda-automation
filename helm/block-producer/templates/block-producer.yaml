@@ -151,6 +151,8 @@ spec:
             value: "0.0.0.0"
           - name: CODA_GRAPHQL_PORT
             value: "3085"
+          - name: CODA_TESTNET_NAME
+            value: {{ $.Values.testnetName }}
           - name: GOOGLE_CLOUD_STORAGE_API_KEY
             valueFrom:
               secretKeyRef:
