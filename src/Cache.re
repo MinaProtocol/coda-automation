@@ -7,17 +7,19 @@ let baseDir = "/usr/local/var/coda-network";
 let keypairsDir = baseDir ++ "/keypairs/";
 let keysetsDir = baseDir ++ "/keysets/";
 
+let modelDir = model =>
+  switch (model) {
+  | Keypair => keypairsDir
+  | Keyset => keysetsDir
+  };
+
 [@bs.module "mkdirp"] external mkdirp: string => unit = "sync";
 
 /**
  * Writes an arbitrary string to cache.
  */
 let write = (model, ~filename, contents) => {
-  let base =
-    switch (model) {
-    | Keypair => keypairsDir
-    | Keyset => keysetsDir
-    };
+  let base = modelDir(model);
   mkdirp(base);
 
   let path = base ++ filename;
@@ -32,3 +34,8 @@ let write = (model, ~filename, contents) => {
     }
   };
 };
+
+/**
+ * Lists all the entries for given model.
+ */
+let list = model => modelDir(model)->Node.Fs.readdirSync;

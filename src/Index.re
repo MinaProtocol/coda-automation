@@ -13,7 +13,10 @@ let keypair = action => {
       let keypair = create(~nickname=None);
       print_endline(keypair->publicKeyGet);
       write(keypair);
-    | _ => print_endline("Unkown ACTION.")
+    | Some(message) =>
+      print_endline("Unsupported action: " ++ message);
+      print_endline("See --help");
+    | _ => print_endline("Please provide an ACTION. See --help.")
     }
   );
 };
@@ -38,6 +41,9 @@ let keyset = (action, keysetName) => {
     print_endline("Created keyset: " ++ name);
   | (Some("create"), None) =>
     print_endline("Please provide a name for the keyset with -n/--name");
+  | (Some("ls"), _)
+  | (Some("list"), _) =>
+    Js.log(list());
   | (Some("upload"), Some(name)) =>
     let keyset = load(name);
     switch (keyset) {

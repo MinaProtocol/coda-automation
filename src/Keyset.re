@@ -42,7 +42,7 @@ let load = name => {
   let filename = Cache.keysetsDir ++ name;
   if (existsSync(filename)) {
     let raw = readFileSync(filename, `utf8);
-    Some(Js.Json.parseExn(raw) -> fromJson);
+    Some(Js.Json.parseExn(raw)->fromJson);
   } else {
     None;
   };
@@ -71,20 +71,26 @@ let appendKeypair = (keyset, keypair) =>
 /**
  * Uploads a serialized keyset to Storage.
  */
-let upload: t => unit =
-  keyset => {
-    let filename = keyset->nameGet;
-    Storage.upload(
-      ~bucket=Storage.keysetBucket,
-      ~filename,
-      Js.Json.stringify(keyset |> toJson),
-      err =>
-      switch (Js.Exn.message(err)) {
-      | Some(msg) => Js.log({j|Error $msg|j})
-      | None =>
-        Js.log(
-          {j|An unkown error occured while uploading keyset $filename.|j},
-        )
-      }
-    );
-  };
+let upload = keyset => {
+  let filename = keyset->nameGet;
+  Storage.upload(
+    ~bucket=Storage.keysetBucket,
+    ~filename,
+    Js.Json.stringify(keyset |> toJson),
+    err =>
+    switch (Js.Exn.message(err)) {
+    | Some(msg) => Js.log({j|Error $msg|j})
+    | None =>
+      Js.log({j|An unkown error occured while uploading keyset $filename.|j})
+    }
+  );
+};
+
+/**
+ * Returns a list of all keyset names.
+ */
+let list = () => {
+  let _storage = Storage.list(~bucket=Storage.keysetBucket);
+  let cache = Cache.list(Cache.Keyset);
+  cache
+};
