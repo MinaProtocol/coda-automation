@@ -12,6 +12,7 @@ type t = {
 };
 
 external toJson: t => Js.Json.t = "%identity";
+external fromJson: Js.Json.t => t = "%identity";
 
 /**
  * Returns a new empty keyset.
@@ -31,7 +32,7 @@ let write = keyset => {
  */
 let load = name => {
   open Node.Fs;
-  let filename = Config.keysetsDir ++ name;
+  let filename = Cache.keysetsDir ++ name;
   if (existsSync(filename)) {
     Some(readFileSync(filename, `utf8));
   } else {

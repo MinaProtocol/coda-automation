@@ -9,11 +9,14 @@ open Cmdliner;
 let createKey = () => {
   open Keypair;
   let keypair = create(~nickname=None);
-  print_endline("Created key: " ++ keypair->publicKeyGet);
+  print_endline(keypair->publicKeyGet);
   write(keypair);
-  print_endline("Saved to disk");
 };
-let createKey_t = Term.(const(createKey) $ const());
+let keypairCommand = {
+  let doc = "Create, upload and download keypairs.";
+  let sdocs = Manpage.s_common_options;
+  (Term.(const(createKey) $ const()), Term.info("keypair", ~doc, ~sdocs));
+};
 
 /**
  * Keyset commands.
@@ -22,22 +25,28 @@ let createKey_t = Term.(const(createKey) $ const());
 let createKeyset = () => {
   open Keyset;
   let keyset = create("testset");
-  upload(keyset);
+  write(keyset);
   ();
 };
-let createKeyset_t = Term.(const(createKeyset) $ const());
+let keysetCommand = {
+  let doc = "Generate and manage shared keysets.";
+  let sdocs = Manpage.s_common_options;
+  (Term.(const(createKeyset) $ const()), Term.info("keyset", ~doc, ~sdocs));
+};
 
 /**
- * Usage command.
+ * Default command.
  */
 
-let usage = () => print_endline("Please provide a COMMAND");
-let usage_t = Term.(const(usage) $ const());
+let defaultCommand = {
+  let doc = "simple utility for spinning up coda testnets";
+  let sdocs = Manpage.s_common_options;
+  (
+    Term.(ret(const(_ => `Help((`Pager, None))) $ const())),
+    Term.info("coda-network", ~version="0.1.0-alpha", ~doc, ~sdocs),
+  );
+};
 
-let commands = [
-  (createKey_t, Term.info("keypair")),
-  (createKeyset_t, Term.info("keyset")),
-];
+let commands = [keypairCommand, keysetCommand];
 
-let () =
-  Term.exit @@ Term.eval_choice((usage_t, Term.info("usage")), commands);
+let () = Term.exit @@ Term.eval_choice(defaultCommand, commands);

@@ -8,10 +8,7 @@
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
-    "clean": "bsb -clean-world",
-    "make-jsoo": "make -C ../.. client_sdk && cp ../../_build/default/src/app/client_sdk/client_sdk.bc.js src",
-    "prepublishOnly": "yarn make-jsoo && yarn build && yarn test",
-    "test": "tsc test/Test.ts && node test/Test.js"
+    "clean": "bsb -clean-world"
   },
   "keywords": [
     "coda",
@@ -34,6 +31,7 @@
   "dependencies": {
     "@elliottcable/bs-cmdliner": "^10.2.2",
     "@google-cloud/storage": "^5.0.0",
-    "@o1labs/client-sdk": "^0.1.2"
+    "@o1labs/client-sdk": "^0.1.2",
+    "mkdirp": "^1.0.4"
   }
 }

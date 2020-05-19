@@ -7,15 +7,20 @@ let baseDir = "/usr/local/var/coda-network";
 let keypairsDir = baseDir ++ "/keypairs/";
 let keysetsDir = baseDir ++ "/keysets/";
 
+[@bs.module "mkdirp"] external mkdirp: string => unit = "sync";
+
 /**
  * Writes an arbitrary string to cache.
  */
 let write = (model, ~filename, contents) => {
-  let path =
+  let base =
     switch (model) {
-    | Keypair => keypairsDir ++ filename
-    | Keyset => keysetsDir ++ filename
+    | Keypair => keypairsDir
+    | Keyset => keysetsDir
     };
+  mkdirp(base);
+
+  let path = base ++ filename;
   try (Node.Fs.writeFileSync(path, contents, `utf8)) {
   | Js.Exn.Error(e) =>
     switch (Js.Exn.message(e)) {
