@@ -78,12 +78,12 @@ module "buildkite-east-small" {
   k8s_cluster_region     = "us-east1"
   k8s_provider           = var.k8s_provider
 
-  cluster_name      = "buildkite-east-small"
+  cluster_name      = "gke-east-small"
   cluster_namespace = "bk-${local.cluster_types.small.name}"
 
   agent_token       = var.agent_token
   agent_vcs_privkey = var.agent_vcs_privkey
-  agent_meta        = "cluster=buildkite-east,size=${local.cluster_types.small.name},queue=default"
+  agent_meta        = "cluster=gke-east,size=${local.cluster_types.small.name},queue=default"
   num_agents        = local.cluster_types.small.count
   agent_resources   = local.cluster_types.small.resources
 }
@@ -96,12 +96,12 @@ module "buildkite-east-large" {
   k8s_cluster_region     = "us-east1"
   k8s_provider           = var.k8s_provider
 
-  cluster_name      = "buildkite-east-large"
+  cluster_name      = "gke-east-large"
   cluster_namespace = "bk-${local.cluster_types.large.name}"
 
   agent_token       = var.agent_token
   agent_vcs_privkey = var.agent_vcs_privkey
-  agent_meta        = "cluster=buildkite-east,size=${local.cluster_types.large.name},queue=default"
+  agent_meta        = "cluster=gke-east,size=${local.cluster_types.large.name},queue=default"
   num_agents        = local.cluster_types.large.count
   agent_resources   = local.cluster_types.large.resources
 }
