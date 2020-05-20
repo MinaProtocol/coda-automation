@@ -1,0 +1,24 @@
+images:
+  daemon: codaprotocol/coda-daemon:0.0.12-beta-new-genesis-01eca9b
+  userAgent: "test"
+  bots: "yo"
+network:
+  name: coda-testnet
+  version: "0.0.13-beta-7cee1ba"
+  baseExternalPort: 10600
+  seedPeers:
+    - /dns4/seed-one.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWP7fTKbyiUcYJGajQDpCFo2rDexgTHFJTxCH8jvcL1eAH
+    - /dns4/seed-two.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWL9ywbiXNfMBqnUKHSB1Q1BaHFNUzppu6JLMVn9TTPFSA
+secrets:
+  privateKeyPassword: naughty blue worm
+blockProducers:
+  - class: "Whale"
+    keypair:
+      publicKey: "whale-keys/0.pub"
+      privateKey: "whale-keys/0"
+    sidecars: ["Bots"]
+  - class: "Fish"
+    keypair:
+      publicKey: "fish-keys/0.pub"
+      privateKey: "fish-keys/0"
+    sidecars: ["UserAgent"]
