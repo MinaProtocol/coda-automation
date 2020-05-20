@@ -11,12 +11,12 @@ let keypair = action => {
     switch (action) {
     | Some("create") =>
       let keypair = create(~nickname=None);
-      print_endline(keypair->publicKeyGet);
+      Js.log(keypair.publicKey);
       write(keypair);
     | Some(message) =>
-      print_endline("Unsupported action: " ++ message);
-      print_endline("See --help");
-    | _ => print_endline("Please provide an ACTION. See --help.")
+      Js.log("Unsupported action: " ++ message);
+      Js.log("See --help");
+    | _ => Js.log("Please provide an ACTION. See --help.")
     }
   );
 };
@@ -31,28 +31,23 @@ let keypairCommand = {
 /**
  * Keyset commands.
  */
-
 let keyset = (action, keysetName) => {
   open Keyset;
   switch (action, keysetName) {
   | (Some("create"), Some(name)) =>
-    let keyset = create(name);
-    write(keyset);
-    print_endline("Created keyset: " ++ name);
+    create(name)->write;
+    Js.log("Created keyset: " ++ name);
   | (Some("create"), None) =>
-    print_endline("Please provide a name for the keyset with -n/--name");
+    Js.log("Please provide a name for the keyset with -n/--name")
   | (Some("ls"), _)
-  | (Some("list"), _) =>
-    Js.log(list());
+  | (Some("list"), _) => Js.log(list())
   | (Some("upload"), Some(name)) =>
     let keyset = load(name);
     switch (keyset) {
-    | Some(keyset) =>
-      upload(keyset);
-      print_endline("Uploaded keyset: " ++ name);
-    | None => print_endline("The provided keyset does not exist.")
+    | Some(keyset) => upload(keyset)
+    | None => Js.log("The provided keyset does not exist.")
     };
-  | (_, _) => print_endline("Unsupported ACTION.")
+  | (_, _) => Js.log("Unsupported ACTION.")
   };
   ();
 };
@@ -86,4 +81,12 @@ let defaultCommand = {
 
 let commands = [keypairCommand, keysetCommand];
 
-let () = Term.exit @@ Term.eval_choice(defaultCommand, commands);
+// Don't exit until all callbacks/Promises resolve.
+let safeExit = result => {
+  switch (result) {
+  | `Ok(_) => ()
+  | res => Term.exit(res)
+  };
+};
+
+let _ = safeExit @@ Term.eval_choice(defaultCommand, commands);

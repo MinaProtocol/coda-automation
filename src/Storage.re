@@ -11,7 +11,8 @@ external create: unit => t = "Storage";
 
 [@bs.send] external getBucket: (t, string) => bucket = "bucket";
 
-[@bs.send] external getFile: (bucket, string) => file = "file";
+[@bs.send]
+external uploadFile: (bucket, string) => Js.Promise.t(unit) = "upload";
 
 [@bs.send]
 external getFiles:
@@ -29,23 +30,22 @@ let client = create();
 let keypairBucket = "network-keypairs";
 let keysetBucket = "network-keysets";
 
-let upload = (~bucket, ~filename, contents, onError) => {
-  Js.log({j|Uploading $filename|j});
-  try (
-    client
-    ->getBucket(bucket)
-    ->getFile(filename)
-    ->save(contents, {resumable: false}, onError)
-  ) {
-  | Js.Exn.Error(e) =>
-    switch (Js.Exn.message(e)) {
-    | Some(msg) => Js.log({j|Error: $msg|j})
-    | None =>
-      Js.log(
-        {j|An unknown error occured while uploading file $filename to $bucket.|j},
-      )
-    }
-  };
+external promiseErrorToExn: Js.Promise.error => Js.Exn.t = "%identity";
+
+let upload = (~bucket, ~filename) => {
+  Js.log2("Upload started:", filename);
+  client->getBucket(bucket)->uploadFile(filename)
+  |> Js.Promise.then_(_ => {
+       Js.log("Upload successful!");
+       Js.Promise.resolve();
+     })
+  |> Js.Promise.catch(e => {
+       switch (Js.Exn.message(e->promiseErrorToExn)) {
+       | Some(msg) => Js.log2("Upload error:", msg)
+       | None => Js.log("Unkown error while uploading file.")
+       };
+       Js.Promise.resolve();
+     });
 };
 
 let list = (~bucket, cb) => {

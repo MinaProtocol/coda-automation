@@ -22,11 +22,11 @@
   "main": "src/SDKWrapper.js",
   "types": "src/SDKWrapper.d.ts",
   "devDependencies": {
-    "bs-platform": "^6.2",
+    "bs-platform": "^7.2",
     "gentype": "^3.22.0"
   },
   "peerDependencies": {
-    "bs-platform": "^6.2"
+    "bs-platform": "^7.2"
   },
   "dependencies": {
     "@elliottcable/bs-cmdliner": "^10.2.2",

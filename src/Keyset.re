@@ -1,14 +1,12 @@
 // Each entry consists of a publicKey and an optional nickname
-[@bs.deriving abstract]
 type entry = {
   publicKey: string,
   nickname: option(string),
 };
 
-[@bs.deriving abstract]
 type t = {
   name: string,
-  entries: list(entry),
+  entries: array(entry),
 };
 
 external toJson: t => Js.Json.t = "%identity";
@@ -24,14 +22,16 @@ type actions =
 /**
  * Returns a new empty keyset.
  */
-let create = name => t(~name, ~entries=[]);
+let create = name => {name, entries: [||]};
+
+let stringify = keyset => keyset->toJson->Js.Json.stringify;
 
 /**
  * Writes a keyset to disk.
  */
 let write = keyset => {
-  let filename = keyset->nameGet;
-  Cache.write(Cache.Keyset, ~filename, Js.Json.stringify(keyset |> toJson));
+  let filename = keyset.name;
+  Cache.write(Cache.Keyset, ~filename, stringify(keyset));
 };
 
 /**
@@ -52,10 +52,10 @@ let load = name => {
  * Adds a publicKey to a keyset with an optional nickname.
  */
 let append = (keyset, ~publicKey, ~nickname) => {
-  t(
-    ~name=keyset->nameGet,
-    ~entries=[entry(~publicKey, ~nickname), ...keyset->entriesGet],
-  );
+  {
+    name: keyset.name,
+    entries: Array.append([|{publicKey, nickname}|], keyset.entries),
+  };
 };
 
 /**
@@ -64,26 +64,17 @@ let append = (keyset, ~publicKey, ~nickname) => {
 let appendKeypair = (keyset, keypair) =>
   append(
     keyset,
-    ~publicKey=keypair->publicKeyGet,
-    ~nickname=keypair->nicknameGet,
+    ~publicKey=keypair.publicKey,
+    ~nickname=keypair.nickname,
   );
 
 /**
  * Uploads a serialized keyset to Storage.
  */
 let upload = keyset => {
-  let filename = keyset->nameGet;
-  Storage.upload(
-    ~bucket=Storage.keysetBucket,
-    ~filename,
-    Js.Json.stringify(keyset |> toJson),
-    err =>
-    switch (Js.Exn.message(err)) {
-    | Some(msg) => Js.log({j|Error $msg|j})
-    | None =>
-      Js.log({j|An unkown error occured while uploading keyset $filename.|j})
-    }
-  );
+  let filename = Cache.keysetsDir ++ keyset.name;
+  let _ = Storage.upload(~bucket=Storage.keysetBucket, ~filename);
+  ();
 };
 
 /**
@@ -92,5 +83,5 @@ let upload = keyset => {
 let list = () => {
   let _storage = Storage.list(~bucket=Storage.keysetBucket);
   let cache = Cache.list(Cache.Keyset);
-  cache
+  cache;
 };
