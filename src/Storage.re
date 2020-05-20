@@ -4,7 +4,7 @@
 
 type t;
 type bucket;
-type file;
+type file = {name: string};
 
 [@bs.module "@google-cloud/storage"] [@bs.new]
 external create: unit => t = "Storage";
@@ -15,9 +15,7 @@ external create: unit => t = "Storage";
 external uploadFile: (bucket, string) => Js.Promise.t(unit) = "upload";
 
 [@bs.send]
-external getFiles:
-  (bucket, (option(Js.Exn.t), option(file) => unit)) => file =
-  "getFiles";
+external getFiles: bucket => Js.Promise.t(array(array(file))) = "getFiles";
 
 type saveOpts = {resumable: bool};
 [@bs.send]
@@ -48,6 +46,16 @@ let upload = (~bucket, ~filename) => {
      });
 };
 
-let list = (~bucket, cb) => {
-  client->getBucket(bucket)->getFiles(cb);
+let list = (~bucket) => {
+  client->getBucket(bucket)->getFiles
+  |> Js.Promise.then_(response => {
+       response[0] |> Array.map(file => file.name) |> Js.Promise.resolve
+     })
+  |> Js.Promise.catch(e => {
+       switch (Js.Exn.message(e->promiseErrorToExn)) {
+       | Some(msg) => Js.log2("Access error:", msg)
+       | None => Js.log("Unkown error while listing files in bucket.")
+       };
+       Js.Promise.resolve([||]);
+     });
 };

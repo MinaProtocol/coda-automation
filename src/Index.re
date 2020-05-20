@@ -31,16 +31,33 @@ let keypairCommand = {
 /**
  * Keyset commands.
  */
-let keyset = (action, keysetName) => {
+let keyset = (action, keysetName, publicKey) => {
   open Keyset;
   switch (action, keysetName) {
   | (Some("create"), Some(name)) =>
     create(name)->write;
     Js.log("Created keyset: " ++ name);
-  | (Some("create"), None) =>
-    Js.log("Please provide a name for the keyset with -n/--name")
+  | (Some("create"), None)
+  | (Some("add"), None) =>
+    Js.log("Please provide a keyset name with -n/--name")
+  | (Some("add"), Some(name)) =>
+    switch (load(name), publicKey) {
+    | (Some(keyset), Some(publicKey)) =>
+      append(keyset, ~publicKey, ~nickname=None)->write;
+      ();
+    | (None, _) => Js.log("The provided keyset does not exist.")
+    | (Some(_), None) =>
+      Js.log("Please provide a publicKey with -k/--publickey")
+    }
   | (Some("ls"), _)
-  | (Some("list"), _) => Js.log(list())
+  | (Some("list"), _) =>
+    let _ =
+      list()
+      |> Js.Promise.then_(files => {
+           Js.log(files);
+           Js.Promise.resolve();
+         });
+    ();
   | (Some("upload"), Some(name)) =>
     let keyset = load(name);
     switch (keyset) {
@@ -60,8 +77,18 @@ let keysetCommand = {
     Arg.(
       value(opt(some(string), None, info(["n", "name"], ~docv="NAME")))
     );
+  let publicKey =
+    Arg.(
+      value(
+        opt(
+          some(string),
+          None,
+          info(["k", "publicKey"], ~docv="PUBLICKEY"),
+        ),
+      )
+    );
   (
-    Term.(const(keyset) $ action $ keysetName),
+    Term.(const(keyset) $ action $ keysetName $ publicKey),
     Term.info("keyset", ~doc, ~sdocs),
   );
 };

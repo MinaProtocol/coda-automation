@@ -77,11 +77,18 @@ let upload = keyset => {
   ();
 };
 
+type listResponse = {
+  remote: array(string),
+  local: array(string),
+};
+
 /**
- * Returns a list of all keyset names.
+ * Returns a Promise that resolves with a list of all keyset names.
  */
 let list = () => {
-  let _storage = Storage.list(~bucket=Storage.keysetBucket);
-  let cache = Cache.list(Cache.Keyset);
-  cache;
+  Storage.list(~bucket=Storage.keysetBucket) |> 
+  Js.Promise.then_(remote => {
+    let local = Cache.list(Cache.Keyset);
+    Js.Promise.resolve({ remote, local })
+  });
 };
