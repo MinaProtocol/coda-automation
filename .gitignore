@@ -3,3 +3,5 @@
 ec2.json
 *credentials.json
 token.pickle
+.merlin
+lib
