@@ -8,9 +8,6 @@ type t = {
 
 external toJson: t => Js.Json.t = "%identity";
 
-// HACK: Workaround to get data out of the client sdk
-external parseKeys: CodaSDK.keypair => t = "%identity";
-
 let filename = keypair =>
   Belt.Option.getWithDefault(keypair.nickname, keypair.publicKey);
 
@@ -18,7 +15,7 @@ let filename = keypair =>
  * Generates a new keypair with an optional nickname
  */
 let create = (~nickname: option(string)) => {
-  let keys = CodaSDK.genKeys()->parseKeys;
+  let keys = CodaSDK.genKeys();
   {publicKey: keys.publicKey, privateKey: keys.privateKey, nickname};
 };
 
