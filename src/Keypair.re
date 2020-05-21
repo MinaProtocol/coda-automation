@@ -6,8 +6,6 @@ type t = {
   nickname: option(string),
 };
 
-external toJson: t => Js.Json.t = "%identity";
-
 let filename = keypair =>
   Belt.Option.getWithDefault(keypair.nickname, keypair.publicKey);
 

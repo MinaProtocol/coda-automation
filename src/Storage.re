@@ -40,7 +40,7 @@ let upload = (~bucket, ~filename) => {
   |> Js.Promise.catch(e => {
        switch (Js.Exn.message(e->promiseErrorToExn)) {
        | Some(msg) => Js.log2("Upload error:", msg)
-       | None => Js.log("Unkown error while uploading file.")
+       | None => Js.log("Unknown error while uploading file.")
        };
        Js.Promise.resolve();
      });
@@ -54,7 +54,7 @@ let list = (~bucket) => {
   |> Js.Promise.catch(e => {
        switch (Js.Exn.message(e->promiseErrorToExn)) {
        | Some(msg) => Js.log2("Access error:", msg)
-       | None => Js.log("Unkown error while listing files in bucket.")
+       | None => Js.log("Unknown error while listing files in bucket.")
        };
        Js.Promise.resolve([||]);
      });
