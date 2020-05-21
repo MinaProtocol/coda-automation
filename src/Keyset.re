@@ -9,7 +9,6 @@ type t = {
   entries: array(entry),
 };
 
-external toJson: t => Js.Json.t = "%identity";
 external fromJson: Js.Json.t => t = "%identity";
 
 type actions =
@@ -24,7 +23,7 @@ type actions =
  */
 let create = name => {name, entries: [||]};
 
-let stringify = keyset => keyset->toJson->Js.Json.stringify;
+let stringify = keyset => keyset->Js.Json.stringifyAny->Belt.Option.getExn;
 
 /**
  * Writes a keyset to disk.
@@ -62,11 +61,7 @@ let append = (keyset, ~publicKey, ~nickname) => {
  * Adds a keypair to a keyset based on it's publicKey.
  */
 let appendKeypair = (keyset, keypair) =>
-  append(
-    keyset,
-    ~publicKey=keypair.publicKey,
-    ~nickname=keypair.nickname,
-  );
+  append(keyset, ~publicKey=keypair.publicKey, ~nickname=keypair.nickname);
 
 /**
  * Uploads a serialized keyset to Storage.
@@ -86,9 +81,9 @@ type listResponse = {
  * Returns a Promise that resolves with a list of all keyset names.
  */
 let list = () => {
-  Storage.list(~bucket=Storage.keysetBucket) |> 
-  Js.Promise.then_(remote => {
-    let local = Cache.list(Cache.Keyset);
-    Js.Promise.resolve({ remote, local })
-  });
+  Storage.list(~bucket=Storage.keysetBucket)
+  |> Js.Promise.then_(remote => {
+       let local = Cache.list(Cache.Keyset);
+       Js.Promise.resolve({remote, local});
+     });
 };
