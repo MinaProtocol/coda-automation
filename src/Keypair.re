@@ -42,7 +42,7 @@ let write = keypair => {
 /**
  * Writes the serialized keypair to disk.
  */
-let uplaod = keypair => {
+let upload = keypair => {
   let _ =
     Storage.upload(
       ~bucket=Storage.keypairBucket,

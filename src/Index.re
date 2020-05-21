@@ -14,7 +14,7 @@ let keypair = action => {
       Js.log(keypair.publicKey);
       write(keypair);
     | Some(message) =>
-      Js.log("Unsupported action: " ++ message);
+      Js.log2("Unsupported action:", message);
       Js.log("See --help");
     | _ => Js.log("Please provide an ACTION. See --help.")
     }
