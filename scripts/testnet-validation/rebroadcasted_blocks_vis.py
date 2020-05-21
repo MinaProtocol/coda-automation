@@ -317,7 +317,7 @@ def visualize_blockchain(ctx, count_best_tips, remote_graphql_port):
 
     if ctx.obj["in_file"] == None:
         REBROADCAST_FILTER = ' "Rebroadcasting $state_hash"'
-        log_iterator = fetch_logs(namespace=ctx.obj["namespace"], hours_ago=ctx.obj["hours_ago"], log_filter=REBROADCAST_FILTER)
+        log_iterator = fetch_logs(namespace=ctx.obj["namespace"], hours_ago=ctx.obj["hours_ago"], log_filter=REBROADCAST_FILTER, max_entries=ctx.obj["max_entries"])
     else: 
         fd = open(ctx.obj["in_file"], "r")
         log_iterator = map(lambda x: json.loads(x), fd.readlines())
@@ -329,39 +329,36 @@ def visualize_blockchain(ctx, count_best_tips, remote_graphql_port):
         if ctx.obj["cache_logs"] and ctx.obj["in_file"] == None:
             outfile.write(json.dumps(entry, default=str) + "\n")
 
-        #print(json.dumps(entry, indent=2, default=str))
 
         block = entry[-1]["metadata"]
+        #print(json.dumps(block, indent=2, default=str))
+
         labels = entry[1]
         state_hash = block["state_hash"]
-        parent_hash = block["external_transition"]["protocol_state"]["previous_state_hash"]
+        parent_hash = block["external_transition"]["data"]["protocol_state"]["previous_state_hash"]
 
         logger.debug(json.dumps(block, indent=2, default=str))
         nBlocks += 1
 
         the_blockchain.insertLink(child=state_hash, parent=parent_hash, value=labels["k8s-pod/app"])
-        if ctx.obj["in_file"] == None:
-            time.sleep(.03)
         if nBlocks % 100 == 0:
             logger.info(f"Processing {nBlocks}")
-        if nBlocks == ctx.obj["max_entries"]:
-            break
 
     logger.info("{} Blocks During the inspected timespan.".format(nBlocks))
-    
+
     if count_best_tips:
         print("Loading Best Tips...")
         config.load_kube_config()
 
         # Load Best Tips
         v1 = client.CoreV1Api()
-        pods = v1.list_namespaced_pod(namespace)
+        pods = v1.list_namespaced_pod(ctx.obj["namespace"])
         items = pods.items
         random.shuffle(items)
         items = items[:50]
         def process_pod(args):
             (i, pod) = args
-            if pod.metadata.namespace == namespace and 'block-producer' in pod.metadata.name:
+            if pod.metadata.namespace == ctx.obj["namespace"] and 'block-producer' in pod.metadata.name:
                 logger.info("Processing {}".format(pod.metadata.name))
                 # Set up Port Forward
                 logger.debug("Setting up Port Forward")
@@ -385,26 +382,24 @@ def visualize_blockchain(ctx, count_best_tips, remote_graphql_port):
                     finally:
                         terminate_process(proc)
                     
-                    try:
-                        result = doit()
-                    except requests.exceptions.ConnectionError:
-                        logging.error("Error fetching chain for {}".format(pod.metadata.name))
+                try:
+                    result = doit()
+                except requests.exceptions.ConnectionError:
+                    logging.error("Error fetching chain for {}".format(pod.metadata.name))
                     return
 
-                    if result['data']['bestChain'] == None: 
-                        logging.error("No Best Tip for {}".format(pod.metadata.name))
-                        return
-                    logger.info("Got Response from {}".format(pod.metadata.name))
-                    logger.debug("Contents of Response: {}".format(result))
+                if result['data']['bestChain'] == None:
+                    logging.error("No Best Tip for {}".format(pod.metadata.name))
+                    return
+                logger.info("Got Response from {}".format(pod.metadata.name))
+                logger.debug("Contents of Response: {}".format(result))
 
-                    chain = list(map(lambda a: a["stateHash"], result['data']['bestChain']))
-
-                    return (chain, pod)
+                chain = list(map(lambda a: a["stateHash"], result['data']['bestChain']))
+                return (chain, pod)
         
         with ThreadPoolExecutor(max_workers=8) as pool:
             for result in pool.map(process_pod, enumerate(items)):
                 if result:
-                    #print(result)
                     chain, pod = result
                     the_blockchain.insert(chain, pod.metadata.name[:-16])
 
@@ -462,8 +457,9 @@ class CustomError(Exception):
                       requests.exceptions.ConnectionError),
                       max_tries=3)
 def get_best_chain(port):
-    coda = CodaClient.Client (graphql_host="localhost", graphql_port=port)
+    coda = CodaClient.Client(graphql_host="localhost", graphql_port=port)
     result = coda._send_query (query="query bestChainQuery { bestChain { stateHash } }")
+
     return result
 
 
