@@ -8,7 +8,7 @@ locals {
 resource "google_service_account" "gcp_buildkite_account" {
   count = var.k8s_provider == local.gke_context ? 1 : 0
 
-  account_id   = "buildkite-${var.cluster_name}"
+  account_id   = var.cluster_namespace
   display_name = "Buildkite Agent Cluster (${var.cluster_name}) service account"
   description  = "GCS service account for Buildkite cluster ${var.cluster_name}"
   project      = local.gke_project

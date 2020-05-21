@@ -17,7 +17,16 @@ variable "agent_token" {}
 #
 # OPTIONAL: input variables
 #
-# Set to override service account privileges with custom profile
+
+variable "cluster_name" {
+  type = string
+
+  description = "Name of the cluster to provision"
+  default     = "gke-east"
+}
+
+# Set to override buildkite agents version control (i.e. github) SSH key
+# for private repo access
 variable "agent_vcs_privkey" {
   type = string
 
@@ -78,12 +87,12 @@ module "buildkite-east-small" {
   k8s_cluster_region     = "us-east1"
   k8s_provider           = var.k8s_provider
 
-  cluster_name      = "gke-east-small"
+  cluster_name      = var.cluster_name
   cluster_namespace = "bk-${local.cluster_types.small.name}"
 
   agent_token       = var.agent_token
   agent_vcs_privkey = var.agent_vcs_privkey
-  agent_meta        = "cluster=gke-east,size=${local.cluster_types.small.name},queue=default"
+  agent_meta        = "cluster=${var.cluster_name},size=${local.cluster_types.small.name},queue=default"
   num_agents        = local.cluster_types.small.count
   agent_resources   = local.cluster_types.small.resources
 }
@@ -96,12 +105,12 @@ module "buildkite-east-large" {
   k8s_cluster_region     = "us-east1"
   k8s_provider           = var.k8s_provider
 
-  cluster_name      = "gke-east-large"
+  cluster_name      = var.cluster_name
   cluster_namespace = "bk-${local.cluster_types.large.name}"
 
   agent_token       = var.agent_token
   agent_vcs_privkey = var.agent_vcs_privkey
-  agent_meta        = "cluster=gke-east,size=${local.cluster_types.large.name},queue=default"
+  agent_meta        = "cluster=${var.cluster_name},size=${local.cluster_types.large.name},queue=default"
   num_agents        = local.cluster_types.large.count
   agent_resources   = local.cluster_types.large.resources
 }

@@ -11,6 +11,18 @@ locals {
     {
       "name" = "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON"
       "value" = var.k8s_provider != local.gke_context ? var.google_app_credentials : base64decode(google_service_account_key.buildkite_svc_key[0].private_key)
+    },
+    {
+      "name" = "BUILDKITE_BUILD_PATH"
+      "value" = "/var/buildkite/builds"
+    },
+    {
+      "name" = "BUILDKITE_PLUGINS_PATH"
+      "value" = "/var/buildkite/plugins"
+    },
+    {
+      "name" = "BUILDKITE_HOOKS_PATH"
+      "value" = "/var/buildkite/hooks"
     }
   ]
 }
