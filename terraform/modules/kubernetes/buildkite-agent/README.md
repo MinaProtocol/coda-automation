@@ -36,12 +36,16 @@
 
 | Name | Description |
 |------|-------------|
+| cluster_svc_name | Buildkite cluster Google service account name  |
 | cluster_svc_email | Buildkite cluster Google service account email identifier  |
 
 ## Example Apply
 
 ```bash
-$ TF_VAR_agent_token=<bk-agent-token> TF_VAR_cluster_name=example TF_VAR_k8s_provider=gke terraform apply
+$ TF_VAR_agent_token=<bk-agent-token> \
+  TF_VAR_cluster_name=example \
+  TF_VAR_k8s_provider=gke \
+  terraform apply
 
 # Note: TF_VAR_k8s_provider expects a 'gke' context to exist within the operator's .kube config if set
 $ kubectl config rename-context <existing-gke-context> gke
