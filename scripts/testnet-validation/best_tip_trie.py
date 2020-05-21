@@ -79,6 +79,8 @@ class BestTipTrie:
         else:
             node = self.root
         for hashPart in chain:
+            if hashPart in self.blocks:
+                node = self.blocks[hashPart]
             node = node.insertChild(hashPart)
             self.blocks[hashPart] = node
         node.labels.append(label)
