@@ -68,8 +68,7 @@ let appendKeypair = (keyset, keypair) =>
  */
 let upload = keyset => {
   let filename = Cache.keysetsDir ++ keyset.name;
-  let _ = Storage.upload(~bucket=Storage.keysetBucket, ~filename);
-  ();
+  Storage.upload(~bucket=Storage.keysetBucket, ~filename) |> ignore;
 };
 
 type listResponse = {

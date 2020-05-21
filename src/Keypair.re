@@ -19,11 +19,7 @@ let filename = keypair =>
  */
 let create = (~nickname: option(string)) => {
   let keys = CodaSDK.genKeys()->parseKeys;
-  {
-    publicKey: keys.publicKey,
-    privateKey: keys.privateKey,
-    nickname,
-  };
+  {publicKey: keys.publicKey, privateKey: keys.privateKey, nickname};
 };
 
 /**
@@ -41,10 +37,6 @@ let write = keypair => {
  * Writes the serialized keypair to disk.
  */
 let upload = keypair => {
-  let _ =
-    Storage.upload(
-      ~bucket=Storage.keypairBucket,
-      ~filename=filename(keypair),
-    );
-  ();
+  Storage.upload(~bucket=Storage.keypairBucket, ~filename=filename(keypair))
+  |> ignore;
 };

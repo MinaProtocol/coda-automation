@@ -20,6 +20,7 @@ let keypair = action => {
     }
   );
 };
+
 let keypairCommand = {
   let doc = "Create, upload and download keypairs.";
   let sdocs = Manpage.s_common_options;
@@ -31,6 +32,7 @@ let keypairCommand = {
 /**
  * Keyset commands.
  */
+
 let keyset = (action, keysetName, publicKey) => {
   open Keyset;
   switch (action, keysetName) {
@@ -51,13 +53,12 @@ let keyset = (action, keysetName, publicKey) => {
     }
   | (Some("ls"), _)
   | (Some("list"), _) =>
-    let _ =
-      list()
-      |> Js.Promise.then_(files => {
-           Js.log(files);
-           Js.Promise.resolve();
-         });
-    ();
+    list()
+    |> Js.Promise.then_(files => {
+         Js.log(files);
+         Js.Promise.resolve();
+       })
+    |> ignore
   | (Some("upload"), Some(name)) =>
     let keyset = load(name);
     switch (keyset) {
@@ -68,6 +69,7 @@ let keyset = (action, keysetName, publicKey) => {
   };
   ();
 };
+
 let keysetCommand = {
   let doc = "Generate and manage shared keysets.";
   let sdocs = Manpage.s_common_options;

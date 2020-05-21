@@ -20,7 +20,7 @@ let modelDir = model =>
  */
 let write = (model, ~filename, contents) => {
   let path = Node.Path.join2(modelDir(model), filename);
-  mkdirp(Node.Path.dirname(base));
+  mkdirp(Node.Path.dirname(baseDir));
   try (Node.Fs.writeFileSync(path, contents, `utf8)) {
   | Js.Exn.Error(e) =>
     switch (Js.Exn.message(e)) {
