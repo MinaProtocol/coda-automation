@@ -19,10 +19,8 @@ let modelDir = model =>
  * Writes an arbitrary string to cache.
  */
 let write = (model, ~filename, contents) => {
-  let base = modelDir(model);
-  mkdirp(base);
-
-  let path = base ++ filename;
+  let path = Node.Path.join2(modelDir(model), filename);
+  mkdirp(Node.Path.dirname(base));
   try (Node.Fs.writeFileSync(path, contents, `utf8)) {
   | Js.Exn.Error(e) =>
     switch (Js.Exn.message(e)) {
