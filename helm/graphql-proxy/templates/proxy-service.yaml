@@ -1,0 +1,16 @@
+{{- if $.Values.proxy.active }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{tpl $.Values.proxy.fullname .}}
+  labels:
+    app: {{tpl $.Values.proxy.fullname .}}
+spec:
+  clusterIP: None
+  ports:
+    - port: 443
+      targetPort: {{ $.Values.coda.graphqlPort }}
+      name: graphql
+  selector:
+    app: {{tpl $.Values.proxy.fullname .}}
+{{ end }}

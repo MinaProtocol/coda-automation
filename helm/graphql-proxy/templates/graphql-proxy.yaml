@@ -1,0 +1,96 @@
+{{- if $.Values.proxy.active }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{tpl $.Values.proxy.fullname .}}
+  labels:
+    app: {{tpl $.Values.proxy.fullname .}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{tpl $.Values.proxy.fullname .}}
+  template:
+    metadata:
+      labels:
+        app: {{tpl $.Values.proxy.fullname .}}
+        testnet: {{ $.Values.testnetName }}
+        role: graphql-proxy
+        version: {{ (split ":" $.Values.coda.image)._1 }}
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '10000'
+        prometheus.io/path: '/metrics'
+    spec:
+      containers:
+      - name: proxy
+        resources:
+          limits:
+            memory: 6.0Gi
+          requests:
+            memory: 2.0Gi
+            cpu: 1000m
+        image: {{ $.Values.proxy.image }}
+        command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
+        args: [ "daemon",
+          "-log-level", "Trace",
+          "-log-json",
+          "-config-directory", "/root/.coda-config",
+          "-client-port", "$(DAEMON_CLIENT_PORT)",
+          "-rest-port", "$(DAEMON_REST_PORT)",
+          "-external-port", "$(DAEMON_EXTERNAL_PORT)",
+          "-metrics-port", "$(DAEMON_METRICS_PORT)",
+          "-insecure-rest-port",
+          {{- range $.Values.coda.seedPeers }}
+          "-peer", {{ . | quote }},
+          {{- end }}
+        ]
+        env:
+          - name: CODA_GRAPHQL_HOST
+            value: "localhost"
+          - name: CODA_GRAPHQL_PORT
+            value: {{ .Values.coda.graphqlPort | quote }}
+          - name: EXTERNAL_PORT
+            value: {{ .Values.proxy.externalPort | quote }}
+        ports:
+          - containerPort: {{ .Values.coda.hostPort }}
+            hostPort: {{ .Values.coda.hostPort }}
+            protocol: TCP
+        imagePullPolicy: Always
+      - name: coda
+        resources:
+          limits:
+            memory: 6.0Gi
+          requests:
+            memory: 2.0Gi
+            cpu: 1000m
+        image: {{ $.Values.coda.image }}
+        command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
+        args: [ "daemon",
+          "-log-level", "Trace",
+          "-log-json",
+          "-config-directory", "/root/.coda-config",
+          "-client-port", "$(DAEMON_CLIENT_PORT)",
+          "-rest-port", "$(DAEMON_REST_PORT)",
+          "-external-port", "$(DAEMON_EXTERNAL_PORT)",
+          "-metrics-port", "$(DAEMON_METRICS_PORT)",
+          "-insecure-rest-port",
+          {{- range $.Values.coda.seedPeers }}
+          "-peer", {{ . | quote }},
+          {{- end }}
+        ]
+        env:
+          - name: DAEMON_REST_PORT
+            value: {{ .Values.coda.graphqlPort | quote }}
+          - name: DAEMON_CLIENT_PORT
+            value: "8301"
+          - name: DAEMON_METRICS_PORT
+            value: "10000"
+          - name: DAEMON_EXTERNAL_PORT
+            value: {{ .Values.coda.hostPort | quote }}
+        ports:
+          - containerPort: {{ .Values.coda.hostPort }}
+            hostPort: {{ .Values.coda.hostPort }}
+            protocol: TCP
+        imagePullPolicy: Always
+{{- end }}

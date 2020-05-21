@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: testnet-points-api-ingress
+  namespace: coda-testnet
+#  annotations:
+#    TODO: configure SSL and Global Static IP here
+#    Likely to be implemented @ the Terraform level pre-deploy and passed as Values.yaml
+#    networking.gke.io/managed-certificates: graphql-o1test-net
+#    kubernetes.io/ingress.global-static-ip-name: 
+spec:
+  backend:
+    serviceName: {{tpl $.Values.proxy.fullname .}}
+    servicePort: 443
