@@ -6,11 +6,11 @@ metadata:
   labels:
     app: {{tpl $.Values.proxy.fullname .}}
 spec:
-  clusterIP: None
+  type: NodePort
   ports:
     - port: 443
-      targetPort: {{ $.Values.coda.graphqlPort }}
-      name: graphql
+      targetPort: {{ $.Values.proxy.externalPort }}
+      name: graphql-proxy
   selector:
     app: {{tpl $.Values.proxy.fullname .}}
 {{ end }}

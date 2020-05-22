@@ -31,20 +31,8 @@ spec:
             memory: 2.0Gi
             cpu: 1000m
         image: {{ $.Values.proxy.image }}
-        command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
-        args: [ "daemon",
-          "-log-level", "Trace",
-          "-log-json",
-          "-config-directory", "/root/.coda-config",
-          "-client-port", "$(DAEMON_CLIENT_PORT)",
-          "-rest-port", "$(DAEMON_REST_PORT)",
-          "-external-port", "$(DAEMON_EXTERNAL_PORT)",
-          "-metrics-port", "$(DAEMON_METRICS_PORT)",
-          "-insecure-rest-port",
-          {{- range $.Values.coda.seedPeers }}
-          "-peer", {{ . | quote }},
-          {{- end }}
-        ]
+        command: ["bash", "-c"]
+        args: [ "dockerize -wait tcp://$CODA_GRAPHQL_HOST:$CODA_GRAPHQL_PORT -timeout 90s && yarn start" ]
         env:
           - name: CODA_GRAPHQL_HOST
             value: "localhost"
@@ -53,9 +41,12 @@ spec:
           - name: EXTERNAL_PORT
             value: {{ .Values.proxy.externalPort | quote }}
         ports:
-          - containerPort: {{ .Values.coda.hostPort }}
-            hostPort: {{ .Values.coda.hostPort }}
+          - containerPort: {{ .Values.proxy.externalPort }}
             protocol: TCP
+        readinessProbe:
+          httpGet:
+            port: {{ .Values.proxy.externalPort }}
+            path: /graphql/
         imagePullPolicy: Always
       - name: coda
         resources:
@@ -74,7 +65,7 @@ spec:
           "-rest-port", "$(DAEMON_REST_PORT)",
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
-          "-insecure-rest-port",
+          "-insecure-rest-server",
           {{- range $.Values.coda.seedPeers }}
           "-peer", {{ . | quote }},
           {{- end }}
