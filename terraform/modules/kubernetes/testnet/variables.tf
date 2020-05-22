@@ -180,3 +180,8 @@ variable "agent_max_tx" {
   type    = string
   default = ""
 }
+
+variable "graphql_proxy_image" {
+  type    = string
+  default = "codaprotocol/graphql-public-proxy:0.0.10"
+}
