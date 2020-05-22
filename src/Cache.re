@@ -1,16 +1,19 @@
 type model =
   | Keypair
-  | Keyset;
+  | Keyset
+  | Genesis;
 
 // TODO: Add support for ENV and non Unix environments
 let baseDir = "/usr/local/var/coda-network";
 let keypairsDir = baseDir ++ "/keypairs/";
 let keysetsDir = baseDir ++ "/keysets/";
+let genesisDir = baseDir ++ "/genesis/";
 
 let modelDir = model =>
   switch (model) {
   | Keypair => keypairsDir
   | Keyset => keysetsDir
+  | Genesis => genesisDir
   };
 
 [@bs.module "mkdirp"] external mkdirp: string => unit = "sync";
