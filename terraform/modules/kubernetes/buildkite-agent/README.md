@@ -1,5 +1,5 @@
 <p><img src="https://www.thepracticalsysadmin.com/wp-content/uploads/2020/03/terraform1.png" alt="Terraform logo" title="terraform" align="left" height="60" /></p>
-<p><img src="https://buildkite.com/docs/assets/integrations/github_enterprise/buildkite-square-58030b96d33965fef1e4ea8c6d954f6422a2489e25b6b670b521421fcaa92088.png" alt="buildkite logo" title="buildkite" align="right" height="70" /></p>
+<p><img src="https://buildkite.com/docs/assets/integrations/github_enterprise/buildkite-square-58030b96d33965fef1e4ea8c6d954f6422a2489e25b6b670b521421fcaa92088.png" alt="buildkite logo" title="buildkite" align="right" height="100" /></p>
 
 # Buildkite Agent Terraform Module (K8s/GKE)
 
@@ -38,16 +38,5 @@
 |------|-------------|
 | cluster_svc_name | Buildkite cluster Google service account name  |
 | cluster_svc_email | Buildkite cluster Google service account email identifier  |
-
-## Example Apply
-
-```bash
-$ TF_VAR_agent_token=<bk-agent-token> \
-  TF_VAR_cluster_name=example \
-  TF_VAR_k8s_provider=gke \
-  terraform apply
-
-# Note: TF_VAR_k8s_provider expects a 'gke' context to exist within the operator's .kube config if set
-$ kubectl config rename-context <existing-gke-context> gke
 ```
 
