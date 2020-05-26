@@ -38,4 +38,3 @@
 |------|-------------|
 | cluster_svc_name | Buildkite cluster Google service account name  |
 | cluster_svc_email | Buildkite cluster Google service account email identifier  |
-```
