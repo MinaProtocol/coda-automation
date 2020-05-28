@@ -114,13 +114,11 @@ let genesis = () => {
       |> Js.Promise.then_(config => {
         let ledger = create(config);
         write(ledger);
-        Js.log2("Created genesis ledger version", version(ledger));
+        Js.log2("\nCreated genesis ledger version", version(ledger));
         Js.Promise.resolve()
       })
       |> ignore
-    ); // create([|(ks, 100, Some(ks))|])->write;
-    // let ks = Keyset.load("testset") |> Belt.Option.getExn;
-    // Js.log("Created genesis ledger: ");
+    );
 };
 
 let genesisTerm = {
