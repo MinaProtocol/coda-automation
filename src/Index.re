@@ -112,7 +112,9 @@ let genesis = () => {
     (
       prompt([||])
       |> Js.Promise.then_(config => {
-        create(config)->write;
+        let ledger = create(config);
+        write(ledger);
+        Js.log2("Created genesis ledger version", version(ledger));
         Js.Promise.resolve()
       })
       |> ignore

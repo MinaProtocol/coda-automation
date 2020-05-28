@@ -32,14 +32,17 @@ let create = config => {
       | None => ()
       };
 
-      Array.map(
-        keysetEntry => {
+      Array.mapi(
+        (index, keysetEntry) => {
           let entry: Keyset.entry = keysetEntry;
           {
             pk: entry.publicKey,
             sk: None,
             balance: string_of_int(balance),
-            delegate: None,
+            delegate:
+              Belt.Option.map(delegateKeyset, dks =>
+                dks.entries[index].publicKey
+              ),
           };
         },
         keyset.entries,
@@ -51,44 +54,68 @@ let create = config => {
   );
 };
 
+let version = ledger => string_of_int(Hashtbl.hash(ledger));
+
 /**
  * Writes a genesis ledger to disk.
  */
 let write = ledger => {
   let content = Js.Json.stringifyAny(ledger)->Belt.Option.getExn;
-  Cache.write(Cache.Genesis, ~filename="version", content);
+  Cache.write(Cache.Genesis, ~filename=version(ledger), content);
 };
 
-let promptEntry: unit => Js.Promise.t(config) =
-  () => {
-    Js.Promise.(
-      Prompt.question("Name: ")
-      |> then_(result =>
-           switch (Keyset.load(result)) {
-           | Some(keyset) =>
-             all2((Prompt.question("Keyset balance: "), resolve(keyset)))
+/**
+ * Prompts the user for specific inputs needed for a ledger entry.
+ * Returns a promise that resolves to a ledger entry.
+ */
+let promptEntry = () => {
+  Js.Promise.(
+    Prompt.question("Name: ")
+    |> then_(result =>
+         switch (Keyset.load(result)) {
+         | Some(keyset) =>
+           all2((Prompt.question("Keyset balance: "), resolve(keyset)))
+         | None => reject(Prompt.Invalid_input)
+         }
+       )
+    |> then_(((balance, keyset)) =>
+         switch (int_of_string_opt(balance)) {
+         | Some(bal) =>
+           all2((
+             resolve((keyset, bal)),
+             Prompt.question("Delegate keyset: "),
+           ))
+         | None => reject(Prompt.Invalid_input)
+         }
+       )
+    |> then_((((keyset, balance), delegate)) =>
+         switch (delegate) {
+         | "" => resolve((keyset, balance, None))
+         | delegate =>
+           switch (Keyset.load(delegate)) {
+           | Some(delegateKeyset) =>
+             resolve((keyset, balance, Some(delegateKeyset)))
            | None => reject(Prompt.Invalid_input)
            }
-         )
-      |> then_(((balance, keyset)) =>
-           switch (int_of_string_opt(balance)) {
-           | Some(bal) => resolve((keyset, bal, None))
-           | None => reject(Prompt.Invalid_input)
-           }
-         )
-    );
-  };
+         }
+       )
+  );
+};
 
+/**
+ * Recursively builds up an array of ledger entries by calling promptEntry.
+ * Returns a promise that resolves with the ledger config to be passed to create.
+ */
 let rec prompt = config => {
   open Js.Promise;
   let count = Array.length(config);
-  let title = "Keyset #" ++ string_of_int(count + 1);
+  let title = "\nKeyset #" ++ string_of_int(count + 1);
   Js.log(title);
-  Js.log(String.make(String.length(title), '='));
+  Js.log(String.make(String.length(title) - 1, '='));
   promptEntry()
   |> then_(entry => {
        all2((
-         Prompt.yesNo("Add another keyset? [y/n] "),
+         Prompt.yesNo("\nAdd another keyset? [Y/n] "),
          resolve(Array.append(config, [|entry|])),
        ))
      })
