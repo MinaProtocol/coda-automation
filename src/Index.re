@@ -21,7 +21,7 @@ let keypair = action => {
   );
 };
 
-let keypairCommand = {
+let keypairTerm = {
   let doc = "Create, upload and download keypairs.";
   let sdocs = Manpage.s_common_options;
   let action =
@@ -40,6 +40,7 @@ let keyset = (action, keysetName, publicKey) => {
     create(name)->write;
     Js.log("Created keyset: " ++ name);
   | (Some("create"), None)
+  | (Some("show"), None)
   | (Some("add"), None) =>
     Js.log("Please provide a keyset name with -n/--name")
   | (Some("add"), Some(name)) =>
@@ -50,6 +51,13 @@ let keyset = (action, keysetName, publicKey) => {
     | (None, _) => Js.log("The provided keyset does not exist.")
     | (Some(_), None) =>
       Js.log("Please provide a publicKey with -k/--publickey")
+    }
+  | (Some("show"), Some(name)) =>
+    switch (load(name)) {
+    | Some(keyset) =>
+      Js.log(keyset.entries);
+      ();
+    | None => Js.log("The provided keyset does not exist.")
     }
   | (Some("ls"), _)
   | (Some("list"), _) =>
@@ -70,7 +78,7 @@ let keyset = (action, keysetName, publicKey) => {
   ();
 };
 
-let keysetCommand = {
+let keysetTerm = {
   let doc = "Generate and manage shared keysets.";
   let sdocs = Manpage.s_common_options;
   let action =
@@ -96,6 +104,30 @@ let keysetCommand = {
 };
 
 /**
+ * Keyset commands.
+ */
+
+let genesis = () => {
+  Genesis.
+    (
+      prompt([||])
+      |> Js.Promise.then_(config => {
+        create(config)->write;
+        Js.Promise.resolve()
+      })
+      |> ignore
+    ); // create([|(ks, 100, Some(ks))|])->write;
+    // let ks = Keyset.load("testset") |> Belt.Option.getExn;
+    // Js.log("Created genesis ledger: ");
+};
+
+let genesisTerm = {
+  let doc = "Generate and manage shared keysets.";
+  let sdocs = Manpage.s_common_options;
+  (Term.(const(genesis) $ const()), Term.info("genesis", ~doc, ~sdocs));
+};
+
+/**
  * Default command.
  */
 
@@ -108,7 +140,7 @@ let defaultCommand = {
   );
 };
 
-let commands = [keypairCommand, keysetCommand];
+let commands = [keypairTerm, keysetTerm, genesisTerm];
 
 // Don't exit until all callbacks/Promises resolve.
 let safeExit = result => {
