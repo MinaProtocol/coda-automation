@@ -1,16 +1,19 @@
 type model =
   | Keypair
-  | Keyset;
+  | Keyset
+  | Genesis;
 
 // TODO: Add support for ENV and non Unix environments
 let baseDir = "/usr/local/var/coda-network";
 let keypairsDir = baseDir ++ "/keypairs/";
 let keysetsDir = baseDir ++ "/keysets/";
+let genesisDir = baseDir ++ "/genesis/";
 
 let modelDir = model =>
   switch (model) {
   | Keypair => keypairsDir
   | Keyset => keysetsDir
+  | Genesis => genesisDir
   };
 
 [@bs.module "mkdirp"] external mkdirp: string => unit = "sync";
@@ -19,9 +22,11 @@ let modelDir = model =>
  * Writes an arbitrary string to cache.
  */
 let write = (model, ~filename, contents) => {
-  let path = Node.Path.join2(modelDir(model), filename);
+  let baseDir = modelDir(model);
   mkdirp(Node.Path.dirname(baseDir));
-  try (Node.Fs.writeFileSync(path, contents, `utf8)) {
+
+  let path = Node.Path.join2(baseDir, filename);
+  try(Node.Fs.writeFileSync(path, contents, `utf8)) {
   | Js.Exn.Error(e) =>
     switch (Js.Exn.message(e)) {
     | Some(msg) => Js.log({j|Error: $msg|j})
