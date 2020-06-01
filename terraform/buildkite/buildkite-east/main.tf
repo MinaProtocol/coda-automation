@@ -59,8 +59,8 @@ locals {
       name = "small"
       resources = {
         limits = {
-          cpu    = "100m"
-          memory = "1G"
+          cpu    = "1"
+          memory = "2G"
         }
       }
       count = 10
@@ -69,8 +69,8 @@ locals {
       name = "large"
       resources = {
         limits = {
-          cpu    = "500m"
-          memory = "5G"
+          cpu    = "4"
+          memory = "8G"
         }
       }
       count = 5
