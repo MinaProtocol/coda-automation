@@ -67,7 +67,13 @@ yarn build
 yarn link
 ```
 
-Now you can use the `coda-network` command. Try the following command to get started:
+Now you can use the `coda-network` command. To use some of the functionality, you'll need a [Google Cloud Service Account](https://cloud.google.com/iam/docs/service-accounts). Once you download the key for the service account, use the following command to configure it:
+
+```
+export GOOGLE_APPLICATION_CREDENTIALS=<PATH_TO_KEYFILE>
+```
+
+Try the following command to get started:
 
 ```
 coda-network --help
@@ -77,7 +83,7 @@ Some of the common commands are:
 
 ```
 coda-network keypair create
-coda-netowkr keyset create -n <KEYSET_NAME>
+coda-netowrk keyset create -n <KEYSET_NAME>
 coda-network keyset add -n <KEYSET_NAME> -k <PUBLIC_KEY>
 coda-network genesis create
 ```
