@@ -56,3 +56,34 @@ Now that you have a testnet running, there's plenty of things you can do:
 - Monitor your nodes with our [Kibana Dashboards](#to-do).
 - Script interactions with the network via the [Python Library](#to-do). 
 - Contribute to this or one of our other [Open Source Projects](#to-do)! 
+
+# Testnet SDK
+
+We've included a utility tool to help with the process of spinning up a network. To use the tool clone the repo and run the following commands:
+
+```
+yarn
+yarn build
+yarn link
+```
+
+Now you can use the `coda-network` command. To use some of the functionality, you'll need a [Google Cloud Service Account](https://cloud.google.com/iam/docs/service-accounts). Once you download the key for the service account, use the following command to configure it:
+
+```
+export GOOGLE_APPLICATION_CREDENTIALS=<PATH_TO_KEYFILE>
+```
+
+Try the following command to get started:
+
+```
+coda-network --help
+```
+
+Some of the common commands are:
+
+```
+coda-network keypair create
+coda-netowrk keyset create -n <KEYSET_NAME>
+coda-network keyset add -n <KEYSET_NAME> -k <PUBLIC_KEY>
+coda-network genesis create
+```
