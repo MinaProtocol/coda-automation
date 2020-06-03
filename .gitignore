@@ -1,4 +1,5 @@
 *config.json
+!bsconfig.json
 */venv/*
 ec2.json
 *credentials.json
