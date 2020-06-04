@@ -30,6 +30,9 @@
     "@elliottcable/bs-cmdliner": "^10.2.2",
     "@google-cloud/storage": "^5.0.0",
     "@o1labs/client-sdk": "^0.1.2",
-    "mkdirp": "^1.0.4"
+    "csv-parser": "^2.3.2",
+    "graphql-request": "^2.0.0",
+    "mkdirp": "^1.0.4",
+    "node-fetch": "^2.6.0"
   }
 }
