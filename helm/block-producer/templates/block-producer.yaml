@@ -50,7 +50,7 @@ spec:
         command:
         - bash
         - -c
-        - for key in key echo-key faucet-key; do [ ! -f /root/wallet-keys/$key ] || coda accounts import -config-directory /root/.coda-config -privkey-path /root/wallet-keys/$key; done
+        - for key in key; do [ ! -f /root/wallet-keys/$key ] || coda accounts import -config-directory /root/.coda-config -privkey-path /root/wallet-keys/$key; done
         volumeMounts:
         - name: wallet-keys
           mountPath: /root/wallet-keys
@@ -59,6 +59,20 @@ spec:
         env: 
           - name: CODA_PRIVKEY_PASS
             value: {{ $.Values.codaPrivkeyPass | quote }} 
+      - name: install-service-keys
+        image: {{ $.Values.codaImage }}
+        command:
+        - bash
+        - -c
+        - for key in echo-key faucet-key; do [ ! -f /root/wallet-keys/$key ] || coda accounts import -config-directory /root/.coda-config -privkey-path /root/wallet-keys/$key; done
+        volumeMounts:
+        - name: wallet-keys
+          mountPath: /root/wallet-keys
+        - name: config-dir
+          mountPath: /root/.coda-config
+        env: 
+          - name: CODA_PRIVKEY_PASS
+            value: {{ $.Values.codaServiceKeyPass | quote }} 
       containers:
       {{ if has (float64 $i) $.Values.blockProducersWithUserAgents }}
       - name: user-agent

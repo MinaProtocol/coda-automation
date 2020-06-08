@@ -14,6 +14,7 @@ seedPeers:
   - /dns4/seed-two.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWL9ywbiXNfMBqnUKHSB1Q1BaHFNUzppu6JLMVn9TTPFSA
 
 codaPrivkeyPass: naughty blue worm
+codaServiceKeyPass: naughty blue work
 codaLogLevel: "Trace"
 logReceivedBlocks: false
 logTxnPoolGossip: false
