@@ -7,6 +7,12 @@ terraform {
     bucket  = "o1labs-terraform-state"
     acl     = "bucket-owner-full-control"
   }
+  required_providers {
+    aws = "2.55.0"
+    google = "3.15.0"
+    helm = "1.1.1"
+    kubernetes = "1.11.1"
+  }
 }
 
 provider "aws" {
