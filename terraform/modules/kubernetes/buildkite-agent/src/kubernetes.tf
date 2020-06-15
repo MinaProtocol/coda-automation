@@ -12,6 +12,6 @@ data "google_container_cluster" "cluster" {
 
 resource "kubernetes_namespace" "cluster_namespace" {
   metadata {
-    name = var.cluster_namespace
+    name = var.cluster_name
   }
 }

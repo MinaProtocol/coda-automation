@@ -51,35 +51,37 @@ variable "k8s_provider" {
 }
 
 # Local variables for parameterizing cluster topology
-# TODO: Make use of for_each expression to parameterize module build
-# once available (see: https://www.hashicorp.com/blog/hashicorp-terraform-0-12-preview-for-and-for-each/)
 locals {
-  cluster_types = {
+  topology = {
     small = {
-      name = "small"
+      agent = {
+        meta  = "size=small"
+      }
       resources = {
         limits = {
-          cpu    = "1"
+          cpu    = "2"
           memory = "2G"
         }
       }
-      count = 10
+      replicaCount = 10
     }
     large = {
-      name = "large"
+      agent = {
+        meta  = "size=large"
+      }
       resources = {
         limits = {
-          cpu    = "4"
+          cpu    = "8"
           memory = "8G"
         }
       }
-      count = 5
+      replicaCount = 5
     }
   }
 }
 
 # Main resource entrypoint
-module "buildkite-east-small" {
+module "buildkite-east" {
   source = "../../modules/kubernetes/buildkite-agent/src"
 
   google_app_credentials = var.google_credentials
@@ -88,29 +90,8 @@ module "buildkite-east-small" {
   k8s_provider           = var.k8s_provider
 
   cluster_name      = var.cluster_name
-  cluster_namespace = "bk-${local.cluster_types.small.name}"
 
   agent_token       = var.agent_token
   agent_vcs_privkey = var.agent_vcs_privkey
-  agent_meta        = "cluster=${var.cluster_name},size=${local.cluster_types.small.name},queue=default"
-  num_agents        = local.cluster_types.small.count
-  agent_resources   = local.cluster_types.small.resources
-}
-
-module "buildkite-east-large" {
-  source = "../../modules/kubernetes/buildkite-agent/src"
-
-  google_app_credentials = var.google_credentials
-  k8s_cluster_name       = "coda-infra-east"
-  k8s_cluster_region     = "us-east1"
-  k8s_provider           = var.k8s_provider
-
-  cluster_name      = var.cluster_name
-  cluster_namespace = "bk-${local.cluster_types.large.name}"
-
-  agent_token       = var.agent_token
-  agent_vcs_privkey = var.agent_vcs_privkey
-  agent_meta        = "cluster=${var.cluster_name},size=${local.cluster_types.large.name},queue=default"
-  num_agents        = local.cluster_types.large.count
-  agent_resources   = local.cluster_types.large.resources
+  agent_topology   = local.topology
 }

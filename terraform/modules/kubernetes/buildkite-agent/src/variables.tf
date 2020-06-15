@@ -42,25 +42,11 @@ variable "agent_vcs_privkey" {
   default     = ""
 }
 
-variable "agent_meta" {
-  type = string
-
-  description = "Agent metadata or labels used to managed job scheduling"
-  default     = "role=agent"
-}
-
 variable "agent_version" {
   type = string
 
   description = "Version of Buildkite agent to launch"
   default     = "3"
-}
-
-variable "num_agents" {
-  type = number
-
-  description = "Number of Buildkite agents to provision"
-  default     = 1
 }
 
 variable "agent_config" {
@@ -70,8 +56,8 @@ variable "agent_config" {
   default     = {}
 }
 
-variable "agent_resources" {
-  description = "Buildkite agent compute resource request and limits (see: https://github.com/buildkite/charts/blob/master/stable/agent/values.yaml#L74)"
+variable "agent_topology" {
+  description = "Buildkite agent compute resource topology - <agent role => system resource requests> (see: https://github.com/buildkite/charts/blob/master/stable/agent/values.yaml#L74)"
   default     = {}
 }
 
@@ -94,14 +80,7 @@ variable "chart_version" {
   type = string
 
   description = "Buildkite chart version to provision"
-  default     = "0.3.14"
-}
-
-variable "cluster_namespace" {
-  type = string
-
-  description = "K8s namespace to install the cluster release into"
-  default     = "default"
+  default     = "0.3.16"
 }
 
 variable "k8s_provider" {
