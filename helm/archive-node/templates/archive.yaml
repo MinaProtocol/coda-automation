@@ -68,5 +68,22 @@ spec:
         args: [ "coda-archive -postgres-uri {{ tpl .Values.postgresUri . }} -server-port 3086" ]
         env:
         imagePullPolicy: Always
+      {{- if $.Values.hasura.active }}
+      # Hasura (Postgres and Graphql bridge-interface) Process
+      - name: hasura
+        image: {{ $.Values.hasuraImage }}
+        imagePullPolicy: Always
+        env:
+        - name: HASURA_GRAPHQL_DATABASE_URL
+          value: {{ tpl .Values.postgresUri . }}
+        - name: HASURA_GRAPHQL_ENABLE_CONSOLE
+          value: "true"
+        - name: HASURA_GRAPHQL_ADMIN_SECRET
+          value: {{ $.Values.hasura.adminPassword }}
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+      {{ end }
 
 # DB Bootstrap Job
