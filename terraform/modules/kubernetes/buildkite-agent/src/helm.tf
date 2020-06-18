@@ -2,11 +2,15 @@ provider helm {}
 
 # Helm Buildkite Agent Spec
 locals {
-  # set Google Cloud application credentials created for this cluster to inject into agent runtime
   buildkite_config_envs = [
+    # set Google Cloud application credentials created for this cluster to inject into agent runtime
     {
       "name" = "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON"
       "value" = var.k8s_provider != local.gke_context ? var.google_app_credentials : base64decode(google_service_account_key.buildkite_svc_key[0].private_key)
+    },
+    {
+      "name" = "UPLOAD_BIN"
+      "value" = var.artifact_upload_bin
     }
   ]
 }

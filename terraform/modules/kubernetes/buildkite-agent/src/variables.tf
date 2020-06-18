@@ -61,6 +61,13 @@ variable "agent_topology" {
   default     = {}
 }
 
+variable "artifact_upload_bin" {
+  type = string
+
+  description = "Path to agent artifact upload binary"
+  default     = "/usr/local/google-cloud-sdk/bin/gsutil"
+}
+
 # Module Vars: Helm Chart
 variable "helm_chart" {
   type = string
