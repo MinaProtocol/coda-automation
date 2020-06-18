@@ -32,7 +32,7 @@ spec:
             cpu: 1000m
         image: {{ $.Values.coda.image }}
         command: ["bash", "-c"]
-        args: [ "sleep 120 && coda internal snark-worker -daemon-address '{{ tpl $.Values.worker.remoteCoordinatorHost . }}:{{ $.Values.worker.remoteCoordinatorPort }}'" ]
+        args: [ "sleep 120 && coda internal snark-worker -proof-level full -daemon-address '{{ tpl $.Values.worker.remoteCoordinatorHost . }}:{{ $.Values.worker.remoteCoordinatorPort }}'" ]
         env:
         imagePullPolicy: Always
 {{ end }}

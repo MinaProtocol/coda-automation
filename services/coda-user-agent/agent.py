@@ -7,12 +7,18 @@ import random
 from requests.exceptions import ConnectionError
 from prometheus_client import Counter, start_http_server
 
+def getenv_as_currency(env_var):
+  value = os.getenv(env_var)
+  if value != None:
+    return Currency(value)
+  return None
+
 CODA_PUBLIC_KEY = os.getenv("CODA_PUBLIC_KEY", "4vsRCVyVkSRs89neWnKPrnz4FRPmXXrWtbsAQ31hUTSi41EkbptYaLkzmxezQEGCgZnjqY2pQ6mdeCytu7LrYMGx9NiUNNJh8XfJYbzprhhJmm1ZjVbW9ZLRvhWBXRqes6znuF7fWbECrCpQ").strip()
 CODA_PRIVKEY_PASS = os.getenv("CODA_PRIVKEY_PASS", "naughty blue worm")
-AGENT_MIN_FEE = os.getenv("AGENT_MIN_FEE") or Currency.random(Currency("0.06"), Currency("0.1"))
-AGENT_MAX_FEE = os.getenv("AGENT_MAX_FEE") or Currency.random(AGENT_MIN_FEE, AGENT_MIN_FEE + Currency("0.2"))
-AGENT_MIN_TX = os.getenv("AGENT_MIN_TX") or Currency.random(Currency("0.0015"), Currency("0.005"))
-AGENT_MAX_TX = os.getenv("AGENT_MAX_TX") or Currency.random(AGENT_MIN_TX, AGENT_MIN_TX + Currency("0.01"))
+AGENT_MIN_FEE = getenv_as_currency("AGENT_MIN_FEE") or Currency.random(Currency("0.06"), Currency("0.1"))
+AGENT_MAX_FEE = getenv_as_currency("AGENT_MAX_FEE") or Currency.random(AGENT_MIN_FEE, AGENT_MIN_FEE + Currency("0.2"))
+AGENT_MIN_TX = getenv_as_currency("AGENT_MIN_TX") or Currency.random(Currency("0.0015"), Currency("0.005"))
+AGENT_MAX_TX = getenv_as_currency("AGENT_MAX_TX") or Currency.random(AGENT_MIN_TX, AGENT_MIN_TX + Currency("0.01"))
 AGENT_SEND_EVERY_MINS = os.getenv("AGENT_SEND_EVERY_MINS", random.randint(1, 5))
 AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
 
@@ -31,11 +37,13 @@ TRANSACTION_ERRORS = Counter('transaction_errors', 'Number of errors that occurr
 class Agent(object):
     """Represents a generic agent that operates on the coda blockchain"""
 
-    def __init__(self, client_args, public_key, privkey_pass, max_tx_amount=AGENT_MAX_TX, max_fee_amount=AGENT_MAX_FEE):
+    def __init__(self, client_args, public_key, privkey_pass, min_tx_amount=AGENT_MIN_TX, max_tx_amount=AGENT_MAX_TX, min_fee_amount=AGENT_MIN_FEE, max_fee_amount=AGENT_MAX_FEE):
         self.coda = Client(**client_args)
         self.public_key = public_key
         self.privkey_pass = privkey_pass
+        self.min_fee_amount = min_fee_amount
         self.max_fee_amount = max_fee_amount
+        self.min_tx_amount = min_tx_amount
         self.max_tx_amount = max_tx_amount
         self.to_account = None
 

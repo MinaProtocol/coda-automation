@@ -18,13 +18,14 @@ locals {
   coda_image   = var.coda_image
   coda_agent_image = var.coda_agent_image
   coda_bots_image = var.coda_bots_image
+  coda_points_image = var.coda_points_image
   coda_faucet_amount = var.coda_faucet_amount
   coda_faucet_fee = var.coda_faucet_fee
 }
 
 variable "coda_image" {
   type = string
-  default = "codaprotocol/coda-daemon:0.0.12-beta-feature-bump-genesis-timestamp-16200a0"
+  default = "codaprotocol/coda-daemon:0.0.12-beta-feature-bump-genesis-timestamp-9764705"
 }
 
 variable "coda_agent_image" {
@@ -35,6 +36,11 @@ variable "coda_agent_image" {
 variable "coda_bots_image" {
   type = string
   default = "codaprotocol/coda-bots:0.0.13-beta-1"
+}
+
+variable "coda_points_image" {
+  type = string
+  default = "codaprotocol/coda-points-hack:32b.4"
 }
 
 variable "coda_faucet_amount" {
