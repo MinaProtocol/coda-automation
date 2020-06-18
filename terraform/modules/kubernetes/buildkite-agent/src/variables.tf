@@ -68,6 +68,13 @@ variable "artifact_upload_bin" {
   default     = "/usr/local/google-cloud-sdk/bin/gsutil"
 }
 
+variable "artifact_upload_path" {
+  type = string
+
+  description = "Path to upload agent job artifacts"
+  default     = "gs://buildkite_k8s/coda/shared"
+}
+
 # Module Vars: Helm Chart
 variable "helm_chart" {
   type = string

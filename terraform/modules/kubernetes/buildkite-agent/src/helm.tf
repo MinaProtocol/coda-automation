@@ -9,6 +9,10 @@ locals {
       "value" = var.k8s_provider != local.gke_context ? var.google_app_credentials : base64decode(google_service_account_key.buildkite_svc_key[0].private_key)
     },
     {
+      "name" = "BUILDKITE_ARTIFACT_UPLOAD_DESTINATION"
+      "value" = var.artifact_upload_path
+    },
+    {
       "name" = "UPLOAD_BIN"
       "value" = var.artifact_upload_bin
     }
