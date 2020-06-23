@@ -9,12 +9,20 @@ locals {
       "value" = var.k8s_provider != local.gke_context ? var.google_app_credentials : base64decode(google_service_account_key.buildkite_svc_key[0].private_key)
     },
     {
+      "name" = "CLUSTER_SERVICE_EMAIL"
+      "value" = var.k8s_provider == local.gke_context ? google_service_account.gcp_buildkite_account[0].email : ""
+    },
+    {
       "name" = "BUILDKITE_ARTIFACT_UPLOAD_DESTINATION"
       "value" = var.artifact_upload_path
     },
     {
       "name" = "UPLOAD_BIN"
       "value" = var.artifact_upload_bin
+    },
+    {
+      "name" = "GSUTIL_DOWNLOAD_URL"
+      "value" = var.gsutil_download_url
     }
   ]
 }
@@ -39,6 +47,26 @@ locals {
 
     dind = {
       enabled = var.dind_enabled
+    }
+
+    entrypointd = {
+      "01-install-gsutil" = <<EOF
+        #!/bin/bash
+
+        set -eou pipefail
+        set +x
+
+        if [[ ! -f $UPLOAD_BIN ]]; then
+          echo "Downloading gsutil because it doesn't exist"
+          wget $GSUTIL_DOWNLOAD_URL
+
+          tar -zxf $(basename ${GSUTIL_DOWNLOAD_URL}) -C /usr/local/
+
+          echo "$BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON" > /tmp/gcp_creds.json
+
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_creds.json && /usr/local/google-cloud-sdk/bin/gcloud auth activate-service-account ${CLUSTER_SERVICE_EMAIL} --key-file /tmp/gcp_creds.json
+        fi
+      EOF
     }
   }
 }
