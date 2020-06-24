@@ -23,6 +23,10 @@ locals {
     {
       "name" = "GSUTIL_DOWNLOAD_URL"
       "value" = var.gsutil_download_url
+    },
+    {
+      "name" = "SUMMON_DOWNLOAD_URL"
+      "value" = var.summon_download_url
     }
   ]
 }
@@ -65,6 +69,22 @@ locals {
           echo "$BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON" > /tmp/gcp_creds.json
 
           export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_creds.json && /usr/local/google-cloud-sdk/bin/gcloud auth activate-service-account ${CLUSTER_SERVICE_EMAIL} --key-file /tmp/gcp_creds.json
+        fi
+      EOF
+
+      "01-install-summon" = <<EOF
+        #!/bin/bash
+
+        set -eou pipefail
+        set +x
+
+        export SUMMON_BIN=/usr/local/bin/summon
+
+        if [[ ! -f ${SUMMON_BIN} ]]; then
+          echo "Downloading summon because it doesn't exist"
+          wget ${SUMMON_DOWNLOAD_URL}
+
+          tar -xzf $(basename ${SUMMON_DOWNLOAD_URL}) -C /usr/local/bin/
         fi
       EOF
     }

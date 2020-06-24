@@ -46,7 +46,7 @@ variable "agent_version" {
   type = string
 
   description = "Version of Buildkite agent to launch"
-  default     = "3"
+  default     = "3-ubuntu"
 }
 
 variable "agent_config" {
@@ -80,6 +80,13 @@ variable "artifact_upload_path" {
 
   description = "Path to upload agent job artifacts"
   default     = "gs://buildkite_k8s/coda/shared"
+}
+
+variable "summon_download_url" {
+  type = string
+
+  description = "Summon secrets management binary download URL"
+  default = "https://github.com/cyberark/summon/releases/download/v0.8.1/summon-linux-amd64.tar.gz"
 }
 
 # Module Vars: Helm Chart
