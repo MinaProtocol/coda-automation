@@ -3,28 +3,17 @@ provider helm {}
 # Helm Buildkite Agent Spec
 locals {
   buildkite_config_envs = [
-    # inject Google Cloud application credentials into agent runtime for enabling buildkite artifact uploads
+    # Buildkite EnvVars
     {
+      # inject Google Cloud application credentials into agent runtime for enabling buildkite artifact uploads
       "name" = "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON"
       "value" = var.k8s_provider != local.gke_context ? var.google_app_credentials : base64decode(google_service_account_key.buildkite_svc_key[0].private_key)
-    },
-    # used by GSUTIL tool for accessing GCS data
-    {
-      "name" = "CLUSTER_SERVICE_EMAIL"
-      "value" = var.k8s_provider == local.gke_context ? google_service_account.gcp_buildkite_account[0].email : ""
     },
     {
       "name" = "BUILDKITE_ARTIFACT_UPLOAD_DESTINATION"
       "value" = var.artifact_upload_path
     },
-    {
-      "name" = "UPLOAD_BIN"
-      "value" = var.artifact_upload_bin
-    },
-    {
-      "name" = "GSUTIL_DOWNLOAD_URL"
-      "value" = var.gsutil_download_url
-    },
+    # Summon EnvVars
     {
       "name" = "SUMMON_DOWNLOAD_URL"
       "value" = var.summon_download_url
@@ -32,6 +21,29 @@ locals {
     {
       "name" = "SECRETSMANAGER_DOWNLOAD_URL"
       "value" = var.secretsmanager_download_url
+    },
+    # Google Cloud EnvVars
+    {
+      # used by GSUTIL tool for accessing GCS data
+      "name" = "CLUSTER_SERVICE_EMAIL"
+      "value" = var.k8s_provider == local.gke_context ? google_service_account.gcp_buildkite_account[0].email : ""
+    },
+    {
+      "name" = "GSUTIL_DOWNLOAD_URL"
+      "value" = var.gsutil_download_url
+    },
+    {
+      "name" = "UPLOAD_BIN"
+      "value" = var.artifact_upload_bin
+    },
+    # AWS EnvVars
+    {
+      "name" = "AWS_ACCESS_KEY_ID"
+      "value" = aws_iam_user.buildkite_aws_user.unique_id
+    },
+    {
+      "name" = "AWS_SECRET_ACCESS_KEY"
+      "value" = aws_iam_access_key.buildkite_aws_key.encrypted_secret
     }
   ]
 }
