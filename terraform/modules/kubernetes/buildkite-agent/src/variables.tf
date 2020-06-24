@@ -82,11 +82,19 @@ variable "artifact_upload_path" {
   default     = "gs://buildkite_k8s/coda/shared"
 }
 
+# Module Vars: Summon secrets management
 variable "summon_download_url" {
   type = string
 
   description = "Summon secrets management binary download URL"
   default = "https://github.com/cyberark/summon/releases/download/v0.8.1/summon-linux-amd64.tar.gz"
+}
+
+variable "secretsmanager_download_url" {
+  type = string
+
+  description = "AWS secrets manager summon provider download URL"
+  default = "https://github.com/cyberark/summon-aws-secrets/releases/download/v0.3.0/summon-aws-secrets-linux-amd64.tar.gz"
 }
 
 # Module Vars: Helm Chart
