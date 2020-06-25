@@ -34,8 +34,4 @@ resource "aws_iam_user_policy" "buildkite_aws_policy" {
   user = aws_iam_user.buildkite_aws_user.name
 
   policy = data.aws_iam_policy_document.buildkite_aws_policydoc.json
-
-  tags = {
-    cluster = var.cluster_name
-  }
 }

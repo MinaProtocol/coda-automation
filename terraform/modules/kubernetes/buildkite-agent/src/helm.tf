@@ -39,11 +39,15 @@ locals {
     # AWS EnvVars
     {
       "name" = "AWS_ACCESS_KEY_ID"
-      "value" = aws_iam_user.buildkite_aws_user.unique_id
+      "value" = aws_iam_access_key.buildkite_aws_key.id
     },
     {
       "name" = "AWS_SECRET_ACCESS_KEY"
-      "value" = aws_iam_access_key.buildkite_aws_key.encrypted_secret
+      "value" = aws_iam_access_key.buildkite_aws_key.secret
+    },
+    {
+      "name" = "AWS_REGION"
+      "value" = "us-west-2"
     }
   ]
 }
@@ -55,10 +59,6 @@ locals {
       pullPolicy = var.image_pullPolicy
     }
 
-    agent = {
-      token = var.agent_token
-      meta  = "role=coda-agent"
-    }
     privateSshKey = var.agent_vcs_privkey
 
     # Using Buildkite's config-setting <=> env-var mapping, convert all k,v's stored within agent config as extra environment variables
@@ -71,47 +71,48 @@ locals {
     }
 
     entrypointd = {
-      "01-install-gsutil" = <<EOF
+      "01-install-gsutil" = <<-EOF
         #!/bin/bash
 
         set -eou pipefail
         set +x
 
-        if [[ ! -f $UPLOAD_BIN ]]; then
+        if [[ ! -f $${UPLOAD_BIN} ]]; then
           echo "Downloading gsutil because it doesn't exist"
-          wget $GSUTIL_DOWNLOAD_URL
+          apt-get -y update && apt install -y wget python && wget $${GSUTIL_DOWNLOAD_URL}
 
-          tar -zxf $(basename ${GSUTIL_DOWNLOAD_URL}) -C /usr/local/
+          tar -zxf $(basename $${GSUTIL_DOWNLOAD_URL}) -C /usr/local/
 
-          echo "$BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON" > /tmp/gcp_creds.json
+          echo "$${BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON}" > /tmp/gcp_creds.json
 
-          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_creds.json && /usr/local/google-cloud-sdk/bin/gcloud auth activate-service-account ${CLUSTER_SERVICE_EMAIL} --key-file /tmp/gcp_creds.json
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_creds.json && /usr/local/google-cloud-sdk/bin/gcloud auth activate-service-account $${CLUSTER_SERVICE_EMAIL} --key-file /tmp/gcp_creds.json
         fi
       EOF
 
-      "01-install-summon" = <<EOF
+      "01-install-summon" = <<-EOF
         #!/bin/bash
 
         set -eou pipefail
         set +x
 
         export SUMMON_BIN=/usr/local/bin/summon
-        export SECRETSMANAGER_LIB=/usr/local/lib/summon-aws-secrets
+        export SECRETSMANAGER_LIB=/usr/local/lib/summon/summon-aws-secrets
 
         # download and install summon binary executable
-        if [[ ! -f ${SUMMON_BIN} ]]; then
+        if [[ ! -f $${SUMMON_BIN} ]]; then
           echo "Downloading summon because it doesn't exist"
-          wget ${SUMMON_DOWNLOAD_URL}
+          apt-get -y update && apt install -y wget && wget $${SUMMON_DOWNLOAD_URL}
 
-          tar -xzf $(basename ${SUMMON_DOWNLOAD_URL}) -C /usr/local/bin/
+          tar -xzf $(basename $${SUMMON_DOWNLOAD_URL}) -C /usr/local/bin/
         fi
 
         # download and install summon AWS Secrets provider
-        if [[ ! -f ${SECRETSMANAGER_LIB} ]]; then
+        if [[ ! -f $${SECRETSMANAGER_LIB} ]]; then
           echo "Downloading summon AWS secrets manager because it doesn't exist"
-          wget ${SECRETSMANAGER_DOWNLOAD_URL}
+          wget $${SECRETSMANAGER_DOWNLOAD_URL}
 
-          tar -xzf $(basename ${SECRETSMANAGER_DOWNLOAD_URL}) -C /usr/local/lib/
+          mkdir -p $(dirname $${SECRETSMANAGER_LIB})
+          tar -xzf $(basename $${SECRETSMANAGER_DOWNLOAD_URL}) -C $(dirname $${SECRETSMANAGER_LIB})
         fi
       EOF
     }

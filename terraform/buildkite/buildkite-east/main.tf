@@ -55,7 +55,8 @@ locals {
   topology = {
     small = {
       agent = {
-        meta  = "size=small"
+        tags  = "size=small"
+        token = var.agent_token
       }
       resources = {
         limits = {
@@ -67,7 +68,8 @@ locals {
     }
     large = {
       agent = {
-        meta  = "size=large"
+        tags  = "size=large"
+        token = var.agent_token
       }
       resources = {
         limits = {
@@ -93,5 +95,5 @@ module "buildkite-east" {
 
   agent_token       = var.agent_token
   agent_vcs_privkey = var.agent_vcs_privkey
-  agent_topology   = local.topology
+  agent_topology    = local.topology
 }
