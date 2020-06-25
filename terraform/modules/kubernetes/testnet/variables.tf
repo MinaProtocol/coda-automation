@@ -1,4 +1,4 @@
-# K8s Cluster Vars
+// K8s Cluster Vars
 
 variable "cluster_name" {
   type = string
@@ -83,59 +83,20 @@ variable "block_producer_starting_host_port" {
   default = 10000
 }
 
-variable "num_whale_block_producers" {
-  type    = number
-  default = 3
-}
-
-variable "num_fish_block_producers" {
-  type    = number
-  default = 5
-}
-
-variable "whale_block_producer_log_level" {
-  type    = string
-  default = "Trace"
-}
-
-variable "whale_block_producer_log_received_blocks" {
-  type    = bool
-  default = false
-}
-
-variable "whale_block_producers_with_bots" {
-  type = list(number)
-  default = []
-}
-
-variable "whale_block_producers_with_points" {
-  type = list(number)
-  default = []
-}
-
-
-variable "fish_block_producer_log_level" {
-  type    = string
-  default = "Trace"
-}
-
-variable "fish_block_producer_log_received_blocks" {
-  type    = bool
-  default = false
-}
-
-variable "fish_block_producer_label_offset" {
-  type = number
-  default = 0
-}
-
-variable "fish_block_producers_with_bots" {
-  type = list(number)
-  default = []
-}
-
-variable "fish_block_producers_with_points" {
-  type = list(number)
+variable "block_producer_configs" {
+  type = list(
+    object({
+      name = string,
+      class = string,
+      log_level = string,
+      log_txn_pool_gossip = bool,
+      log_received_blocks = bool,
+      enable_gossip_flooding = bool,
+      run_with_user_agent = bool,
+      run_with_bots = bool,
+      run_with_points = bool
+    })
+  )
   default = []
 }
 
