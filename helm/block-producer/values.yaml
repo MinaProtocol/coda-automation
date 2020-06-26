@@ -1,32 +1,37 @@
-numProducers: 3
-labelOffset: 0
-
-blockProducersWithBots: []
-
 testnetName: "coda-testnet"
 
-codaImage: codaprotocol/coda-daemon:0.0.12-beta-new-genesis-01eca9b
+coda:
+  image: codaprotocol/coda-daemon:0.0.12-beta-new-genesis-01eca9b
+  privkeyPass: "naughty blue worm"
+  seedPeers:
+    - /dns4/seed-one.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWP7fTKbyiUcYJGajQDpCFo2rDexgTHFJTxCH8jvcL1eAH
+    - /dns4/seed-two.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWL9ywbiXNfMBqnUKHSB1Q1BaHFNUzppu6JLMVn9TTPFSA
 
-seedPeers: 
-  - /dns4/seed-one.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWP7fTKbyiUcYJGajQDpCFo2rDexgTHFJTxCH8jvcL1eAH
-  - /dns4/seed-two.genesis-redux.o1test.net/tcp/10002/ipfs/12D3KooWL9ywbiXNfMBqnUKHSB1Q1BaHFNUzppu6JLMVn9TTPFSA
+userAgent:
+  image: ""
+  minFee: ""
+  maxFee: ""
+  minTx: ""
+  maxTx: ""
 
-codaPrivkeyPass: naughty blue worm
-codaLogLevel: "Trace"
-logReceivedBlocks: false
+bots:
+  image: ""
+  faucet:
+    amount: "10000000000"
+    fee: "100000000"
 
-startingPorts:  10600
+points:
+  image: ""
 
-keySecretTemplatePrefix: "online-whale-account"
-blockProducerClass: "whale" # Options "whale", "fish"
-
-agentImage: ""
-agentCommand: ["python3 agent.py"]
-agentMinFee: ""
-agentMaxFee: ""
-agentMinTx: ""
-agentMaxTx: ""
-
-botsImage: ""
-faucetAmount: "10000000000"
-faucetFee: "100000000"
+block_producer_configs: []
+# supported config fields:
+#   name
+#   externalPort
+#   runWithUserAgent
+#   runWithBots
+#   runWithPoints
+#   logLevel
+#   logReceivedBlocks
+#   logTxnPoolGossip
+#   enableGossipFlooding
+#   privateKeySecret
