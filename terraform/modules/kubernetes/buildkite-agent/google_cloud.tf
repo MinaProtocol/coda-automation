@@ -1,4 +1,4 @@
-data "google_client_config" "current" {}
+# data "google_client_config" "current" {}
 
 locals {
   gke_context = "gke"

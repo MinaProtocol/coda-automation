@@ -82,8 +82,8 @@ locals {
       }
       resources = {
         limits = {
-          cpu    = "14"
-          memory = "10G"
+          cpu    = "12"
+          memory = "30G"
         }
       }
       replicaCount = 2
