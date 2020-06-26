@@ -127,10 +127,11 @@ data "helm_repository" "buildkite_helm_repo" {
 resource "helm_release" "buildkite_agents" {
   for_each   = var.agent_topology
  
-  name       = "${var.cluster_name}-buildkite-${each.key}"
-  repository = data.helm_repository.buildkite_helm_repo.metadata[0].name
-  chart      = var.helm_chart
-  namespace  = kubernetes_namespace.cluster_namespace.metadata[0].name
+  name              = "${var.cluster_name}-buildkite-${each.key}"
+  repository        = data.helm_repository.buildkite_helm_repo.metadata[0].name
+  chart             = var.helm_chart
+  namespace         = kubernetes_namespace.cluster_namespace.metadata[0].name
+  create_namespace  = true
 
   values = [
     yamlencode(merge(local.default_agent_vars, each.value))

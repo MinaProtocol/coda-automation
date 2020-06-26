@@ -25,8 +25,6 @@ variable "cluster_name" {
   default     = "gke-east"
 }
 
-# Set to override buildkite agents version control (i.e. github) SSH key
-# for private repo access
 variable "agent_vcs_privkey" {
   type = string
 
@@ -34,7 +32,6 @@ variable "agent_vcs_privkey" {
   default     = ""
 }
 
-# Set to override service account privileges with custom profile
 variable "google_credentials" {
   type = string
 
@@ -42,7 +39,6 @@ variable "google_credentials" {
   default     = ""
 }
 
-# Determines k8s resource provider context
 variable "k8s_provider" {
   type = string
 
@@ -64,7 +60,7 @@ locals {
           memory = "2G"
         }
       }
-      replicaCount = 10
+      replicaCount = 5
     }
     large = {
       agent = {
@@ -79,12 +75,24 @@ locals {
       }
       replicaCount = 5
     }
+    xxlarge = {
+      agent = {
+        tags  = "size=xxlarge"
+        token = var.agent_token
+      }
+      resources = {
+        limits = {
+          cpu    = "14"
+          memory = "10G"
+        }
+      }
+      replicaCount = 2
+    }
   }
 }
 
-# Main resource entrypoint
 module "buildkite-east" {
-  source = "../../modules/kubernetes/buildkite-agent/src"
+  source = "../../modules/kubernetes/buildkite-agent"
 
   google_app_credentials = var.google_credentials
   k8s_cluster_name       = "coda-infra-east"
