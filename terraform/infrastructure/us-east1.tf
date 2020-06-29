@@ -90,14 +90,14 @@ resource "google_container_node_pool" "east_experimental_nodes" {
   name       = "coda-infra-compute"
   location   = "us-east1"
   cluster    = google_container_cluster.coda_cluster_east.name
-  node_count = local.num_nodes_per_zone
+  node_count = 0
   autoscaling {
-    min_node_count = 0
-    max_node_count = 3
+    min_node_count = 1
+    max_node_count = 1
   }
   node_config {
     preemptible  = true
-    machine_type = "c2-standard-30"
+    machine_type = "c2-standard-8"
     disk_size_gb = 500
 
     metadata = {
@@ -135,4 +135,5 @@ resource "helm_release" "east_prometheus" {
   ]
   wait       = true
   depends_on = [google_container_cluster.coda_cluster_east]
+  force_update  = true
 }
