@@ -1,4 +1,14 @@
-provider helm {}
+provider helm {
+  kubernetes {
+    config_context  = var.k8s_provider
+  }
+}
+
+resource "kubernetes_namespace" "cluster_namespace" {
+  metadata {
+    name = var.cluster_name
+  }
+}
 
 # Helm Buildkite Agent Spec
 locals {
@@ -130,7 +140,7 @@ resource "helm_release" "buildkite_agents" {
   name              = "${var.cluster_name}-buildkite-${each.key}"
   repository        = data.helm_repository.buildkite_helm_repo.metadata[0].name
   chart             = var.helm_chart
-  namespace         = kubernetes_namespace.cluster_namespace.metadata[0].name
+  namespace         = var.cluster_name
   create_namespace  = true
 
   values = [
