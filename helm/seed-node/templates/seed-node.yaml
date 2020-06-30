@@ -43,7 +43,8 @@ spec:
           "-seed",
           "-discovery-keypair", "{{ $.Values.seed.discoveryKeypair }}",
           {{- if $.Values.coda.genesis.active }}
-          "-genesis-constants", "/genesis_constants/genesis_constants.json",
+          "-config-file", "/config/daemon.json",
+          "-generate-genesis-proof", "true",
           {{- end }}
           {{- range $.Values.coda.seedPeers }}
           "-peer", {{ . | quote }},
@@ -67,11 +68,11 @@ spec:
         imagePullPolicy: Always
       {{- if $.Values.coda.genesis.active }}
         volumeMounts:
-        - name: genesis-constants
-          mountPath: "/genesis_constants/"
+        - name: daemon-config
+          mountPath: "/config/"
       volumes:
-      - name: genesis-constants
+      - name: daemon-config
         configMap:
-          name: {{ tpl $.Values.seed.fullname . }}-genesis-config
+          name: {{ tpl $.Values.seed.fullname . }}-daemon-config
       {{- end -}}
 {{- end }}

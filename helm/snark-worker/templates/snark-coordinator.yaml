@@ -44,7 +44,8 @@ spec:
           "-snark-worker-fee", "$(CODA_SNARK_FEE)",
           "-work-selection", "$(WORK_SELECTION)",
           {{- if $.Values.coda.genesis.active }}
-          "-genesis-constants", "/genesis_constants/genesis_constants.json",
+          "-config-file", "/config/daemon.json",
+          "-generate-genesis-proof", "true",
           {{- end }}
           {{- range $.Values.coda.seedPeers }}
           "-peer", {{ . | quote }},
@@ -74,11 +75,11 @@ spec:
         imagePullPolicy: Always
       {{- if $.Values.coda.genesis.active }}
         volumeMounts:
-        - name: genesis-constants
-          mountPath: "/genesis_constants/"
+        - name: daemon-config
+          mountPath: "/config/"
       volumes:
-      - name: genesis-constants
+      - name: daemon-config
         configMap:
-          name: {{ tpl $.Values.coordinator.fullname . }}-genesis-config
+          name: {{ tpl $.Values.coordinator.fullname . }}-daemon-config
       {{- end -}}
 {{- end }}
