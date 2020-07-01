@@ -16,6 +16,7 @@ module "testnet_east" {
   testnet_name          = local.testnet_name
   coda_image            = local.coda_image
   genesis_timestamp     = timestamp()
+  ledger_config_location = local.ledger_config_location
 
   seed_zone = "us-east1-b"
   seed_region = "us-east1"
@@ -31,23 +32,3 @@ module "testnet_east" {
   snark_worker_host_port = 10400
 }
 
-# # Seed DNS
-# data "aws_route53_zone" "selected" {
-#   name = "o1test.net."
-# }
-
-# resource "aws_route53_record" "seed_one" {
-#   zone_id = "${data.aws_route53_zone.selected.zone_id}"
-#   name    = "seed-one.${local.testnet_name}.${data.aws_route53_zone.selected.name}"
-#   type    = "A"
-#   ttl     = "300"
-#   records = [module.testnet_east.seed_one_ip]
-# }
-
-# resource "aws_route53_record" "seed_two" {
-#   zone_id = "${data.aws_route53_zone.selected.zone_id}"
-#   name    = "seed-two.${local.testnet_name}.${data.aws_route53_zone.selected.name}"
-#   type    = "A"
-#   ttl     = "300"
-#   records = [module.testnet_east.seed_two_ip]
-# }
