@@ -123,7 +123,14 @@ variable "k8s_provider" {
   type = string
 
   description = "K8s resource provider"
-  default     = "minikube"
+  default     = "gke"
+}
+
+variable "cloud_env" {
+  type = bool
+
+  description = "Whether operating in a kubernetes cloud environment"
+  default = true
 }
 
 variable "image_pullPolicy" {

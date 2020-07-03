@@ -11,7 +11,7 @@ locals {
           memory = "2G"
         }
       }
-      replicaCount = 5
+      replicaCount = 10
     }
     large = {
       agent = {
@@ -24,7 +24,7 @@ locals {
           memory = "8G"
         }
       }
-      replicaCount = 5
+      replicaCount = 10
     }
   }
 }
@@ -43,5 +43,3 @@ module "buildkite-east" {
   agent_vcs_privkey = var.agent_vcs_privkey
   agent_topology    = local.topology
 }
-
-

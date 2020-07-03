@@ -8,7 +8,7 @@ resource "kubernetes_secret" "google_application_credentials" {
   }
 
   data = {
-    "credentials_json" = "${var.k8s_provider == local.gke_context ? google_service_account_key.buildkite_svc_key[0].private_key : var.google_app_credentials}"
+    "credentials_json" = "${var.k8s_provider != local.minikube_context ? google_service_account_key.buildkite_svc_key[0].private_key : var.google_app_credentials}"
   }
 }
 

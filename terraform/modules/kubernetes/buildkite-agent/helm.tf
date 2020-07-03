@@ -17,7 +17,7 @@ locals {
     {
       # inject Google Cloud application credentials into agent runtime for enabling buildkite artifact uploads
       "name" = "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON"
-      "value" = var.k8s_provider != local.gke_context ? var.google_app_credentials : base64decode(google_service_account_key.buildkite_svc_key[0].private_key)
+      "value" = var.k8s_provider == local.minikube_context ? var.google_app_credentials : base64decode(google_service_account_key.buildkite_svc_key[0].private_key)
     },
     {
       "name" = "BUILDKITE_ARTIFACT_UPLOAD_DESTINATION"
@@ -36,7 +36,7 @@ locals {
     {
       # used by GSUTIL tool for accessing GCS data
       "name" = "CLUSTER_SERVICE_EMAIL"
-      "value" = var.k8s_provider == local.gke_context ? google_service_account.gcp_buildkite_account[0].email : ""
+      "value" = var.k8s_provider != local.minikube_context ? google_service_account.gcp_buildkite_account[0].email : ""
     },
     {
       "name" = "GSUTIL_DOWNLOAD_URL"

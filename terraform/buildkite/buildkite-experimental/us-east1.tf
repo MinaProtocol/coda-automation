@@ -7,11 +7,11 @@ locals {
       }
       resources = {
         limits = {
-          cpu    = "6"
+          cpu    = "15"
           memory = "10G"
         }
       }
-      replicaCount = 2
+      replicaCount = 1
     }
   }
 }
@@ -24,7 +24,7 @@ module "buildkite-ci-compute" {
   k8s_cluster_region     = "us-east1"
   k8s_provider           = var.k8s_provider
 
-  cluster_name      = "bk-agent-benchmarking"
+  cluster_name      = "bk-benchmarking"
 
   agent_token       = var.agent_token
   agent_vcs_privkey = var.agent_vcs_privkey
