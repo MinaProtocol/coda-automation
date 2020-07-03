@@ -101,7 +101,6 @@ resource "google_container_cluster" "buildkite_cluster_east" {
   remove_default_node_pool = true
   initial_node_count       = 1
   
-
   master_auth {
     username = ""
     password = ""

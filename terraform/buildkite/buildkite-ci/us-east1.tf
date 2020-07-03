@@ -33,9 +33,7 @@ module "buildkite-east" {
   source = "../../modules/kubernetes/buildkite-agent"
 
   google_app_credentials = var.google_credentials
-  k8s_cluster_name       = "coda-infra-east"
-  k8s_cluster_region     = "us-east1"
-  k8s_provider           = var.k8s_provider
+  k8s_context          = var.k8s_context
 
   cluster_name      = var.cluster_name
 

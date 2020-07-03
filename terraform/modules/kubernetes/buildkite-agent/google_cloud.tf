@@ -1,5 +1,5 @@
 locals {
-  minikube_context = "minikube"
+  k8s_context = "minikube"
   gke_project = "o1labs-192920"
 }
 
@@ -13,7 +13,7 @@ resource "google_service_account" "gcp_buildkite_account" {
 }
 
 # resource "google_project_iam_member" "buildkite_artifact_admin" {
-#   count = var.k8s_provider != local.minikube_context ? 1 : 0
+#   count = var.cloud_env ? 1 : 0
 
 #   project = local.gke_project
 #   role    = "roles/storage.objectCreator"
@@ -27,7 +27,7 @@ resource "google_service_account" "gcp_buildkite_account" {
 # }
 
 resource "google_service_account_key" "buildkite_svc_key" {
-  count = var.k8s_provider != local.minikube_context ? 1 : 0
+  count = var.cloud_env ? 1 : 0
 
   service_account_id = google_service_account.gcp_buildkite_account[0].name
 }

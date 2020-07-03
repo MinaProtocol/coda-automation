@@ -22,7 +22,7 @@ variable "cluster_name" {
   type = string
 
   description = "Name of the cluster to provision"
-  default     = "gke-east"
+  default     = "gke-experimental"
 }
 
 variable "agent_vcs_privkey" {
@@ -39,9 +39,9 @@ variable "google_credentials" {
   default     = ""
 }
 
-variable "k8s_provider" {
+variable "k8s_context" {
   type = string
 
-  description = "k8s resource provider -- generally determined by operating environment."
+  description = "k8s resource provider context -- generally determined by operating environment"
   default     = "minikube"
 }

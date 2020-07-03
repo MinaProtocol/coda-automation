@@ -7,18 +7,18 @@ variable "google_app_credentials" {
   default     = ""
 }
 
-variable "k8s_cluster_name" {
-  type = string
+variable "cloud_env" {
+  type = bool
 
-  description = "Kubernetes cluster to provision to Buildkite agents on"
-  default     = "coda-infra-east"
+  description = "Whether operating in a kubernetes cloud environment"
+  default = true
 }
 
-variable "k8s_cluster_region" {
+variable "k8s_context" {
   type = string
 
-  description = "Kubernetes cluster region"
-  default     = "us-east1"
+  description = "K8s resource provider context"
+  default     = "minikube"
 }
 
 # Module Vars: Agent
@@ -117,20 +117,6 @@ variable "chart_version" {
 
   description = "Buildkite chart version to provision"
   default     = "0.3.16"
-}
-
-variable "k8s_provider" {
-  type = string
-
-  description = "K8s resource provider"
-  default     = "gke"
-}
-
-variable "cloud_env" {
-  type = bool
-
-  description = "Whether operating in a kubernetes cloud environment"
-  default = true
 }
 
 variable "image_pullPolicy" {
