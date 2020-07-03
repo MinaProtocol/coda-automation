@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testnet-points-community-bot
+  labels:
+    app: testnet-points-community-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testnet-points-community-bot
+  template:
+    metadata:
+      labels:
+        app: testnet-points-community-bot
+        testnet: rising-phoenix
+        role: community-bot
+    spec:
+      containers:
+      - name: bot
+        resources:
+          limits:
+            memory: 2Gi
+          requests:
+            memory: 512Mi
+        image: gcr.io/o1labs-192920/testnet-points-community-bot:0.0.1
+        command: ["bash", "-c"]
+        args: ["python3 combot.py"]
+        env:
+          - name: DISCORD_API_KEY
+            value: "NjAwNDE0MDUxNzU5MjkyNDE3.XSzfXw.z6OAL6fpkvbl-vi-_YhWntHz_ro"
+          - name: TESTNET_POINTS_API_KEY
+            value: "f029bfe08c909718a65ef7de081c95c3075485d0"
+          - name: TESTNET_POINTS_URI
+            value: "https://points.o1test.net"
+        imagePullPolicy: Always

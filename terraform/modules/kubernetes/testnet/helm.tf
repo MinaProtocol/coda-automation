@@ -17,58 +17,79 @@ provider helm {
 
 locals {
   seed_peers = [
-    "/ip4/${module.seed_one.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_one.discovery_keypair)[2]}",
-    "/ip4/${module.seed_two.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_two.discovery_keypair)[2]}"
+    "/dns4/seed-node.${var.testnet_name}/tcp/10001/ipfs/${split(",", var.seed_discovery_keypairs[0])[2]}"
+    # "/ip4/${module.seed_one.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_one.discovery_keypair)[2]}",
+    # "/ip4/${module.seed_two.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_two.discovery_keypair)[2]}"
   ]
-  whale_producer_vars = {
-    numProducers             = var.num_whale_block_producers
-    blockProducersWithBots   = var.whale_block_producers_with_bots
-    blockProducersWithPoints = var.whale_block_producers_with_points
-    testnetName              = var.testnet_name
-    codaImage                = var.coda_image
-    botsImage                = var.coda_bots_image
-    pointsImage              = var.coda_points_image
-    seedPeers                = concat(var.additional_seed_peers, local.seed_peers)
-    codaPrivkeyPass          = var.block_producer_key_pass
-    codaLogLevel             = var.whale_block_producer_log_level
-    logReceivedBlocks        = var.whale_block_producer_log_received_blocks
-    startingPorts            = var.block_producer_starting_host_port
-    keySecretTemplatePrefix  = "online-whale-account"
-    blockProducerClass       = "whale"
-  }
-  fish_producer_vars = {
-    numProducers              = var.num_fish_block_producers
-    labelOffset               = var.fish_block_producer_label_offset
-    blockProducersWithBots    = var.fish_block_producers_with_bots
-    blockProducersWithPoints  = var.fish_block_producers_with_points
-    testnetName               = var.testnet_name
-    codaImage                 = var.coda_image
-    agentImage                = var.coda_agent_image
-    botsImage                 = var.coda_bots_image
-    pointsImage               = var.coda_points_image
-    seedPeers                 = concat(var.additional_seed_peers, local.seed_peers)
-    codaPrivkeyPass           = var.block_producer_key_pass
-    codaLogLevel              = var.fish_block_producer_log_level
-    logReceivedBlocks         = var.fish_block_producer_log_received_blocks
-    startingPorts             = var.block_producer_starting_host_port + var.num_whale_block_producers
-    keySecretTemplatePrefix   = "online-fish-account"
-    blockProducerClass        = "fish"
-    agentMinFee               = var.agent_min_fee
-    agentMaxFee               = var.agent_max_fee
-    agentMinTx                = var.agent_min_tx
-    agentMaxTx                = var.agent_max_tx
-    faucetAmount              = var.coda_faucet_amount
-    faucetFee                 = var.coda_faucet_fee
-  }
-  snark_worker_vars = {
-    testnetName = var.testnet_name
-    coda = {
+
+  coda_values = {
       genesis = {
-        active = false
+        active = true
+        genesis_state_timestamp = var.genesis_timestamp
+        ledger = jsonencode(jsondecode(file(var.ledger_config_location)))
       }
       image = var.coda_image
       seedPeers = concat(var.additional_seed_peers, local.seed_peers)
+      logLevel             = var.log_level
+      logReceivedBlocks    = var.log_received_blocks
     }
+
+  seed_values = {
+    testnetName = var.testnet_name
+    coda = local.coda_values
+    seed = {
+      active = true
+      discovery_keypair = var.seed_discovery_keypairs[0]
+    }
+  }
+
+  whale_producer_vars = {
+    testnetName = var.testnet_name
+    coda = local.coda_values
+    blockProducersWithBots   = var.whale_block_producers_with_bots
+    blockProducersWithPoints = var.whale_block_producers_with_points
+    botsImage                = var.coda_bots_image
+    pointsImage              = var.coda_points_image
+
+    blockProducer = {
+      numProducers            = var.num_whale_block_producers
+      labelOffset = var.fish_block_producer_label_offset
+      codaPrivkeyPass         = var.block_producer_key_pass
+      startingPorts           = var.block_producer_starting_host_port + var.num_whale_block_producers
+      keySecretTemplatePrefix = "online-whale-account"
+      class      = "whale"
+    }
+  }
+
+  fish_producer_vars = {
+    testnetName = var.testnet_name
+    coda = local.coda_values
+    blockProducer = {
+      numProducers            = var.num_fish_block_producers
+      labelOffset = var.fish_block_producer_label_offset
+      codaPrivkeyPass         = var.block_producer_key_pass
+      startingPorts           = var.block_producer_starting_host_port + var.num_whale_block_producers
+      keySecretTemplatePrefix = "online-fish-account"
+      class      = "fish"
+    }
+    agent = {
+      image              = var.coda_agent_image
+      maxTx              = var.agent_max_tx
+      minTx              = var.agent_min_tx
+      maxFee             = var.agent_max_fee
+      minFee             = var.agent_min_fee
+    }
+    blockProducersWithBots    = var.fish_block_producers_with_bots
+    blockProducersWithPoints  = var.fish_block_producers_with_points
+    botsImage                 = var.coda_bots_image
+    pointsImage               = var.coda_points_image
+    faucetAmount              = var.coda_faucet_amount
+    faucetFee                 = var.coda_faucet_fee
+  }
+  
+  snark_worker_vars = {
+    testnetName = var.testnet_name
+    coda = local.coda_values
     worker = {
       active = true
       numReplicas = var.snark_worker_replicas
@@ -90,6 +111,18 @@ locals {
   }   
 }
 
+# Cluster-Local Seed Node
+resource "helm_release" "seed" {
+  name      = "${var.testnet_name}-seed"
+  chart     = "../../../helm/seed-node"
+  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  values = [
+    yamlencode(local.seed_values)
+  ]
+  wait       = true
+}
+
+
 # Block Producers
 
 resource "helm_release" "whale_producers" {
@@ -100,7 +133,7 @@ resource "helm_release" "whale_producers" {
     yamlencode(local.whale_producer_vars)
   ]
   wait       = false
-  depends_on = [module.seed_one, module.seed_two]
+  depends_on = [helm_release.seed]
 }
 
 resource "helm_release" "fish_producers" {
@@ -111,7 +144,7 @@ resource "helm_release" "fish_producers" {
     yamlencode(local.fish_producer_vars)
   ]
   wait       = false
-  depends_on = [module.seed_one, module.seed_two]
+  depends_on = [helm_release.seed]
 }
 
 # Snark Workers 
@@ -124,7 +157,7 @@ resource "helm_release" "snark_workers" {
     yamlencode(local.snark_worker_vars)
   ]
   wait       = false
-  depends_on = [module.seed_one, module.seed_two]
+  depends_on = [helm_release.seed]
 }
 
 resource "helm_release" "archive_node" {

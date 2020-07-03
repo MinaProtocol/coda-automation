@@ -1,23 +1,23 @@
-{{ range $i, $e := until (.Values.numProducers | int)}}
+{{ range $i, $e := until (.Values.blockProducer.numProducers | int)}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1 $.Values.labelOffset }}
+  name: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
   labels:
-    app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1 $.Values.labelOffset }}
+    app: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1 $.Values.labelOffset }}
+      app: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
   template:
     metadata:
       labels:
-        app: {{ $.Values.blockProducerClass }}-block-producer-{{ add $i 1 $.Values.labelOffset }}
+        app: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
         testnet: {{ $.Values.testnetName }}
         role: block-producer
-        class: {{ $.Values.blockProducerClass }}
-        version: {{ (split ":" $.Values.codaImage)._1 }}
+        class: {{ $.Values.blockProducer.class }}
+        version: {{ (split ":" $.Values.coda.image)._1 }}
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/path: '/metrics'
@@ -33,7 +33,7 @@ spec:
         - name: private-keys
           mountPath: "/keys/"
           readOnly: true
-        {{ if has (float64 $i) $.Values.blockProducersWithBots }}
+        {{ if has (float64 $i) $.Values.blockProducersWithBots -}}
         - name: echo-service-key
           mountPath: "/echo-keys/"
           readOnly: true
@@ -46,7 +46,7 @@ spec:
         securityContext:
           runAsUser: 0
       - name: install-key
-        image: {{ $.Values.codaImage }}
+        image: {{ $.Values.coda.image }}
         command:
         - bash
         - -c
@@ -58,43 +58,43 @@ spec:
           mountPath: /root/.coda-config
         env: 
           - name: CODA_PRIVKEY_PASS
-            value: {{ $.Values.codaPrivkeyPass | quote }} 
+            value: {{ $.Values.blockProducer.codaPrivkeyPass | quote }}
       containers:
-      {{ if ne $.Values.agentImage "" }}
+      {{ if $.Values.agent.active -}}
       - name: user-agent
         resources:
           requests:
             memory: 512m
             cpu: 0.1
-        image: {{ $.Values.agentImage }}
+        image: {{ $.Values.agent.image }}
         command: ["bash"]
-        args: ["-c", {{ range $.Values.agentCommand }} {{- . | quote }}, {{end}}]
+        args: ["-c", {{ range $.Values.agent.command }} {{- . | quote }}, {{end}} ]
         env: 
-          {{ if ne $.Values.agentMinFee "" -}}
+          {{ if ne $.Values.agent.minFee "" -}}
           - name: AGENT_MIN_FEE
-            value: {{ $.Values.agentMinFee | quote }}
+            value: {{ $.Values.agent.minFee | quote }}
           {{ end -}}
-          {{- if ne $.Values.agentMaxFee "" -}}
+          {{- if ne $.Values.agent.maxFee "" -}}
           - name: AGENT_MAX_FEE
-            value: {{ $.Values.agentMaxFee | quote }}
+            value: {{ $.Values.agent.maxFee | quote }}
           {{ end -}}
-          {{- if ne $.Values.agentMinTx "" -}}
+          {{- if ne $.Values.agent.minTx "" -}}
           - name: AGENT_MIN_TX
-            value: {{ $.Values.agentMinTx | quote }}
+            value: {{ $.Values.agent.minTx | quote }}
           {{ end -}}
-          {{- if ne $.Values.agentMaxTx "" -}}
+          {{- if ne $.Values.agent.maxTx "" -}}
           - name: AGENT_MAX_TX
-            value: {{ $.Values.agentMaxTx | quote }}
+            value: {{ $.Values.agent.maxTx | quote }}
           {{ end -}}
           - name: AGENT_SEND_EVERY_MINUTES
             value: "10"
           - name: CODA_PUBLIC_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ $.Values.keySecretTemplatePrefix }}-{{ add $i 1 $.Values.labelOffset }}-key
+                name: {{ $.Values.blockProducer.keySecretTemplatePrefix }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-key
                 key: pub
           - name: CODA_PRIVKEY_PASS
-            value: {{ $.Values.codaPrivkeyPass | quote }}
+            value: {{ $.Values.blockProducer.codaPrivkeyPass | quote }}
           - name: PYTHONUNBUFFERED
             value: "1"
         ports: 
@@ -120,14 +120,14 @@ spec:
                 name: echo-service-key
                 key: pub
           - name: ECHO_PASSWORD
-            value: {{ $.Values.codaPrivkeyPass | quote }}
+            value: {{ $.Values.blockProducer.codaPrivkeyPass | quote }}
           - name: FAUCET_PUBLICKEY
             valueFrom:
               secretKeyRef:
                 name: faucet-service-key
                 key: pub
           - name: FAUCET_PASSWORD
-            value: {{ $.Values.codaPrivkeyPass | quote }}
+            value: {{ $.Values.blockProducer.codaPrivkeyPass | quote }}
           - name: DISCORD_API_KEY
             valueFrom:
               secretKeyRef:
@@ -139,25 +139,6 @@ spec:
             value: {{ $.Values.faucetFee | quote }}
         imagePullPolicy: Always
       {{ end -}}
-      {{- if has (float64 $i) $.Values.blockProducersWithPoints }}
-      - name: points
-        resources:
-          requests:
-            memory: 512m
-            cpu: 0.1
-        image: {{ $.Values.pointsImage }}
-        env:
-          - name: CODA_GRAPHQL_HOST
-            value: "0.0.0.0"
-          - name: CODA_GRAPHQL_PORT
-            value: "3085"
-          - name: GOOGLE_CLOUD_STORAGE_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: o1-google-cloud-storage-api-key
-                key: o1google
-        imagePullPolicy: Always
-      {{ end -}}
       - name: coda
         resources:
           limits:
@@ -165,14 +146,14 @@ spec:
           requests:
             memory: 2.0Gi
             cpu: 1
-        image: {{ $.Values.codaImage }}
+        image: {{ $.Values.coda.image }}
         command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
         args: [ "daemon",
-          "-log-level", {{ $.Values.codaLogLevel }},
+          "-log-level", {{ $.Values.coda.logLevel }},
           "-log-json",
-          {{- if $.Values.logReceivedBlocks }}
+          {{- if $.Values.coda.logReceivedBlocks -}}
           "-log-received-blocks", "true",
-          {{- end }}
+          {{- end -}}
           "-config-directory", "/root/.coda-config",
           "-client-port", "$(DAEMON_CLIENT_PORT)",
           "-rest-port", "$(DAEMON_REST_PORT)",
@@ -180,9 +161,13 @@ spec:
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-block-producer-key", "/root/wallet-keys/key",
-          {{- range $.Values.seedPeers }}
+          {{- if $.Values.coda.genesis.active -}}
+          "-config-file", "/config/daemon.json",
+          "-generate-genesis-proof", "true",
+          {{- end -}}
+          {{- range $.Values.coda.seedPeers -}}
           "-peer", {{ . | quote }},
-          {{- end }}
+          {{- end -}}
         ]
         env:
           - name: DAEMON_REST_PORT
@@ -192,12 +177,12 @@ spec:
           - name: DAEMON_METRICS_PORT
             value: "10000"
           - name: DAEMON_EXTERNAL_PORT
-            value: {{ add $.Values.startingPorts $i $.Values.labelOffset | quote }}
+            value: {{ add $.Values.blockProducer.startingPorts $i $.Values.blockProducer.labelOffset | quote }}
           - name: CODA_PRIVKEY_PASS
-            value: {{ $.Values.codaPrivkeyPass | quote }}
+            value: {{ $.Values.blockProducer.codaPrivkeyPass | quote }}
         ports:
-          - containerPort: {{ add $.Values.startingPorts $i $.Values.labelOffset }}
-            hostPort: {{ add $.Values.startingPorts $i $.Values.labelOffset }}
+          - containerPort: {{ add $.Values.blockProducer.startingPorts $i $.Values.blockProducer.labelOffset }}
+            hostPort: {{ add $.Values.blockProducer.startingPorts $i $.Values.blockProducer.labelOffset }}
             protocol: TCP
           - name: graphql
             containerPort: 3085
@@ -209,10 +194,14 @@ spec:
           mountPath: /root/wallet-keys
         - name: config-dir
           mountPath: /root/.coda-config
+        {{- if $.Values.coda.genesis.active }}
+        - name: daemon-config
+          mountPath: "/config/"
+        {{- end }}
       volumes:
       - name: private-keys
         secret:
-          secretName: {{ $.Values.keySecretTemplatePrefix }}-{{ add $i 1 $.Values.labelOffset }}-key
+          secretName: {{ $.Values.blockProducer.keySecretTemplatePrefix }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-key
           defaultMode: 256
           items:
           - key: key
@@ -243,14 +232,36 @@ spec:
         emptyDir: {}
       - name: config-dir
         emptyDir: {}
+      {{- if $.Values.coda.genesis.active }}
+      - name: daemon-config
+        configMap:
+          name: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-daemon-config
+      {{- end }}
+---
+{{ if $.Values.coda.genesis.active -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-daemon-config
+  labels:
+    app: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
+    heritage: {{ $.Release.Service }}
+    release: {{ $.Release.Name }}
+data:
+  daemon.json: |-
+    {
+      "daemon": {
+        "txpool_max_size": 1
+      },
+      "genesis": { 
+        "genesis_state_timestamp": {{ $.Values.coda.genesis.genesis_state_timestamp | quote}},
+        "k": 1, 
+        "delta": 1 
+      },
+      "proof": {},
+      "ledger": {{ $.Values.coda.genesis.ledger }}
+    }
+
+{{- end}}
 ---
 {{ end }}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ uuidv4 }}-block-producer-fixit-secret
-type: Opaque
-data:
-  username: YWRtaW4=
-  password: MWYyZDFlMmU2N2Rm
