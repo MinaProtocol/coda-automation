@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testnet-points-db
+  labels:
+    app: testnet-points-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testnet-points-db
+  template:
+    metadata:
+      labels:
+        app: testnet-points-db
+        testnet: rising-phoenix
+        role: testnet-points-db
+    spec:
+      containers: 
+        - name: cloudsql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.16
+          command: ["/cloud_sql_proxy",
+                    "-instances=o1labs-192920:us-central1:testnet-points-db=tcp:0.0.0.0:5432",
+                    # If running on a VPC, the Cloud SQL proxy can connect via Private IP. See:
+                    # https://cloud.google.com/sql/docs/mysql/private-ip for more info.
+                    # "-ip_address_types=PRIVATE",
+                    "-credential_file=/secrets/cloudsql/credentials.json"]
+          securityContext:
+            runAsUser: 2  # non-root user
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: testnet-points-api-sql-instance-credentials
+              mountPath: /secrets/cloudsql/credentials.json
+              subPath: sql-instance-credentials.json
+              readOnly: true
+      volumes:
+        - name: testnet-points-api-sql-instance-credentials
+          secret:
+            secretName: testnet-points-api-sql-instance-credentials
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: testnet-points-db-svc
+  namespace: coda-testnet
+spec:
+  selector:
+    app: testnet-points-db
+  clusterIP: None
+  ports:
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432

@@ -1,0 +1,24 @@
+{{ if $.Values.coda.genesis.active -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ tpl $.Values.seed.fullname . }}-daemon-config
+  labels:
+    app: {{ tpl $.Values.seed.fullname . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+data:
+  daemon.json: |-
+    {
+      "daemon": {
+        "txpool_max_size": 1
+      },
+      "genesis": { 
+        "genesis_state_timestamp": {{ $.Values.coda.genesis.genesis_state_timestamp | quote}},
+        "k": 1, 
+        "delta": 1
+      },
+      "proof": {},
+      "ledger": {{ $.Values.coda.genesis.ledger }}
+    }
+{{- end}}

@@ -139,25 +139,6 @@ spec:
             value: {{ $.Values.bots.faucet.fee | quote }}
         imagePullPolicy: Always
       {{ end -}}
-      {{- if $config.runWithPoints }}
-      - name: points
-        resources:
-          requests:
-            memory: 512m
-            cpu: 0.1
-        image: {{ $.Values.points.image }}
-        env:
-          - name: CODA_GRAPHQL_HOST
-            value: "0.0.0.0"
-          - name: CODA_GRAPHQL_PORT
-            value: "3085"
-          - name: GOOGLE_CLOUD_STORAGE_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: o1-google-cloud-storage-api-key
-                key: o1google
-        imagePullPolicy: Always
-      {{ end -}}
       - name: coda
         resources:
           limits:
@@ -172,7 +153,7 @@ spec:
           "-log-json",
           {{- if $config.logReceivedBlocks }}
           "-log-received-blocks", "true",
-          {{- end }}
+          {{- end -}}
           "-config-directory", "/root/.coda-config",
           "-client-port", "$(DAEMON_CLIENT_PORT)",
           "-rest-port", "$(DAEMON_REST_PORT)",
@@ -180,9 +161,13 @@ spec:
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-block-producer-key", "/root/wallet-keys/key",
+          {{- if $.Values.coda.genesis.active -}}
+          "-config-file", "/config/daemon.json",
+          "-generate-genesis-proof", "true",
+          {{- end -}}
           {{- range $.Values.coda.seedPeers }}
           "-peer", {{ . | quote }},
-          {{- end }}
+          {{- end -}}
         ]
         env:
           - name: DAEMON_REST_PORT
@@ -209,6 +194,10 @@ spec:
           mountPath: /root/wallet-keys
         - name: config-dir
           mountPath: /root/.coda-config
+        {{- if $.Values.coda.genesis.active }}
+        - name: daemon-config
+          mountPath: "/config/"
+        {{- end }}
       volumes:
       - name: private-keys
         secret:
@@ -243,14 +232,36 @@ spec:
         emptyDir: {}
       - name: config-dir
         emptyDir: {}
+      {{- if $.Values.coda.genesis.active }}
+      - name: daemon-config
+        configMap:
+          name: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-daemon-config
+      {{- end }}
+---
+{{ if $.Values.coda.genesis.active -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-daemon-config
+  labels:
+    app: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
+    heritage: {{ $.Release.Service }}
+    release: {{ $.Release.Name }}
+data:
+  daemon.json: |-
+    {
+      "daemon": {
+        "txpool_max_size": 1
+      },
+      "genesis": { 
+        "genesis_state_timestamp": {{ $.Values.coda.genesis.genesis_state_timestamp | quote}},
+        "k": 1, 
+        "delta": 1 
+      },
+      "proof": {},
+      "ledger": {{ $.Values.coda.genesis.ledger }}
+    }
+
+{{- end}}
 ---
 {{ end }}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ uuidv4 }}-block-producer-fixit-secret
-type: Opaque
-data:
-  username: YWRtaW4=
-  password: MWYyZDFlMmU2N2Rm

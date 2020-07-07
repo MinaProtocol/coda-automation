@@ -17,17 +17,37 @@ provider helm {
 
 locals {
   seed_peers = [
-    "/ip4/${module.seed_one.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_one.discovery_keypair)[2]}",
-    "/ip4/${module.seed_two.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_two.discovery_keypair)[2]}"
+    "/dns4/seed-node.${var.testnet_name}/tcp/10001/ipfs/${split(",", var.seed_discovery_keypairs[0])[2]}"
+    # "/ip4/${module.seed_one.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_one.discovery_keypair)[2]}",
+    # "/ip4/${module.seed_two.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_two.discovery_keypair)[2]}"
   ]
+
+  coda_vars = {
+    genesis = {
+      active = true
+      genesis_state_timestamp = var.genesis_timestamp
+      ledger = jsonencode(jsondecode(file(var.ledger_config_location)))
+    }
+    image       = var.coda_image
+    privkeyPass = var.block_producer_key_pass
+    seedPeers   = concat(var.additional_seed_peers, local.seed_peers)
+    logLevel             = var.log_level
+    logReceivedBlocks    = var.log_received_blocks
+  }
+
+  seed_vars = {
+    testnetName = var.testnet_name
+    coda = local.coda_values
+    seed = {
+      active = true
+      discovery_keypair = var.seed_discovery_keypairs[0]
+    }
+  }
+
   block_producer_vars = {
     testnetName = var.testnet_name
 
-    coda = {
-      image       = var.coda_image
-      privkeyPass = var.block_producer_key_pass
-      seedPeers   = concat(var.additional_seed_peers, local.seed_peers)
-    }
+    coda = coda_vars
 
     userAgent = {
       image  = var.coda_agent_image
@@ -65,15 +85,10 @@ locals {
       }
     ]
   }
+  
   snark_worker_vars = {
     testnetName = var.testnet_name
-    coda = {
-      genesis = {
-        active = false
-      }
-      image = var.coda_image
-      seedPeers = concat(var.additional_seed_peers, local.seed_peers)
-    }
+    coda = local.coda_values
     worker = {
       active = true
       numReplicas = var.snark_worker_replicas
@@ -95,6 +110,18 @@ locals {
   }   
 }
 
+# Cluster-Local Seed Node
+resource "helm_release" "seed" {
+  name      = "${var.testnet_name}-seed"
+  chart     = "../../../helm/seed-node"
+  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  values = [
+    yamlencode(local.seed_vars)
+  ]
+  wait       = true
+}
+
+
 # Block Producers
 
 resource "helm_release" "block_producers" {
@@ -105,7 +132,7 @@ resource "helm_release" "block_producers" {
     yamlencode(local.block_producer_vars)
   ]
   wait       = false
-  depends_on = [module.seed_one, module.seed_two]
+  depends_on = [helm_release.seed]
 }
 
 # Snark Workers 
@@ -118,7 +145,7 @@ resource "helm_release" "snark_workers" {
     yamlencode(local.snark_worker_vars)
   ]
   wait       = false
-  depends_on = [module.seed_one, module.seed_two]
+  depends_on = [helm_release.seed]
 }
 
 resource "helm_release" "archive_node" {

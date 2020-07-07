@@ -42,25 +42,11 @@ variable "agent_vcs_privkey" {
   default     = ""
 }
 
-variable "agent_meta" {
-  type = string
-
-  description = "Agent metadata or labels used to managed job scheduling"
-  default     = "role=agent"
-}
-
 variable "agent_version" {
   type = string
 
   description = "Version of Buildkite agent to launch"
-  default     = "3"
-}
-
-variable "num_agents" {
-  type = number
-
-  description = "Number of Buildkite agents to provision"
-  default     = 1
+  default     = "3-ubuntu"
 }
 
 variable "agent_config" {
@@ -70,9 +56,45 @@ variable "agent_config" {
   default     = {}
 }
 
-variable "agent_resources" {
-  description = "Buildkite agent compute resource request and limits (see: https://github.com/buildkite/charts/blob/master/stable/agent/values.yaml#L74)"
+variable "agent_topology" {
+  description = "Buildkite agent compute resource topology - <agent role => system resource requests> (see: https://github.com/buildkite/charts/blob/master/stable/agent/values.yaml#L74)"
   default     = {}
+}
+
+variable "gsutil_download_url" {
+  type = string
+
+  description = "gsutil tool archive download URL"
+  default = "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-296.0.1-linux-x86_64.tar.gz"
+}
+
+variable "artifact_upload_bin" {
+  type = string
+
+  description = "Path to agent artifact upload binary"
+  default     = "/usr/local/google-cloud-sdk/bin/gsutil"
+}
+
+variable "artifact_upload_path" {
+  type = string
+
+  description = "Path to upload agent job artifacts"
+  default     = "gs://buildkite_k8s/coda/shared"
+}
+
+# Module Vars: Summon secrets management
+variable "summon_download_url" {
+  type = string
+
+  description = "Summon secrets management binary download URL"
+  default = "https://github.com/cyberark/summon/releases/download/v0.8.1/summon-linux-amd64.tar.gz"
+}
+
+variable "secretsmanager_download_url" {
+  type = string
+
+  description = "AWS secrets manager summon provider download URL"
+  default = "https://github.com/cyberark/summon-aws-secrets/releases/download/v0.3.0/summon-aws-secrets-linux-amd64.tar.gz"
 }
 
 # Module Vars: Helm Chart
@@ -94,14 +116,7 @@ variable "chart_version" {
   type = string
 
   description = "Buildkite chart version to provision"
-  default     = "0.3.14"
-}
-
-variable "cluster_namespace" {
-  type = string
-
-  description = "K8s namespace to install the cluster release into"
-  default     = "default"
+  default     = "0.3.16"
 }
 
 variable "k8s_provider" {

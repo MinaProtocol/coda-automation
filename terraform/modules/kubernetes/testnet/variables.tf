@@ -8,6 +8,15 @@ variable "cluster_region" {
   type = string
 }
 
+# Genesis Ledger Vars
+
+# Empty ledger variable by default
+# Optionally load a new ledger
+variable "ledger_config_location" {
+  type = string
+  default = "./templates/default_ledger.json"
+}
+
 # Global Vars
 
 variable "coda_image" {
@@ -50,6 +59,10 @@ variable "testnet_name" {
 variable "additional_seed_peers" {
   type    = list
   default = []
+}
+
+variable "genesis_timestamp" {
+  type = string
 }
 
 # Seed Vars

@@ -1,6 +1,15 @@
 testnetName: "coda-testnet"
 
 coda:
+  genesis:
+    active: true
+    k: 10
+    delta: 3
+    txpool_max_size: 3000
+    genesis_state_timestamp: "2020-04-20 11:00:00-07:00"
+    ledger: "{}"
+  logLevel: "Trace"
+  logReceivedBlocks: false
   image: codaprotocol/coda-daemon:0.0.12-beta-new-genesis-01eca9b
   privkeyPass: "naughty blue worm"
   seedPeers:
