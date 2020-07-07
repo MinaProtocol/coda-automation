@@ -132,3 +132,11 @@ variable "dind_enabled" {
   description = "Whether to enable a preset Docker-in-Docker(DinD) pod configuration"
   default     = true
 }
+
+# Module Vars: Docker Hub
+variable "ci_docker_password" {
+  type = string
+
+  description = "Buildkite CI DockerHub password."
+  default     = ""
+}

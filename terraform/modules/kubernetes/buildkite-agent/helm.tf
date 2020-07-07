@@ -4,6 +4,7 @@ provider helm {
   }
 }
 
+# TODO: remove once resource has been destroyed
 resource "kubernetes_namespace" "cluster_namespace" {
   metadata {
     name = var.cluster_name
@@ -58,6 +59,11 @@ locals {
     {
       "name" = "AWS_REGION"
       "value" = "us-west-2"
+    },
+    # Docker EnvVars
+    {
+      "name" = "DOCKER_LOGIN_PASSWORD"
+      "value" = var.ci_docker_password
     }
   ]
 }
