@@ -33,14 +33,14 @@ spec:
         - name: private-keys
           mountPath: "/keys/"
           readOnly: true
-        {{ if $config.runWithBots }}
+        {{- if $config.runWithBots }}
         - name: echo-service-key
           mountPath: "/echo-keys/"
           readOnly: true
         - name: faucet-service-key
           mountPath: "/faucet-keys/"
           readOnly: true
-        {{ end -}}
+        {{- end }}
         - name: wallet-keys
           mountPath: /wallet-keys
         securityContext:
@@ -60,7 +60,7 @@ spec:
           - name: CODA_PRIVKEY_PASS
             value: {{ $.Values.coda.privkeyPass | quote }}
       containers:
-      {{ if $config.runWithUserAgent }}
+      {{ if $config.runWithUserAgent -}}
       - name: user-agent
         resources:
           requests:
@@ -101,8 +101,8 @@ spec:
           - name: metrics
             containerPort: 8000
         imagePullPolicy: Always
-      {{ end -}}
-      {{- if $config.runWithBots }}
+      {{- end }}
+      {{ if $config.runWithBots -}}
       - name: bots
         resources:
           requests:
@@ -138,7 +138,7 @@ spec:
           - name: FEE_AMOUNT
             value: {{ $.Values.bots.faucet.fee | quote }}
         imagePullPolicy: Always
-      {{ end -}}
+      {{- end }}
       - name: coda
         resources:
           limits:
@@ -146,13 +146,16 @@ spec:
           requests:
             memory: 2.0Gi
             cpu: 1
-        image: {{ $.Values.coda.image }}
+        image: {{ $.Values.coda.image | quote }}
         command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
         args: [ "daemon",
-          "-log-level", {{ $config.logLevel }},
+          "-log-level", {{ $.Values.coda.logLevel }},
           "-log-json",
-          {{- if $config.logReceivedBlocks }}
+          {{- if $.Values.coda.logReceivedBlocks }}
           "-log-received-blocks", "true",
+          {{- end -}}
+          {{- range $.Values.coda.seedPeers }}
+          "-peer", {{ . | quote }},
           {{- end -}}
           "-config-directory", "/root/.coda-config",
           "-client-port", "$(DAEMON_CLIENT_PORT)",
@@ -161,12 +164,9 @@ spec:
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-block-producer-key", "/root/wallet-keys/key",
-          {{- if $.Values.coda.genesis.active -}}
+          {{- if (ne $.Values.coda.runtimeConfig "") -}}
           "-config-file", "/config/daemon.json",
           "-generate-genesis-proof", "true",
-          {{- end -}}
-          {{- range $.Values.coda.seedPeers }}
-          "-peer", {{ . | quote }},
           {{- end -}}
         ]
         env:
@@ -194,7 +194,7 @@ spec:
           mountPath: /root/wallet-keys
         - name: config-dir
           mountPath: /root/.coda-config
-        {{- if $.Values.coda.genesis.active }}
+        {{- if (ne $.Values.coda.runtimeConfig "") }}
         - name: daemon-config
           mountPath: "/config/"
         {{- end }}
@@ -232,36 +232,23 @@ spec:
         emptyDir: {}
       - name: config-dir
         emptyDir: {}
-      {{- if $.Values.coda.genesis.active }}
+      {{- if (ne $.Values.coda.runtimeConfig "") }}
       - name: daemon-config
         configMap:
-          name: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-daemon-config
+          name: {{ $config.name }}-daemon-config
       {{- end }}
 ---
-{{ if $.Values.coda.genesis.active -}}
+{{ if (ne $.Values.coda.runtimeConfig "") -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-daemon-config
+  name: {{ $config.name }}-daemon-config
   labels:
-    app: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
+    app: {{ $config.name }}
     heritage: {{ $.Release.Service }}
     release: {{ $.Release.Name }}
 data:
-  daemon.json: |-
-    {
-      "daemon": {
-        "txpool_max_size": 1
-      },
-      "genesis": { 
-        "genesis_state_timestamp": {{ $.Values.coda.genesis.genesis_state_timestamp | quote}},
-        "k": 1, 
-        "delta": 1 
-      },
-      "proof": {},
-      "ledger": {{ $.Values.coda.genesis.ledger }}
-    }
-
+  daemon.json: {{ $.Values.coda.runtimeConfig | quote }}
 {{- end}}
 ---
 {{ end }}

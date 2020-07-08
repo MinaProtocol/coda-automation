@@ -61,8 +61,10 @@ variable "additional_seed_peers" {
   default = []
 }
 
-variable "genesis_timestamp" {
-  type = string
+# empty string means that the deployment will use compile time constants
+variable "runtime_config" {
+  type    = string
+  default = ""
 }
 
 # Seed Vars
@@ -87,6 +89,21 @@ variable "seed_discovery_keypairs" {
 
 # Block Producer Vars
 
+variable "log_level" {
+  type    = string
+  default = "Trace"
+}
+
+variable "log_received_blocks" {
+  type    = bool
+  default = false
+}
+
+variable "log_txn_pool_gossip" {
+  type    = bool
+  default = false
+}
+
 variable "block_producer_key_pass" {
   type = string
 }
@@ -101,13 +118,10 @@ variable "block_producer_configs" {
     object({
       name = string,
       class = string,
-      log_level = string,
-      log_txn_pool_gossip = bool,
-      log_received_blocks = bool,
+      private_key_secret = string,
       enable_gossip_flooding = bool,
       run_with_user_agent = bool,
-      run_with_bots = bool,
-      run_with_points = bool
+      run_with_bots = bool
     })
   )
   default = []

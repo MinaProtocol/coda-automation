@@ -1,13 +1,7 @@
 testnetName: "coda-testnet"
 
 coda:
-  genesis:
-    active: true
-    k: 10
-    delta: 3
-    txpool_max_size: 3000
-    genesis_state_timestamp: "2020-04-20 11:00:00-07:00"
-    ledger: "{}"
+  runtimeConfig: ""
   logLevel: "Trace"
   logReceivedBlocks: false
   image: codaprotocol/coda-daemon:0.0.12-beta-new-genesis-01eca9b
@@ -29,18 +23,29 @@ bots:
     amount: "10000000000"
     fee: "100000000"
 
-points:
-  image: ""
-
-block_producer_configs: []
-# supported config fields:
-#   name
-#   externalPort
-#   runWithUserAgent
-#   runWithBots
-#   runWithPoints
-#   logLevel
-#   logReceivedBlocks
-#   logTxnPoolGossip
-#   enableGossipFlooding
-#   privateKeySecret
+# for purposes of testing this chart, we provide defaults that exercise all sidecar permutations
+blockProducerConfigs:
+  - name: "test-1"
+    externalPort: 1
+    runWithUserAgent: false
+    runWithBots: false
+    enableGossipFlooding: false
+    privateKeySecret: "yolo"
+  - name: "test-2"
+    externalPort: 2
+    runWithUserAgent: true
+    runWithBots: false
+    enableGossipFlooding: true
+    privateKeySecret: "yolo"
+  - name: "test-3"
+    externalPort: 3
+    runWithUserAgent: false
+    runWithBots: true
+    enableGossipFlooding: true
+    privateKeySecret: "yolo"
+  - name: "test-4"
+    externalPort: 4
+    runWithUserAgent: true
+    runWithBots: true
+    enableGossipFlooding: false
+    privateKeySecret: "yolo"

@@ -1,4 +1,5 @@
 provider helm {
+  debug = true
   kubernetes {
     host                   = "https://${data.google_container_cluster.cluster.endpoint}"
     client_certificate     = base64decode(data.google_container_cluster.cluster.master_auth[0].client_certificate)
@@ -14,31 +15,24 @@ provider helm {
 #   url  = var.coda_helm_repo
 # }
 
-
 locals {
   seed_peers = [
     "/dns4/seed-node.${var.testnet_name}/tcp/10001/ipfs/${split(",", var.seed_discovery_keypairs[0])[2]}"
-    # "/ip4/${module.seed_one.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_one.discovery_keypair)[2]}",
-    # "/ip4/${module.seed_two.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_two.discovery_keypair)[2]}"
   ]
 
   coda_vars = {
-    genesis = {
-      active = true
-      genesis_state_timestamp = var.genesis_timestamp
-      ledger = jsonencode(jsondecode(file(var.ledger_config_location)))
-    }
-    image       = var.coda_image
-    privkeyPass = var.block_producer_key_pass
-    seedPeers   = concat(var.additional_seed_peers, local.seed_peers)
-    logLevel             = var.log_level
-    logReceivedBlocks    = var.log_received_blocks
+    runtimeConfig     = var.runtime_config
+    image             = var.coda_image
+    privkeyPass       = var.block_producer_key_pass
+    seedPeers         = concat(var.additional_seed_peers, local.seed_peers)
+    logLevel          = var.log_level
+    logReceivedBlocks = var.log_received_blocks
   }
 
   seed_vars = {
     testnetName = var.testnet_name
-    coda = local.coda_values
-    seed = {
+    coda        = local.coda_vars
+    seed        = {
       active = true
       discovery_keypair = var.seed_discovery_keypairs[0]
     }
@@ -47,7 +41,7 @@ locals {
   block_producer_vars = {
     testnetName = var.testnet_name
 
-    coda = coda_vars
+    coda = local.coda_vars
 
     userAgent = {
       image  = var.coda_agent_image
@@ -65,10 +59,6 @@ locals {
       }
     }
 
-    points = {
-      image = var.coda_points_image
-    }
-
     blockProducerConfigs = [
       for index, config in var.block_producer_configs: {
         name                 = config.name
@@ -76,19 +66,15 @@ locals {
         externalPort         = var.block_producer_starting_host_port + index
         runWithUserAgent     = config.run_with_user_agent
         runWithBots          = config.run_with_bots
-        runWithPoints        = config.run_with_points
-        logLevel             = config.log_level
-        logReceivedBlocks    = config.log_received_blocks
-        logTxnPoolGossip     = config.log_txn_pool_gossip
         enableGossipFlooding = config.enable_gossip_flooding
-        privateKeySecret     = "online-${config.class}-account-${index}-key"
+        privateKeySecret     = config.private_key_secret
       }
     ]
   }
   
   snark_worker_vars = {
     testnetName = var.testnet_name
-    coda = local.coda_values
+    coda = local.coda_vars 
     worker = {
       active = true
       numReplicas = var.snark_worker_replicas
@@ -111,6 +97,7 @@ locals {
 }
 
 # Cluster-Local Seed Node
+
 resource "helm_release" "seed" {
   name      = "${var.testnet_name}-seed"
   chart     = "../../../helm/seed-node"
@@ -156,5 +143,5 @@ resource "helm_release" "archive_node" {
     yamlencode(local.archive_node_vars)
   ]
   wait       = false
-  depends_on = [module.seed_one, module.seed_two]
+  depends_on = [helm_release.seed]
 }

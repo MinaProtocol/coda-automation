@@ -1,4 +1,4 @@
-{{ if $.Values.coda.genesis.active -}}
+{{ if (ne $.Values.coda.runtimeConfig "") -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,17 +8,5 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 data:
-  daemon.json: |-
-    {
-      "daemon": {
-        "txpool_max_size": 1
-      },
-      "genesis": { 
-        "genesis_state_timestamp": {{ $.Values.coda.genesis.genesis_state_timestamp | quote}},
-        "k": 1, 
-        "delta": 1
-      },
-      "proof": {},
-      "ledger": {{ $.Values.coda.genesis.ledger }}
-    }
+  daemon.json: {{ $.Values.coda.runtimeConfig | quote }}
 {{- end}}
