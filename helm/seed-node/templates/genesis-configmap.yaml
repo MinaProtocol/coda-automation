@@ -10,15 +10,15 @@ metadata:
 data:
   daemon.json: |-
     {
-      "daemon": {
-        "txpool_max_size": 1
-      },
+      "daemon": {},
       "genesis": { 
         "genesis_state_timestamp": {{ $.Values.coda.genesis.genesis_state_timestamp | quote}},
-        "k": 1, 
-        "delta": 1
+        "k": 20, 
+        "delta": 3
       },
-      "proof": {},
+      "proof": {
+        "c": 8
+      },
       "ledger": {{ $.Values.coda.genesis.ledger }}
     }
 {{- end}}

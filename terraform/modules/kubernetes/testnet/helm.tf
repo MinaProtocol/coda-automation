@@ -160,13 +160,13 @@ resource "helm_release" "snark_workers" {
   depends_on = [helm_release.seed]
 }
 
-resource "helm_release" "archive_node" {
-  name      = "${var.testnet_name}-archive-node"
-  chart     = "../../../helm/archive-node"
-  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
-  values = [
-    yamlencode(local.archive_node_vars)
-  ]
-  wait       = false
-  depends_on = [module.seed_one, module.seed_two]
-}
+# resource "helm_release" "archive_node" {
+#   name      = "${var.testnet_name}-archive-node"
+#   chart     = "../../../helm/archive-node"
+#   namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+#   values = [
+#     yamlencode(local.archive_node_vars)
+#   ]
+#   wait       = false
+#   depends_on = [helm_release.seed]
+# }

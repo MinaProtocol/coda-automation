@@ -78,7 +78,7 @@ def retrieve_log(logs: list, key: str, value: str, subkey: str = "metadata"):
     return None
 
 def _process_log_iterator(ctx, log_iterator):
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     logger = logging.getLogger()
 
     broadcasting_block_logs = {}
