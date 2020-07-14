@@ -62,7 +62,7 @@ locals {
     },
     # Docker EnvVars
     {
-      "name" = "DOCKER_LOGIN_PASSWORD"
+      "name" = "DOCKER_PASSWORD"
       "value" = var.ci_docker_password
     }
   ]

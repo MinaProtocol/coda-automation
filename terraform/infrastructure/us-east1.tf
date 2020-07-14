@@ -91,13 +91,9 @@ resource "google_container_cluster" "buildkite_cluster_east" {
   min_master_version = "1.15"
 
   node_locations = [
-    "us-east1-c",
-    #"us-east1-d",
+    "us-east1-c"
   ]
 
-  # We can't create a cluster with no node pool defined, but we want to only use
-  # separately managed node pools. So we create the smallest possible default
-  # node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
   
@@ -116,7 +112,6 @@ resource "google_container_node_pool" "east_experimental_nodes" {
   name       = "buildkite-compute-test"
   location   = "us-east1"
   cluster    = google_container_cluster.buildkite_cluster_east.name
-  # node_count = 1
   initial_node_count = 1
 
   node_config {

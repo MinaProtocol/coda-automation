@@ -11,7 +11,7 @@ variable "cloud_env" {
   type = bool
 
   description = "Whether operating in a kubernetes cloud environment"
-  default = true
+  default = false
 }
 
 variable "k8s_context" {
