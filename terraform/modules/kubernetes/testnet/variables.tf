@@ -113,7 +113,7 @@ variable "log_level" {
 
 variable "log_received_blocks" {
   type    = bool
-  default = false
+  default = true
 }
 
 variable "whale_block_producers_with_bots" {

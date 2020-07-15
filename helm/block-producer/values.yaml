@@ -4,7 +4,7 @@ testnetName: "coda-testnet"
 coda:
   genesis:
     active: true
-    k: 10
+    k: 20
     delta: 3
     txpool_max_size: 3000
     genesis_state_timestamp: "2020-04-20 11:00:00-07:00"
