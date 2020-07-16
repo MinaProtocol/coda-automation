@@ -152,6 +152,7 @@ spec:
           "-log-level", {{ $.Values.coda.logLevel }},
           "-log-json",
           "-log-received-blocks", "true",
+          "-log-snark-work-gossip", "true",
           "-config-directory", "/root/.coda-config",
           "-client-port", "$(DAEMON_CLIENT_PORT)",
           "-rest-port", "$(DAEMON_REST_PORT)",
