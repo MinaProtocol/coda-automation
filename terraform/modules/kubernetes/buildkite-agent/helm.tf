@@ -63,7 +63,7 @@ locals {
     # Docker EnvVars
     {
       "name" = "DOCKER_PASSWORD"
-      "value" = var.ci_docker_password
+      "value" = data.aws_secretsmanager_secret_version.buildkite_docker_token
     }
   ]
 }
