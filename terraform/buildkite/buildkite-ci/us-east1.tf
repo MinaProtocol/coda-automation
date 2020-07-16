@@ -24,7 +24,7 @@ locals {
           memory = "8G"
         }
       }
-      replicaCount = 10
+      replicaCount = 5
     }
   }
 }
@@ -34,6 +34,7 @@ module "buildkite-east" {
 
   google_app_credentials = var.google_credentials
   k8s_context          = var.k8s_context
+  cloud_env            = var.cloud_env
 
   cluster_name      = var.cluster_name
 

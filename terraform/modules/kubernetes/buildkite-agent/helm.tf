@@ -1,3 +1,7 @@
+provider kubernetes {
+    config_context  = var.k8s_context
+}
+
 provider helm {
   kubernetes {
     config_context  = var.k8s_context
@@ -63,7 +67,7 @@ locals {
     # Docker EnvVars
     {
       "name" = "DOCKER_PASSWORD"
-      "value" = data.aws_secretsmanager_secret_version.buildkite_docker_token
+      "value" = data.aws_secretsmanager_secret_version.buildkite_docker_token.secret_string
     }
   ]
 }

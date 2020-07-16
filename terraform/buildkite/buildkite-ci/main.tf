@@ -1,7 +1,7 @@
 terraform {
   required_version = ">= 0.12.6"
   backend "s3" {
-    key     = "terraform-bk-coda-jobs.tfstate"
+    key     = "terraform-bk-coda-ci.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -37,6 +37,13 @@ variable "google_credentials" {
 
   description = "custom operator Google Cloud Platform access credentials"
   default     = ""
+}
+
+variable "cloud_env" {
+  type = bool
+
+  description = "Whether operating in a kubernetes cloud environment"
+  default = false
 }
 
 variable "k8s_context" {

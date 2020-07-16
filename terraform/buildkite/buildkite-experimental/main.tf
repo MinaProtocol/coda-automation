@@ -39,6 +39,13 @@ variable "google_credentials" {
   default     = ""
 }
 
+variable "cloud_env" {
+  type = bool
+
+  description = "Whether operating in a kubernetes cloud environment"
+  default = false
+}
+
 variable "k8s_context" {
   type = string
 

@@ -21,8 +21,9 @@ module "buildkite-ci-compute" {
 
   google_app_credentials = var.google_credentials
   k8s_context           = var.k8s_context
+  cloud_env             = var.cloud_env
 
-  cluster_name      = "agent-benchmarking"
+  cluster_name      = var.cluster_name
 
   agent_token       = var.agent_token
   agent_vcs_privkey = var.agent_vcs_privkey

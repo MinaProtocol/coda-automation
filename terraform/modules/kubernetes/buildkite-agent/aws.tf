@@ -35,10 +35,10 @@ resource "aws_iam_user_policy" "buildkite_aws_policy" {
   policy = data.aws_iam_policy_document.buildkite_aws_policydoc.json
 }
 
-data "aws_secretsmanager_secret" "buildkite_docker_token_meta" {
+data "aws_secretsmanager_secret" "buildkite_docker_token_metadata" {
   name = "o1bot/docker/ci-access-token"
 }
 
 data "aws_secretsmanager_secret_version" "buildkite_docker_token" {
-  secret_id = "${data.aws_secretsmanager_secret.buildkite_docker_token.id}"
+  secret_id = "${data.aws_secretsmanager_secret.buildkite_docker_token_metadata.id}"
 }

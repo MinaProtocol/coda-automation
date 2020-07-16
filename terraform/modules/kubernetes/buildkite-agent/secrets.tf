@@ -1,7 +1,3 @@
-provider "kubernetes" {
-  config_context  = var.k8s_context
-}
-
 resource "kubernetes_secret" "google_application_credentials" {
   metadata {
     name      = "google-application-credentials"
