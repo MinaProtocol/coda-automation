@@ -22,7 +22,7 @@ module "testnet_east" {
   seed_region = "us-east1"
 
   num_whale_block_producers = 5
-  num_fish_block_producers = 10
+  num_fish_block_producers = 150
   block_producer_key_pass = "naughty blue worm"
   block_producer_starting_host_port = 10001
 

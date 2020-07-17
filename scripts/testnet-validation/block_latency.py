@@ -160,7 +160,7 @@ def process_logs(message):
     #print ("timestamp: {}".format(timestamp))
     metadata = jsonPayload["metadata"]
     #print ("metadata: {}".format(metadata))
-    host = metadata["host"]
+    host = metadata["peer_id"]
     print ("host: {}".format(host))
     if exists(log_message, block_broadcasted_filter):
         print ("new block broadcasted")
@@ -170,11 +170,8 @@ def process_logs(message):
             s = senders[state_hash]
         else:
             s = dict()
-        if not(host in s):
-            s[host] = (timestamp, True) #timestamp and if it is the producer of the block
-        else:
-            t, s = s[host]
-            s[host] = (t, True)
+        s[host] = (timestamp, True) #timestamp and if it is the producer of the block
+        print("setting broadcast sender:{}".format(s[host]))
         senders[state_hash] = s
     else:
         if exists(log_message, block_rebroadcast_filter):
@@ -189,14 +186,14 @@ def process_logs(message):
                     s[host] = (timestamp, False)
             else:
                 print("Error! Duplicate rebroadcasting") #should not hit this because we invalidate duplicate blocks
-                senders[state_hash] = s
+            senders[state_hash] = s
         else:
             if exists(log_message, block_received_filter):
                 print ("block received")
                 state_hash = metadata["state_hash"]
                 print ("state_hash: {}".format(state_hash))
                 sender_b = metadata["sender"]
-                sender = (sender_b["Remote"])["host"]
+                sender = (sender_b["Remote"])["peer_id"]
                 print ("sender: {}".format(sender))
                 line = (sender, host, timestamp)
                 if state_hash in block_latency_temp:
@@ -246,8 +243,8 @@ def update_sender_time():
     for (state_hash, lines) in block_latency_temp.items():
         for line in lines:
             (sender, host, timestamp) = line
-            if sender in senders[state_hash]:
-                sender_timestamp, is_first_hop = (senders[state_hash])[sender]
+            if (state_hash in senders) and (sender in senders[state_hash]):
+                sender_timestamp, is_first_hop = senders[state_hash][sender]
                 print ("sender_timestamp: {}".format(sender_timestamp))
                 if state_hash in block_latency:
                     lst = block_latency[state_hash]

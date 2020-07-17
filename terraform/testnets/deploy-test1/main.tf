@@ -26,5 +26,5 @@ locals {
 }
 variable "coda_image" {
   type = string
-  default = "codaprotocol/coda-daemon:0.0.12-beta-feature-gossip-latency-7b555c4"
+  default = "codaprotocol/coda-daemon:0.0.12-beta-develop-012fb80"
 }
