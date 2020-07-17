@@ -9,13 +9,12 @@ terraform {
   }
 }
 
-#
-# REQUIRED: input variables -- recommended to express as environment vars (e.g. TF_VAR_***)
-#
-variable "agent_token" {}
+provider "aws" {
+  region = "us-west-2"
+}
 
 #
-# OPTIONAL: input variables
+# OPTIONAL: input variables -- recommended to express as environment vars (e.g. TF_VAR_***)
 #
 
 variable "cluster_name" {
@@ -25,23 +24,23 @@ variable "cluster_name" {
   default     = "gke-east"
 }
 
-variable "agent_vcs_privkey" {
-  type = string
-
-  description = "version control private key for secured repository access"
-  default     = ""
-}
-
 variable "google_credentials" {
   type = string
 
-  description = "custom operator Google Cloud Platform access credentials"
+  description = "Custom operator Google Cloud Platform access credentials"
+  default     = ""
+}
+
+variable "agent_vcs_privkey" {
+  type = string
+
+  description = "Version control private key for secured repository access"
   default     = ""
 }
 
 variable "k8s_context" {
   type = string
 
-  description = "k8s resource provider context -- generally determined by operating environment"
+  description = "K8s resource provider context -- generally determined by operating environment"
   default     = "minikube"
 }

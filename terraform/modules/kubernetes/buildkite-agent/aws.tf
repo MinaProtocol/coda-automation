@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "us-west-2"
-}
-
 resource "aws_iam_user" "buildkite_aws_user" {
   name = "buildkite-${var.cluster_name}"
   path = "/service-accounts/"

@@ -1,9 +1,17 @@
+data "aws_secretsmanager_secret" "buildkite_agent_token_metadata" {
+  name = "buildkite/agent/access-token"
+}
+
+data "aws_secretsmanager_secret_version" "buildkite_agent_token" {
+  secret_id = "${data.aws_secretsmanager_secret.buildkite_agent_token_metadata.id}"
+}
+
 locals {
   topology = {
     small = {
       agent = {
         tags  = "size=small"
-        token = var.agent_token
+        token = data.aws_secretsmanager_secret_version.buildkite_agent_token.secret_string
       }
       resources = {
         limits = {
@@ -16,7 +24,7 @@ locals {
     large = {
       agent = {
         tags  = "size=large"
-        token = var.agent_token
+        token = data.aws_secretsmanager_secret_version.buildkite_agent_token.secret_string
       }
       resources = {
         limits = {
@@ -37,7 +45,6 @@ module "buildkite-east" {
 
   cluster_name      = var.cluster_name
 
-  agent_token       = var.agent_token
   agent_vcs_privkey = var.agent_vcs_privkey
   agent_topology    = local.topology
 }

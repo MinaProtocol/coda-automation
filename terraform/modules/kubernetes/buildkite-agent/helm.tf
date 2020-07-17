@@ -8,7 +8,6 @@ provider helm {
   }
 }
 
-# TODO: remove once resource has been destroyed
 resource "kubernetes_namespace" "cluster_namespace" {
   metadata {
     name = var.cluster_name

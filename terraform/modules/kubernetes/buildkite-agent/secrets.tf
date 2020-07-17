@@ -12,13 +12,3 @@ resource "kubernetes_secret" "google_application_credentials" {
   }
 }
 
-resource "kubernetes_secret" "buildkite_agent_token" {
-  metadata {
-    name      = "buildkite-agent-token"
-    namespace = kubernetes_namespace.cluster_namespace.metadata[0].name
-  }
-
-  data = {
-    "agent_token" = var.agent_token
-  }
-}

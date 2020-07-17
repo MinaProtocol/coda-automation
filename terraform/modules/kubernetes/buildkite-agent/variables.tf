@@ -1,4 +1,4 @@
-# K8s Cluster Vars
+# GCP/K8s Cluster Vars
 
 variable "google_app_credentials" {
   type = string
@@ -27,12 +27,6 @@ variable "cluster_name" {
   type = string
 
   description = "Name of K8s Buildkite Agent cluster to provision"
-}
-
-variable "agent_token" {
-  type = string
-
-  description = "Agent registration token for connection with Buildkite server"
 }
 
 variable "agent_vcs_privkey" {
@@ -131,12 +125,4 @@ variable "dind_enabled" {
 
   description = "Whether to enable a preset Docker-in-Docker(DinD) pod configuration"
   default     = true
-}
-
-# Module Vars: Docker Hub
-variable "ci_docker_password" {
-  type = string
-
-  description = "Buildkite CI DockerHub password."
-  default     = ""
 }
