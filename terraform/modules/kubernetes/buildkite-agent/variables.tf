@@ -29,6 +29,10 @@ variable "cluster_name" {
   description = "Name of K8s Buildkite Agent cluster to provision"
 }
 
+variable "agent_topology" {
+  description = "Buildkite agent compute resource topology - <agent role => system resource requests> (see: https://github.com/buildkite/charts/blob/master/stable/agent/values.yaml#L74)"
+}
+
 variable "agent_vcs_privkey" {
   type = string
 
@@ -47,11 +51,6 @@ variable "agent_config" {
   type = map(string)
 
   description = "Buildkite agent configuration options (see: https://github.com/buildkite/charts/blob/master/stable/agent/README.md#configuration)"
-  default     = {}
-}
-
-variable "agent_topology" {
-  description = "Buildkite agent compute resource topology - <agent role => system resource requests> (see: https://github.com/buildkite/charts/blob/master/stable/agent/values.yaml#L74)"
   default     = {}
 }
 
