@@ -1,9 +1,12 @@
 resource "kubernetes_secret" "google_application_credentials" {
+  count = var.enable_gcs_access ? 1 : 0
+
   metadata {
     name      = "google-application-credentials"
     namespace = kubernetes_namespace.cluster_namespace.metadata[0].name
     annotations = {
-      "kubernetes.io/service-account.name" = "google-application-credentials"
+      "kubernetes.io/service-account.name" = google_service_account.gcp_buildkite_account[0].name,
+      "kubernetes.io/service-account.namespace" = kubernetes_namespace.cluster_namespace.metadata[0].name
     }
   }
 
