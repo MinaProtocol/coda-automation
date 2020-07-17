@@ -34,7 +34,6 @@ module "buildkite-east" {
 
   google_app_credentials = var.google_credentials
   k8s_context          = var.k8s_context
-  cloud_env            = var.cloud_env
 
   cluster_name      = var.cluster_name
 

@@ -4,7 +4,7 @@ locals {
 }
 
 resource "google_service_account" "gcp_buildkite_account" {
-  count = var.cloud_env ? 1 : 0
+  count = var.enable_gcs_access ? 1 : 0
 
   account_id   = var.cluster_name
   display_name = "Buildkite Agent Cluster (${var.cluster_name}) service account"
@@ -13,7 +13,7 @@ resource "google_service_account" "gcp_buildkite_account" {
 }
 
 # resource "google_project_iam_member" "buildkite_artifact_admin" {
-#   count = var.cloud_env ? 1 : 0
+#   count = var.enable_gcs_access ? 1 : 0
 
 #   project = local.gke_project
 #   role    = "roles/storage.objectCreator"
@@ -27,7 +27,7 @@ resource "google_service_account" "gcp_buildkite_account" {
 # }
 
 resource "google_service_account_key" "buildkite_svc_key" {
-  count = var.cloud_env ? 1 : 0
+  count = var.enable_gcs_access ? 1 : 0
 
   service_account_id = google_service_account.gcp_buildkite_account[0].name
 }

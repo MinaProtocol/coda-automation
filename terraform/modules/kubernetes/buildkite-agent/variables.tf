@@ -7,11 +7,11 @@ variable "google_app_credentials" {
   default     = ""
 }
 
-variable "cloud_env" {
+variable "enable_gcs_access" {
   type = bool
 
-  description = "Whether operating in a kubernetes cloud environment"
-  default = false
+  description = "Whether to grant the provisioned cluster with GCS access (for artifact uploading, etc)"
+  default = true
 }
 
 variable "k8s_context" {
