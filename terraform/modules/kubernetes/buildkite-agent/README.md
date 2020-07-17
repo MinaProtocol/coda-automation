@@ -26,6 +26,7 @@
 | gsutil\_download\_url | gsutil tool archive download URL | `string` | `https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-296.0.1-linux-x86_64.tar.gz` | no |
 | summon\_download\_url | Summon secrets management binary download URL | `string` | `https://github.com/cyberark/summon/releases/download/v0.8.1/summon-linux-amd64.tar.gz` | no |
 | secretsmanager\_download\_url | AWS secrets manager summon provider download URL | `string` | `https://github.com/cyberark/summon-aws-secrets/releases/download/v0.3.0/summon-aws-secrets-linux-amd64.tar.gz` | no |
+| enable\_gcs\_access | Whether to grant the provisioned cluster with GCS access (for artifact uploading, etc) | `bool` | `true` | no |
 | artifact\_upload\_bin | Path to agent artifact upload binary | `string` | `/usr/local/google-cloud-sdk/bin/gsutil` | no |
 | artifact\_upload\_path | Path within GCS to upload agent job artifacts | `string` | `gs://buildkite_k8s/coda/shared` | no |
 | image\_pullPolicy | Agent container image pull policy | `string` | `IfNotPresent` | no |
