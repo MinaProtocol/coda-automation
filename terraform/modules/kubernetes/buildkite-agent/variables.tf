@@ -109,7 +109,7 @@ variable "chart_version" {
   type = string
 
   description = "Buildkite chart version to provision"
-  default     = "0.3.16"
+  default     = "0.4.1"
 }
 
 variable "image_pullPolicy" {
