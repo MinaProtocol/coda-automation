@@ -1,4 +1,4 @@
-# K8s Cluster Vars
+# GCP/K8s Cluster Vars
 
 variable "google_app_credentials" {
   type = string
@@ -7,18 +7,18 @@ variable "google_app_credentials" {
   default     = ""
 }
 
-variable "k8s_cluster_name" {
-  type = string
+variable "enable_gcs_access" {
+  type = bool
 
-  description = "Kubernetes cluster to provision to Buildkite agents on"
-  default     = "coda-infra-east"
+  description = "Whether to grant the provisioned cluster with GCS access (for artifact uploading, etc)"
+  default = true
 }
 
-variable "k8s_cluster_region" {
+variable "k8s_context" {
   type = string
 
-  description = "Kubernetes cluster region"
-  default     = "us-east1"
+  description = "K8s resource provider context"
+  default     = "minikube"
 }
 
 # Module Vars: Agent
@@ -29,10 +29,8 @@ variable "cluster_name" {
   description = "Name of K8s Buildkite Agent cluster to provision"
 }
 
-variable "agent_token" {
-  type = string
-
-  description = "Agent registration token for connection with Buildkite server"
+variable "agent_topology" {
+  description = "Buildkite agent compute resource topology - <agent role => system resource requests> (see: https://github.com/buildkite/charts/blob/master/stable/agent/values.yaml#L74)"
 }
 
 variable "agent_vcs_privkey" {
@@ -53,11 +51,6 @@ variable "agent_config" {
   type = map(string)
 
   description = "Buildkite agent configuration options (see: https://github.com/buildkite/charts/blob/master/stable/agent/README.md#configuration)"
-  default     = {}
-}
-
-variable "agent_topology" {
-  description = "Buildkite agent compute resource topology - <agent role => system resource requests> (see: https://github.com/buildkite/charts/blob/master/stable/agent/values.yaml#L74)"
   default     = {}
 }
 
@@ -116,14 +109,7 @@ variable "chart_version" {
   type = string
 
   description = "Buildkite chart version to provision"
-  default     = "0.3.16"
-}
-
-variable "k8s_provider" {
-  type = string
-
-  description = "K8s resource provider"
-  default     = "minikube"
+  default     = "0.3.18"
 }
 
 variable "image_pullPolicy" {
