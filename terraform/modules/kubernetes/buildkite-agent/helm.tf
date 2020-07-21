@@ -151,6 +151,7 @@ resource "helm_release" "buildkite_agents" {
   chart             = var.helm_chart
   namespace         = var.cluster_name
   create_namespace  = true
+  version           = var.chart_version
 
   values = [
     yamlencode(merge(local.default_agent_vars, each.value))
