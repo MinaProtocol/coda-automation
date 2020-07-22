@@ -29,6 +29,11 @@ variable "coda_agent_image" {
   default = "codaprotocol/coda-user-agent:0.1.4"
 }
 
+variable "coda_agent_active" {
+  type    = string
+  default = "true"
+}
+
 variable "coda_bots_image" {
   type    = string
   default = ""
