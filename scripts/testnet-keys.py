@@ -343,14 +343,18 @@ def generate_ledger(
     # GENERATE THE LEDGER
     #####################
     print("\n===Generating Genesis Ledger===")
-    # [
-    #     {  
-    #     "pk":public-key-string, 
-    #     "sk":optional-secret-key-string, 
-    #     "balance":int, 
-    #     "delegate": optional-public-key-string
-    #     }
-    # ]
+    # {
+    #   "name": "release",
+    #   "num_accounts": 250,
+    #   "accounts": [
+    #         {  
+    #           "pk":public-key-string, 
+    #           "sk":optional-secret-key-string, 
+    #           "balance":int, 
+    #           "delegate": optional-public-key-string
+    #         }
+    #   ]
+    # }
     ledger = []
     annotated_ledger = []
 
@@ -454,14 +458,26 @@ def generate_ledger(
         except IndexError: 
             print("There are less online whale keys than there are offline whale keys, are you sure you meant to do that?")
             break
-    
+    print()
+    # TODO: dynamic num_accounts
     # Write ledger and annotated ledger to disk
     with open(SCRIPT_DIR / 'genesis_ledger.json', 'w') as outfile:
-        json.dump(ledger, outfile, indent=1)
+        ledger_wrapper = {
+            "name": "release",
+            "num_accounts": 250,
+            "accounts": ledger
+        }
+        json.dump(ledger_wrapper, outfile, indent=1)
+        print(f"Ledger Path: {SCRIPT_DIR / 'genesis_ledger.json'}")
 
     with open(SCRIPT_DIR / 'annotated_ledger.json', 'w') as outfile:
-        json.dump(annotated_ledger, outfile, indent=1)
-
+        annotated_ledger_wrapper = {
+            "name": "annotated_release",
+            "num_accounts": 250,
+            "accounts": ledger
+        }
+        json.dump(annotated_ledger_wrapper, outfile, indent=1)
+        print(f"Annotated Ledger Path: {SCRIPT_DIR / 'genesis_ledger.json'}")
     
 #####
 # Commands for persisting keys to K8s Secrets

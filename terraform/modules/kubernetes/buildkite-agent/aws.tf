@@ -1,8 +1,3 @@
-# activated for AWS secrets manager interfacing
-provider "aws" {
-  region = "us-west-2"
-}
-
 resource "aws_iam_user" "buildkite_aws_user" {
   name = "buildkite-${var.cluster_name}"
   path = "/service-accounts/"
@@ -17,7 +12,7 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
     actions = [
       "secretsmanager:GetSecretValue",
       "secretsmanager:ListSecrets",
-      "secretsmanager:TagResouce"
+      "secretsmanager:TagResource"
     ]
 
     effect = "Allow"
@@ -34,4 +29,12 @@ resource "aws_iam_user_policy" "buildkite_aws_policy" {
   user = aws_iam_user.buildkite_aws_user.name
 
   policy = data.aws_iam_policy_document.buildkite_aws_policydoc.json
+}
+
+data "aws_secretsmanager_secret" "buildkite_docker_token_metadata" {
+  name = "o1bot/docker/ci-access-token"
+}
+
+data "aws_secretsmanager_secret_version" "buildkite_docker_token" {
+  secret_id = "${data.aws_secretsmanager_secret.buildkite_docker_token_metadata.id}"
 }

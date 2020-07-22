@@ -1,4 +1,18 @@
-provider helm {}
+provider kubernetes {
+    config_context  = var.k8s_context
+}
+
+provider helm {
+  kubernetes {
+    config_context  = var.k8s_context
+  }
+}
+
+resource "kubernetes_namespace" "cluster_namespace" {
+  metadata {
+    name = var.cluster_name
+  }
+}
 
 # Helm Buildkite Agent Spec
 locals {
@@ -7,7 +21,7 @@ locals {
     {
       # inject Google Cloud application credentials into agent runtime for enabling buildkite artifact uploads
       "name" = "BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON"
-      "value" = var.k8s_provider != local.gke_context ? var.google_app_credentials : base64decode(google_service_account_key.buildkite_svc_key[0].private_key)
+      "value" = var.enable_gcs_access ? base64decode(google_service_account_key.buildkite_svc_key[0].private_key) : var.google_app_credentials
     },
     {
       "name" = "BUILDKITE_ARTIFACT_UPLOAD_DESTINATION"
@@ -26,7 +40,7 @@ locals {
     {
       # used by GSUTIL tool for accessing GCS data
       "name" = "CLUSTER_SERVICE_EMAIL"
-      "value" = var.k8s_provider == local.gke_context ? google_service_account.gcp_buildkite_account[0].email : ""
+      "value" = var.enable_gcs_access? google_service_account.gcp_buildkite_account[0].email : ""
     },
     {
       "name" = "GSUTIL_DOWNLOAD_URL"
@@ -48,6 +62,11 @@ locals {
     {
       "name" = "AWS_REGION"
       "value" = "us-west-2"
+    },
+    # Docker EnvVars
+    {
+      "name" = "DOCKER_PASSWORD"
+      "value" = data.aws_secretsmanager_secret_version.buildkite_docker_token.secret_string
     }
   ]
 }
@@ -127,10 +146,12 @@ data "helm_repository" "buildkite_helm_repo" {
 resource "helm_release" "buildkite_agents" {
   for_each   = var.agent_topology
  
-  name       = "${var.cluster_name}-buildkite-${each.key}"
-  repository = data.helm_repository.buildkite_helm_repo.metadata[0].name
-  chart      = var.helm_chart
-  namespace  = kubernetes_namespace.cluster_namespace.metadata[0].name
+  name              = "${var.cluster_name}-buildkite-${each.key}"
+  repository        = data.helm_repository.buildkite_helm_repo.metadata[0].name
+  chart             = var.helm_chart
+  namespace         = var.cluster_name
+  create_namespace  = true
+  version           = var.chart_version
 
   values = [
     yamlencode(merge(local.default_agent_vars, each.value))

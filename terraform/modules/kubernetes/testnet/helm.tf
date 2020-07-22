@@ -73,6 +73,7 @@ locals {
       class      = "fish"
     }
     agent = {
+      active             = var.coda_agent_active
       image              = var.coda_agent_image
       maxTx              = var.agent_max_tx
       minTx              = var.agent_min_tx

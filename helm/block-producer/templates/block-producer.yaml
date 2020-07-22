@@ -152,6 +152,7 @@ spec:
           "-log-level", {{ $.Values.coda.logLevel }},
           "-log-json",
           "-log-received-blocks", "true",
+          "-log-snark-work-gossip", "true",
           "-config-directory", "/root/.coda-config",
           "-client-port", "$(DAEMON_CLIENT_PORT)",
           "-rest-port", "$(DAEMON_REST_PORT)",
@@ -233,33 +234,7 @@ spec:
       {{- if $.Values.coda.genesis.active }}
       - name: daemon-config
         configMap:
-          name: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-daemon-config
+          name: {{ tpl $.Values.blockProducer.fullname $ }}-daemon-config
       {{- end }}
----
-{{ if $.Values.coda.genesis.active -}}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-daemon-config
-  labels:
-    app: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
-    heritage: {{ $.Release.Service }}
-    release: {{ $.Release.Name }}
-data:
-  daemon.json: |-
-    {
-      "daemon": {},
-      "genesis": { 
-        "genesis_state_timestamp": {{ $.Values.coda.genesis.genesis_state_timestamp | quote}},
-        "k": 20, 
-        "delta": 3
-      },
-      "proof": {
-        "c": 8
-      },
-      "ledger": {{ $.Values.coda.genesis.ledger }}
-    }
-
-{{- end}}
 ---
 {{ end }}
