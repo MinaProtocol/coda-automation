@@ -6,6 +6,8 @@ type t = {
   nickname: option(string),
 };
 
+external fromJson: Js.Json.t => t = "%identity";
+
 let filename = keypair =>
   Belt.Option.getWithDefault(keypair.nickname, keypair.publicKey);
 
@@ -29,9 +31,24 @@ let write = keypair => {
 };
 
 /**
+ * Attempts to load a keyset based on the name.
+ */
+let load = name => {
+  open Node.Fs;
+  let filename = Cache.keypairsDir ++ name;
+  if (existsSync(filename)) {
+    let raw = readFileSync(filename, `utf8);
+    Some(Js.Json.parseExn(raw)->fromJson);
+  } else {
+    None;
+  };
+};
+
+/**
  * Writes the serialized keypair to disk.
  */
 let upload = keypair => {
-  Storage.upload(~bucket=Storage.keypairBucket, ~filename=filename(keypair))
+  let filename = Cache.keypairsDir ++ filename(keypair);
+  Storage.upload(~bucket=Storage.keypairBucket, ~filename)
   |> ignore;
 };

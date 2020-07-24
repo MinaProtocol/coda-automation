@@ -33,12 +33,33 @@ let keypairTerm = {
  * Keyset commands.
  */
 
-let keyset = (action, keysetName, publicKey) => {
+let rec populateKeyset: (Keyset.t, int) => Keyset.t =
+  (keyset, count) =>
+    count > 0
+      ? {
+        let keypair =
+          Keypair.create(
+            ~nickname=Some(keyset.name ++ string_of_int(count)),
+          );
+        Keypair.write(keypair);
+        populateKeyset(Keyset.appendKeypair(keyset, keypair), count - 1);
+      }
+      : keyset;
+
+let keyset = (action, keysetName, publicKey, count) => {
   open Keyset;
   switch (action, keysetName) {
   | (Some("create"), Some(name)) =>
-    create(name)->write;
+    let keyset = create(name);
+    write(keyset);
     Js.log("Created keyset: " ++ name);
+    switch (count) {
+    | Some(num) =>
+      Js.log3("Generating", num, "new keys");
+      populateKeyset(keyset, num) |> write;
+      Js.log("Successfully generated new keys");
+    | None => ()
+    };
   | (Some("create"), None)
   | (Some("show"), None)
   | (Some("add"), None) =>
@@ -70,7 +91,7 @@ let keyset = (action, keysetName, publicKey) => {
   | (Some("upload"), Some(name)) =>
     let keyset = load(name);
     switch (keyset) {
-    | Some(keyset) => upload(keyset)
+    | Some(keyset) => upload(keyset) |> ignore
     | None => Js.log("The provided keyset does not exist.")
     };
   | (_, _) => Js.log("Unsupported ACTION.")
@@ -87,6 +108,10 @@ let keysetTerm = {
     Arg.(
       value(opt(some(string), None, info(["n", "name"], ~docv="NAME")))
     );
+  let count =
+    Arg.(
+      value(opt(some(int), None, info(["c", "count"], ~docv="COUNT")))
+    );
   let publicKey =
     Arg.(
       value(
@@ -98,7 +123,7 @@ let keysetTerm = {
       )
     );
   (
-    Term.(const(keyset) $ action $ keysetName $ publicKey),
+    Term.(const(keyset) $ action $ keysetName $ publicKey $ count),
     Term.info("keyset", ~doc, ~sdocs),
   );
 };
@@ -108,17 +133,16 @@ let keysetTerm = {
  */
 
 let genesis = () => {
-  Genesis.
-    (
-      prompt([||])
-      |> Js.Promise.then_(config => {
-        let ledger = create(config);
-        write(ledger);
-        Js.log2("\nCreated genesis ledger version", version(ledger));
-        Js.Promise.resolve()
-      })
-      |> ignore
-    );
+  Genesis.(
+    prompt([||])
+    |> Js.Promise.then_(config => {
+         let ledger = create(config);
+         write(ledger);
+         Js.log2("\nCreated genesis ledger version", version(ledger));
+         Js.Promise.resolve();
+       })
+    |> ignore
+  );
 };
 
 let genesisTerm = {
