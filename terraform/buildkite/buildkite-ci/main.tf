@@ -13,6 +13,14 @@ provider "aws" {
   region = "us-west-2"
 }
 
+data "aws_secretsmanager_secret" "buildkite_agent_token_metadata" {
+  name = "buildkite/agent/access-token"
+}
+
+data "aws_secretsmanager_secret_version" "buildkite_agent_token" {
+  secret_id = "${data.aws_secretsmanager_secret.buildkite_agent_token_metadata.id}"
+}
+
 #
 # OPTIONAL: input variables -- recommended to express as environment vars (e.g. TF_VAR_***)
 #
