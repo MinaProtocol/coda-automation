@@ -12,8 +12,14 @@ from pathlib import Path
 
 # This script is designed to fetch relevant parameters from a running testnet
 # and run a daemon locally that is correctly configured to connect to that testnet.
+<<<<<<< HEAD
 # Example Invocation:
 # python3 scripts/testnet-validation/local_daemon.py run --working-directory ~/Desktop/config --coda-docker-image codaprotocol/coda-daemon:0.0.12-beta-rosetta-dockerfile-aec5631
+=======
+# Settings:
+# - Docker Gossip Port
+# - Coda Docker Image
+>>>>>>> script for running local daemons against QA Networks
 
 SCRIPT_DIR = Path(__file__).parent.absolute()
 config.load_kube_config()
@@ -103,10 +109,17 @@ daemon \
 
 @cli.command()
 @click.option("--namespace", default="regeneration", help="The name of the testnet you'd like to connect to.")
+<<<<<<< HEAD
 @click.option("--gossip-port", default=10000, help="The port to expose on the Coda Daemon Docker Container.")
 @click.option("--docker-image", default="codaprotocol/coda-daemon:latest", help="The Coda Daemon Docker Image to use.")
 @click.option("--working-directory", default=".", help="The location to download temporary files to, namely the daemon.json")
 def run(namespace, gossip_port, docker_image, working_directory):
+=======
+@click.option("--docker-gossip-port", default=10000, help="The port to expose on the Coda Daemon Docker Container.")
+@click.option("--coda-docker-image", default="codaprotocol/coda-daemon:latest", help="The Coda Daemon Docker Image to use.")
+@click.option("--working-directory", default=".", help="The location to download temporary files to, namely the daemon.json")
+def run(namespace, docker_gossip_port, coda_docker_image, working_directory):
+>>>>>>> script for running local daemons against QA Networks
   if working_directory == ".":
     working_directory = SCRIPT_DIR
   else:
@@ -115,7 +128,11 @@ def run(namespace, gossip_port, docker_image, working_directory):
   addresses = fetch_peers(namespace)
   fetch_daemon_json(working_directory, namespace)
 
+<<<<<<< HEAD
   run_docker(docker_image, gossip_port, working_directory, peers=addresses)
+=======
+  run_docker(coda_docker_image, docker_gossip_port, working_directory, peers=addresses)
+>>>>>>> script for running local daemons against QA Networks
 
 
 
