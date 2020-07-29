@@ -1,5 +1,5 @@
 locals {
-  east_topology = {
+  west_topology = {
     small = {
       agent = {
         tags  = "size=small"
@@ -11,7 +11,7 @@ locals {
           memory = "2G"
         }
       }
-      replicaCount = 10
+      replicaCount = 12
     }
     large = {
       agent = {
@@ -24,12 +24,12 @@ locals {
           memory = "8G"
         }
       }
-      replicaCount = 5
+      replicaCount = 12
     }
   }
 }
 
-module "buildkite-east" {
+module "buildkite-west" {
   source = "../../modules/kubernetes/buildkite-agent"
 
   google_app_credentials = var.google_credentials
@@ -38,5 +38,5 @@ module "buildkite-east" {
   cluster_name      = var.cluster_name
 
   agent_vcs_privkey = var.agent_vcs_privkey
-  agent_topology    = local.east_topology
+  agent_topology    = local.west_topology
 }
