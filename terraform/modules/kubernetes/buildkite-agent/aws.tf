@@ -22,15 +22,16 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
       "*",
     ]
   }
+
   statement {
     actions = [
-      "s3:GetObject*",
-      "s3:PutObject*",
-      "s3:ListObjects*",
-      "s3:HeadObject*",
-      "s3:CopyObject*",
-      "s3:DeleteObject*",
-      "s3:MultipartUpload*"
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:ListObjects",
+      "s3:HeadObject",
+      "s3:CopyObject",
+      "s3:DeleteObject",
+      "s3:MultipartUpload"
     ]
 
     effect = "Allow"
