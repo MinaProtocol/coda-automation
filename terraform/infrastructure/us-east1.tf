@@ -63,7 +63,7 @@ resource "google_container_node_pool" "east_primary_nodes" {
   name       = "coda-infra-east"
   location   = "us-east1"
   cluster    = google_container_cluster.coda_cluster_east.name
-  node_count = 9
+  node_count = 4
   autoscaling {
     min_node_count = 0
     max_node_count = 15
