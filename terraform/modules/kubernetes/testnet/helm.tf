@@ -26,7 +26,7 @@ locals {
       genesis = {
         active = true
         genesis_state_timestamp = var.genesis_timestamp
-        ledger = file(var.ledger_config_location)
+        ledger = jsonencode(jsondecode(file(var.ledger_config_location)))
       }
       image = var.coda_image
       seedPeers = concat(var.additional_seed_peers, local.seed_peers)
