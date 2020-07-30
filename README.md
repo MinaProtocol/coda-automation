@@ -37,6 +37,7 @@ coda-automation
 For the purposes of this README we are assuming the following: 
 - You have a configured AWS Account with credentials on your machine: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
 - You have a configured Google Cloud Project with credentials on your machine: https://cloud.google.com/sdk/gcloud/reference/auth/login
+  After running `gcloud auth login` you also need `gcloud auth application-default login` to set up a .json creds file for terraform
 - You have Terraform `0.12.28` installed on your machine 
   
   MacOS:
@@ -44,7 +45,9 @@ For the purposes of this README we are assuming the following:
 
   Other Platforms: https://www.terraform.io/downloads.html
 - You have Kubectl configured for the GKE cluster of your choice: https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl
-  TL;DR: ` gcloud container clusters get-credentials -region us-east1 coda-infra-east`
+  TL;DR: ` gcloud container clusters get-credentials --region us-east1 coda-infra-east`
+- You have the following python packages availible: docker, inflect, click, natsort.
+  TL;DR: `pip3 install docker inflect click natsort`
 
 # What is a Testnet
 
@@ -174,6 +177,7 @@ Options:
 There's several gotchas here that the script will check for:
 - For a particular block producer "class", number of offline and online keys must be equal
 - Remember the path to the ledger file here, you will need it as an input to your deployment
+- Minimum of 10 fish keys
 
 ### Create a Testnet
 
