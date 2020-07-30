@@ -30,7 +30,6 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
       "s3:ListObjects",
       "s3:HeadObject",
       "s3:CopyObject",
-      "s3:DeleteObject",
       "s3:MultipartUpload"
     ]
 
