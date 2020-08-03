@@ -17,9 +17,9 @@ provider helm {
 
 locals {
   seed_peers = [
-    "/dns4/seed-node.${var.testnet_name}/tcp/10001/ipfs/${split(",", var.seed_discovery_keypairs[0])[2]}"
-    # "/ip4/${module.seed_one.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_one.discovery_keypair)[2]}",
-    # "/ip4/${module.seed_two.instance_external_ip}/tcp/10001/ipfs/${split(",", module.seed_two.discovery_keypair)[2]}"
+    "/dns4/seed-node.${var.testnet_name}/tcp/10001/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
+    # "/ip4/${module.seed_one.instance_external_ip}/tcp/10001/p2p/${split(",", module.seed_one.discovery_keypair)[2]}",
+    # "/ip4/${module.seed_two.instance_external_ip}/tcp/10001/p2p/${split(",", module.seed_two.discovery_keypair)[2]}"
   ]
 
   coda_values = {
