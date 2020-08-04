@@ -34,6 +34,8 @@ resource "google_container_node_pool" "west_primary_nodes" {
   name       = "buildkite-infra-west"
   location   = "us-west1"
   cluster    = google_container_cluster.buildkite_cluster_west.name
+
+  # total nodes provisioned = node_count * # of AZs
   node_count = 4
   autoscaling {
     min_node_count = 0
