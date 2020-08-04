@@ -1,6 +1,8 @@
 resource "aws_iam_user" "buildkite_aws_user" {
   name = "buildkite-${var.cluster_name}"
   path = "/service-accounts/"
+
+  force_destroy = true
 }
 
 resource "aws_iam_access_key" "buildkite_aws_key" {

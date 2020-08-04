@@ -29,7 +29,7 @@ variable "cluster_name" {
   type = string
 
   description = "Name of the cluster to provision"
-  default     = "gke-east"
+  default     = "gke-west"
 }
 
 variable "google_credentials" {
@@ -50,5 +50,5 @@ variable "k8s_context" {
   type = string
 
   description = "K8s resource provider context -- generally determined by operating environment"
-  default     = "minikube"
+  default     = "gke_o1labs-192920_us-west1_buildkite-infra-west"
 }

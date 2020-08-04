@@ -15,11 +15,11 @@ locals {
       }
       resources = {
         limits = {
-          cpu    = "15"
-          memory = "10G"
+          cpu    = "32"
+          memory = "20G"
         }
       }
-      replicaCount = 1
+      replicaCount = 3
     }
   }
 }
