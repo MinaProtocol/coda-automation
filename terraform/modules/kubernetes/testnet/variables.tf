@@ -34,7 +34,7 @@ variable "coda_agent_active" {
   default = "true"
 }
 
-variable "coda_bots_image" {
+variable "coda_faucet_image" {
   type    = string
   default = ""
 }

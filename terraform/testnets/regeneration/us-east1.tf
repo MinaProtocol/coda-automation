@@ -15,6 +15,7 @@ module "testnet_east" {
   cluster_region        = "us-east1"
   testnet_name          = local.testnet_name
   coda_image            = local.coda_image
+  coda_faucet_image     = "codaprotocol/coda-bots:0.0.13-beta-1"
   genesis_timestamp     = timestamp()
   ledger_config_location = local.ledger_config_location
 

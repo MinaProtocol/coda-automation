@@ -1,0 +1,23 @@
+testnetName: "coda-testnet"
+coda:
+  genesis:
+    active: true
+    k: 10
+    delta: 3
+    txpool_max_size: 3000
+    genesis_state_timestamp: "2020-04-20 11:00:00-07:00"
+    ledger: "{}"
+  image: codaprotocol/coda-daemon:0.0.12-beta-develop-589b507
+  seedPeers:
+    - /ip4/35.185.66.37/tcp/10105/ipfs/12D3KooWQ7Pz3SPizarzx9ZhCJ6jNmQ2iDPgHQxVzRzqYU2SgRSd
+    - /ip4/35.237.214.144/tcp/10120/ipfs/12D3KooWGtjWnCcvkaSEbKuNbPivEogxqtLWcsJiQtURydptvrsA
+
+faucet:
+  active: true
+  fullname: "discord-faucet-{{ $.Values.testnetName }}"
+  hostPort: 10001
+  rpcPort: 8301
+  codaPrivkeyPass: naughty blue worm
+  image: codaprotocol/coda-bots:0.0.13-beta-1
+  amount: "1000000000"
+  fee: "10000000"

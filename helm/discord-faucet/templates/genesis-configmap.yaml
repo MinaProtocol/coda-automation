@@ -1,0 +1,24 @@
+{{ if $.Values.coda.genesis.active -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ tpl $.Values.faucet.fullname . }}-daemon-config
+  labels:
+    app: {{ tpl $.Values.faucet.fullname . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+data:
+  daemon.json: |-
+    {
+      "daemon": {},
+      "genesis": { 
+        "genesis_state_timestamp": {{ $.Values.coda.genesis.genesis_state_timestamp | quote}},
+        "k": 20, 
+        "delta": 3
+      },
+      "proof": {
+        "c": 8
+      },
+      "ledger": {{ $.Values.coda.genesis.ledger }}
+    }
+{{- end}}
