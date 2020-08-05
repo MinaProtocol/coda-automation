@@ -1,5 +1,5 @@
 locals {
-  east1_compute_topology = {
+  east4_compute_topology = {
     small = {
       agent = {
         tags  = "size=small"
@@ -58,14 +58,14 @@ locals {
   }
 }
 
-module "buildkite-east1-compute" {
+module "buildkite-east4-compute" {
   source = "../../modules/kubernetes/buildkite-agent"
 
-  k8s_context             = "gke_o1labs-192920_us-east1_buildkite-infra-east1"
-  cluster_name            = "gke-east1"
+  k8s_context             = "gke_o1labs-192920_us-east4_buildkite-infra-east4"
+  cluster_name            = "gke-east4"
 
   google_app_credentials  = var.google_credentials
 
   agent_vcs_privkey       = var.agent_vcs_privkey
-  agent_topology          = local.east1_compute_topology
+  agent_topology          = local.east4_compute_topology
 }

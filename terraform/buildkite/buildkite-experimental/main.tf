@@ -17,13 +17,6 @@ provider "aws" {
 # OPTIONAL: input variables
 #
 
-variable "cluster_name" {
-  type = string
-
-  description = "Name of the cluster to provision"
-  default     = "gke-benchmark"
-}
-
 variable "agent_vcs_privkey" {
   type = string
 
@@ -38,9 +31,3 @@ variable "google_credentials" {
   default     = ""
 }
 
-variable "k8s_context" {
-  type = string
-
-  description = "K8s resource provider context -- generally determined by operating environment"
-  default     = "gke_o1labs-192920_us-central1_buildkite-infra-central"
-}
