@@ -11,7 +11,9 @@ resource "google_container_cluster" "buildkite_cluster_west" {
   min_master_version = "1.15"
 
   node_locations = [
-    "us-west1-a"
+    "us-west1-a",
+    "us-west1-b",
+    "us-west1-c"
   ]
 
   remove_default_node_pool = true
@@ -32,10 +34,12 @@ resource "google_container_node_pool" "west_primary_nodes" {
   name       = "buildkite-infra-west"
   location   = "us-west1"
   cluster    = google_container_cluster.buildkite_cluster_west.name
-  node_count = 12
+
+  # total nodes provisioned = node_count * # of AZs
+  node_count = 4
   autoscaling {
     min_node_count = 0
-    max_node_count = 12
+    max_node_count = 4
   }
   node_config {
     preemptible  = true
