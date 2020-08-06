@@ -29,6 +29,11 @@ variable "coda_agent_image" {
   default = "codaprotocol/coda-user-agent:0.1.4"
 }
 
+variable "coda_agent_active" {
+  type    = string
+  default = "true"
+}
+
 variable "coda_bots_image" {
   type    = string
   default = ""
@@ -95,6 +100,11 @@ variable "log_level" {
 }
 
 variable "log_received_blocks" {
+  type    = bool
+  default = false
+}
+
+variable "log_snark_work_gossip" {
   type    = bool
   default = false
 }

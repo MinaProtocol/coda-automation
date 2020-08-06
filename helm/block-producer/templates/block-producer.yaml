@@ -154,6 +154,9 @@ spec:
           {{- if $.Values.coda.logReceivedBlocks }}
           "-log-received-blocks", "true",
           {{- end -}}
+          {{- if $.Values.coda.logSnarkWorkGossip }}
+          "-log-snark-work-gossip", "true",
+          {{- end -}}
           {{- range $.Values.coda.seedPeers }}
           "-peer", {{ . | quote }},
           {{- end -}}
@@ -237,18 +240,5 @@ spec:
         configMap:
           name: {{ $config.name }}-daemon-config
       {{- end }}
----
-{{ if (ne $.Values.coda.runtimeConfig "") -}}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ $config.name }}-daemon-config
-  labels:
-    app: {{ $config.name }}
-    heritage: {{ $.Release.Service }}
-    release: {{ $.Release.Name }}
-data:
-  daemon.json: {{ $.Values.coda.runtimeConfig | quote }}
-{{- end}}
 ---
 {{ end }}

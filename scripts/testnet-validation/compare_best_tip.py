@@ -49,7 +49,7 @@ def check(namespace, remote_graphql_port):
 
   def process_pod(args):
     (i, pod) = args
-    if pod.metadata.namespace == namespace and 'block-producer' in pod.metadata.name:
+    if pod.metadata.namespace == namespace and ('block-producer' in pod.metadata.name or 'snark-coordinator' in pod.metadata.name):
       logger.info("Processing {}".format(pod.metadata.name))
       # Set up Port Forward
       logger.debug("Setting up Port Forward")
