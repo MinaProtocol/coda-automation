@@ -25,13 +25,6 @@ data "aws_secretsmanager_secret_version" "buildkite_agent_token" {
 # OPTIONAL: input variables -- recommended to express as environment vars (e.g. TF_VAR_***)
 #
 
-variable "cluster_name" {
-  type = string
-
-  description = "Name of the cluster to provision"
-  default     = "gke-west"
-}
-
 variable "google_credentials" {
   type = string
 
@@ -44,11 +37,4 @@ variable "agent_vcs_privkey" {
 
   description = "Version control private key for secured repository access"
   default     = ""
-}
-
-variable "k8s_context" {
-  type = string
-
-  description = "K8s resource provider context -- generally determined by operating environment"
-  default     = "gke_o1labs-192920_us-west1_buildkite-infra-west"
 }

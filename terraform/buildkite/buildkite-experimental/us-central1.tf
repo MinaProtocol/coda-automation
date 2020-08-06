@@ -27,11 +27,11 @@ locals {
 module "buildkite-ci-compute" {
   source = "../../modules/kubernetes/buildkite-agent"
 
-  google_app_credentials = var.google_credentials
-  k8s_context           = var.k8s_context
+  k8s_context             = "gke_o1labs-192920_us-central1_buildkite-infra-central"
+  cluster_name            = "gke-benchmark"
 
-  cluster_name      = var.cluster_name
+  google_app_credentials  = var.google_credentials
 
-  agent_vcs_privkey = var.agent_vcs_privkey
-  agent_topology    = local.experimental_topology
+  agent_vcs_privkey       = var.agent_vcs_privkey
+  agent_topology          = local.experimental_topology
 }
