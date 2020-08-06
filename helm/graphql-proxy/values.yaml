@@ -1,0 +1,23 @@
+testnetName: "coda-testnet"
+coda: 
+  rpcPort: 8301
+  hostPort: 10001
+  graphqlPort: 3085
+  genesis: 
+    active: true
+    k: 10
+    delta: 3
+    txpool_max_size: 3000
+    genesis_state_timestamp: "2020-02-25 10:00:00-07:00" 
+  image: codaprotocol/coda-daemon:0.0.12-beta-feature-bump-genesis-timestamp-4158ad2
+  seedPeers: 
+    - /ip4/35.227.69.79/tcp/10001/ipfs/12D3KooWAFFq2yEQFFzhU5dt64AWqawRuomG9hL8rSmm5vxhAsgr     
+    - /ip4/35.196.247.216/tcp/10001/ipfs/12D3KooWB79AmjiywL1kMGeKHizFNQE9naThM2ooHgwFcUzt6Yt1
+
+proxy: 
+  fullname: "graphql-proxy-{{ $.Values.testnetName }}"
+  dns: "graphql.{{ $.Values.testnetName }}.o1test.net"
+  active: true
+  image: codaprotocol/graphql-public-proxy:0.0.10
+  externalPort: 8000
+

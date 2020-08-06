@@ -1,0 +1,8 @@
+---
+apiVersion: networking.gke.io/v1beta1
+kind: ManagedCertificate
+metadata:
+  name: {{ tpl $.Values.proxy.fullname . }}-certificate
+spec:
+  domains:
+    - {{ tpl $.Values.proxy.dns . }}
