@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "terraform-pancake.tfstate"
+    key     = "terraform-bugspray.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -13,44 +13,74 @@ provider "aws" {
   region = "us-west-2"
 }
 
-locals {
-  testnet_name = "pancake"
-  coda_image   = var.coda_image
-  coda_agent_image = var.coda_agent_image
-  coda_bots_image = var.coda_bots_image
-  coda_points_image = var.coda_points_image
-  coda_faucet_amount = var.coda_faucet_amount
-  coda_faucet_fee = var.coda_faucet_fee
-  num_whale_block_producers = 5
-  num_fish_block_producers = 10
+provider "google" {
+  alias   = "google-us-east1"
+  project = "o1labs-192920"
+  region  = "us-east1"
+  zone    = "us-east1-b"
 }
 
-variable "coda_image" {
-  type = string
-  default = "codaprotocol/coda-daemon:0.0.12-beta-feature-bump-genesis-timestamp-2-30a06eb"
-}
+module "testnet_east" {
+  providers = { google = google.google-us-east1 }
+  source    = "../../modules/kubernetes/testnet"
 
-variable "coda_agent_image" {
-  type = string
-  default = "codaprotocol/coda-user-agent:0.1.5"
-}
+  cluster_name          = "coda-infra-east"
+  cluster_region        = "us-east1"
+  testnet_name          = "pancake"
 
-variable "coda_bots_image" {
-  type = string
-  default = "codaprotocol/coda-bots:0.0.13-beta-1"
-}
+  coda_image            = "codaprotocol/coda-daemon:0.0.12-beta-develop-f1c2b80"
+  coda_agent_image      = "codaprotocol/coda-user-agent:0.1.5"
+  coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
+  coda_points_image     = "codaprotocol/coda-points-hack:32b.4"
 
-variable "coda_points_image" {
-  type = string
-  default = "codaprotocol/coda-points-hack:32b.4"
-}
+  coda_faucet_amount    = "10000000000"
+  coda_faucet_fee       = "100000000"
 
-variable "coda_faucet_amount" {
-  type    = string
-  default = "10000000000"
-}
+  runtime_config         = "{}"
+  ledger_config_location = "../../../scripts/genesis_ledger.json"
 
-variable "coda_faucet_fee" {
-  type    = string
-  default = "100000000"
+  seed_zone = "us-east1-b"
+  seed_region = "us-east1"
+
+  log_level              = "Trace"
+  log_txn_pool_gossip    = true
+  log_received_blocks    = true
+
+  block_producer_key_pass = "naughty blue worm"
+  block_producer_starting_host_port = 10001
+
+  block_producer_configs = concat(
+    [
+      for i in range(5):
+      {
+        name                   = "whale-block-producer-${i + 1}"
+        class                  = "whale"
+        id                     = i + 1
+        enable_gossip_flooding = false
+        run_with_user_agent    = false
+        run_with_bots          = false
+      }
+    ],
+    [
+      for i in range(10):
+      {
+        name                   = "fish-block-producer-${i + 1}"
+        class                  = "fish"
+        id                     = i + 1
+        enable_gossip_flooding = false
+        run_with_user_agent    = true
+        run_with_bots          = false
+      }
+    ]
+  )
+
+  snark_worker_replicas = 8
+  snark_worker_fee      = "0.025"
+  snark_worker_public_key = "4vsRCVQZ41uqXfVVfkBNUuNNS7PgSJGdMDNAyKGDdU1WkdxxyxQ7oMdFcjDRf45fiGKkdYKkLPBrE1KnxmyBuvaTW97A5C8XjNSiJmvo9oHa4AwyVsZ3ACaspgQ3EyxQXk6uujaxzvQhbLDx"
+  snark_worker_host_port = 10400
+
+  agent_min_fee = "0.06"
+  agent_max_fee = "0.1"
+  agent_min_tx = "0.0015"
+  agent_max_tx = "0.0015"
 }
