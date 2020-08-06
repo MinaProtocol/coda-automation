@@ -26,7 +26,7 @@ locals {
       genesis = {
         active = true
         genesis_state_timestamp = var.genesis_timestamp
-        ledger = file(var.ledger_config_location)
+        ledger = jsonencode(jsondecode(file(var.ledger_config_location)))
       }
       image = var.coda_image
       seedPeers = concat(var.additional_seed_peers, local.seed_peers)
@@ -46,11 +46,7 @@ locals {
   whale_producer_vars = {
     testnetName = var.testnet_name
     coda = local.coda_values
-    blockProducersWithBots   = var.whale_block_producers_with_bots
-    blockProducersWithPoints = var.whale_block_producers_with_points
-    botsImage                = var.coda_bots_image
-    pointsImage              = var.coda_points_image
-
+    
     blockProducer = {
       numProducers            = var.num_whale_block_producers
       labelOffset = var.fish_block_producer_label_offset
@@ -80,12 +76,6 @@ locals {
       maxFee             = var.agent_max_fee
       minFee             = var.agent_min_fee
     }
-    blockProducersWithBots    = var.fish_block_producers_with_bots
-    blockProducersWithPoints  = var.fish_block_producers_with_points
-    botsImage                 = var.coda_bots_image
-    pointsImage               = var.coda_points_image
-    faucetAmount              = var.coda_faucet_amount
-    faucetFee                 = var.coda_faucet_fee
   }
   
   snark_worker_vars = {
@@ -103,6 +93,7 @@ locals {
       hostPort    = var.snark_worker_host_port
     }
   }
+
   archive_node_vars = {
     testnetName = var.testnet_name
     seedPeers  = concat(var.additional_seed_peers, local.seed_peers)
@@ -110,6 +101,20 @@ locals {
     archiveImage = replace(var.coda_image, "codaprotocol/coda-daemon",
                                            "codaprotocol/coda-archive")
   }   
+
+  faucet_vars = {
+    testnetName = var.testnet_name
+    coda = local.coda_values
+    faucet = {
+      active = true 
+      hostPort = 11000
+      image = var.coda_faucet_image
+      codaPrivkeyPass         = var.block_producer_key_pass
+      amount              = var.coda_faucet_amount
+      fee                 = var.coda_faucet_fee
+    }
+    
+  }
 }
 
 # Cluster-Local Seed Node
@@ -161,6 +166,7 @@ resource "helm_release" "snark_workers" {
   depends_on = [helm_release.seed]
 }
 
+# Archive Node 
 # resource "helm_release" "archive_node" {
 #   name      = "${var.testnet_name}-archive-node"
 #   chart     = "../../../helm/archive-node"
@@ -171,3 +177,15 @@ resource "helm_release" "snark_workers" {
 #   wait       = false
 #   depends_on = [helm_release.seed]
 # }
+
+# Discord Faucet 
+resource "helm_release" "discord_faucet" {
+  name      = "${var.testnet_name}-faucet"
+  chart     = "../../../helm/discord-faucet"
+  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  values = [
+    yamlencode(local.faucet_vars)
+  ]
+  wait       = false
+  depends_on = [helm_release.seed]
+}
