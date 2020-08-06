@@ -9,3 +9,4 @@ metadata:
     release: {{ .Release.Name }}
 data:
   daemon.json: {{ $.Values.coda.runtimeConfig | quote }}
+{{- end }}

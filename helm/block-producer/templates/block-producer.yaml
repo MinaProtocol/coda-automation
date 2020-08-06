@@ -238,7 +238,7 @@ spec:
       {{- if (ne $.Values.coda.runtimeConfig "") }}
       - name: daemon-config
         configMap:
-          name: {{ $config.name }}-daemon-config
+          name: block-producer-daemon-config
       {{- end }}
 ---
 {{ end }}

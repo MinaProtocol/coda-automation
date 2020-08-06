@@ -36,8 +36,20 @@ module "testnet_east" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
-  runtime_config         = "{}"
-  ledger_config_location = "../../../scripts/genesis_ledger.json"
+  runtime_config = <<EOT
+    {
+      "daemon": {},
+      "genesis": { 
+        "genesis_state_timestamp": "${timestamp()}",
+        "k": 20, 
+        "delta": 3
+      },
+      "proof": {
+        "c": 8
+      },
+      "ledger": ${file("../../../scripts/genesis_ledger.json")}
+    }
+  EOT
 
   seed_zone = "us-east1-b"
   seed_region = "us-east1"
@@ -51,22 +63,22 @@ module "testnet_east" {
 
   block_producer_configs = concat(
     [
-      for i in range(5):
-      {
+      for i in range(5): {
         name                   = "whale-block-producer-${i + 1}"
         class                  = "whale"
         id                     = i + 1
+        private_key_secret     = "online-whale-account-${i + 1}-key"
         enable_gossip_flooding = false
         run_with_user_agent    = false
         run_with_bots          = false
       }
     ],
     [
-      for i in range(10):
-      {
+      for i in range(10): {
         name                   = "fish-block-producer-${i + 1}"
         class                  = "fish"
         id                     = i + 1
+        private_key_secret     = "online-fish-account-${i + 1}-key"
         enable_gossip_flooding = false
         run_with_user_agent    = true
         run_with_bots          = false

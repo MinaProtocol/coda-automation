@@ -8,15 +8,6 @@ variable "cluster_region" {
   type = string
 }
 
-# Genesis Ledger Vars
-
-# Empty ledger variable by default
-# Optionally load a new ledger
-variable "ledger_config_location" {
-  type = string
-  default = "./templates/default_ledger.json"
-}
-
 # Global Vars
 
 variable "coda_image" {
