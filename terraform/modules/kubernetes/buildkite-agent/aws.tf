@@ -35,7 +35,8 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
 
     resources = [
       "arn:aws:s3:::packages.o1test.net/*",
-      "arn:aws:s3:::snark-keys.o1test.net/*"
+      "arn:aws:s3:::snark-keys.o1test.net/*",
+      "arn:aws:s3:::*.snark-keys.o1test.net/*"
     ]
   }
 }
