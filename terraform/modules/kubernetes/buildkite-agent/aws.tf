@@ -29,17 +29,13 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
     actions = [
       "s3:GetObject",
       "s3:PutObject",
-      "s3:ListObjects",
-      "s3:HeadObject",
-      "s3:CopyObject",
-      "s3:MultipartUpload"
     ]
 
     effect = "Allow"
 
     resources = [
-      "arn:aws:s3:::packages.o1test.net",
-      "arn:aws:s3:::*.o1test.net"
+      "arn:aws:s3:::packages.o1test.net/*",
+      "arn:aws:s3:::snark-keys.o1test.net/*"
     ]
   }
 }
