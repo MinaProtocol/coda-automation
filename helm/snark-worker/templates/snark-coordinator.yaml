@@ -82,6 +82,6 @@ spec:
       volumes:
       - name: daemon-config
         configMap:
-          name: {{ tpl $.Values.coordinator.fullname . }}-daemon-config
+          name: snark-coordinator-daemon-config
       {{- end -}}
 {{- end }}
