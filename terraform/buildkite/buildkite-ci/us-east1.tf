@@ -11,7 +11,7 @@ locals {
           memory = "2G"
         }
       }
-      replicaCount = 20
+      replicaCount = 10
     }
 
     medium = {
@@ -25,7 +25,7 @@ locals {
           memory = "4G"
         }
       }
-      replicaCount = 12
+      replicaCount = 6
     }
 
     large = {
@@ -37,9 +37,10 @@ locals {
         limits = {
           cpu    = "8"
           memory = "8G"
+          ephemeral-storage = "15Gi"
         }
       }
-      replicaCount = 8
+      replicaCount = 12
     }
 
     xlarge = {
@@ -51,9 +52,10 @@ locals {
         limits = {
           cpu    = "15.5"
           memory = "16G"
+          ephemeral-storage = "15Gi"
         }
       }
-      replicaCount = 4
+      replicaCount = 3
     }
   }
 }
