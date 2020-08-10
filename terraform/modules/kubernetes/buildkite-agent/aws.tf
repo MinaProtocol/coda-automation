@@ -29,6 +29,7 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
     actions = [
       "s3:GetObject",
       "s3:PutObject",
+      "s3:DeleteObject"
     ]
 
     effect = "Allow"
