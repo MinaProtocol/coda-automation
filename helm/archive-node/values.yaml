@@ -1,8 +1,8 @@
 testnetName: "coda-testnet"
 
 seedPeers: 
-  - /ip4/35.196.112.167/tcp/10001/ipfs/12D3KooWAFFq2yEQFFzhU5dt64AWqawRuomG9hL8rSmm5vxhAsgr
-  - /ip4/35.196.148.252/tcp/10001/ipfs/12D3KooWB79AmjiywL1kMGeKHizFNQE9naThM2ooHgwFcUzt6Yt
+  - /ip4/35.196.112.167/tcp/10001/p2p/12D3KooWAFFq2yEQFFzhU5dt64AWqawRuomG9hL8rSmm5vxhAsgr
+  - /ip4/35.196.148.252/tcp/10001/p2p/12D3KooWB79AmjiywL1kMGeKHizFNQE9naThM2ooHgwFcUzt6Yt
 
 codaImage: codaprotocol/coda-daemon:0.0.12-beta-release-0.0.13-beta-376d2ab
 hostPort: "10909"
