@@ -1,25 +1,12 @@
-{{ if $.Values.coda.genesis.active -}}
+{{ if (ne $.Values.coda.runtimeConfig "") -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ tpl $.Values.blockProducer.fullname $ }}-daemon-config
+  name: block-producer-daemon-config
   labels:
-    app: {{ tpl $.Values.blockProducer.fullname $ }}
+    app: block-producer
     heritage: {{ $.Release.Service }}
     release: {{ $.Release.Name }}
 data:
-  daemon.json: |-
-    {
-      "daemon": {},
-      "genesis": { 
-        "genesis_state_timestamp": {{ $.Values.coda.genesis.genesis_state_timestamp | quote}},
-        "k": 20, 
-        "delta": 3
-      },
-      "proof": {
-        "c": 8
-      },
-      "ledger": {{ $.Values.coda.genesis.ledger }}
-    }
-
-{{- end}}
+  daemon.json: {{ $.Values.coda.runtimeConfig | quote }}
+{{- end }}

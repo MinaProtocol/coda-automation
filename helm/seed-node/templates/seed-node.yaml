@@ -44,7 +44,7 @@ spec:
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-seed",
           "-discovery-keypair", "{{ $.Values.seed.discoveryKeypair }}",
-          {{- if $.Values.coda.genesis.active }}
+          {{- if (ne $.Values.coda.runtimeConfig "") }}
           "-config-file", "/config/daemon.json",
           "-generate-genesis-proof", "true",
           {{- end }}
@@ -68,7 +68,7 @@ spec:
           hostPort: {{ .Values.seed.hostPort }}
           protocol: TCP
         imagePullPolicy: Always
-      {{- if $.Values.coda.genesis.active }}
+      {{- if (ne $.Values.coda.runtimeConfig "") }}
         volumeMounts:
         - name: daemon-config
           mountPath: "/config/"
