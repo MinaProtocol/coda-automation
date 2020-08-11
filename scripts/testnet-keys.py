@@ -185,11 +185,11 @@ def generate_seed_keys(count, output_dir):
         seed_number = p.number_to_words(i+1)
 
         # Key outputted to stdout
-        key_raw = client.containers.run(CODA_DAEMON_IMAGE, entrypoint="bash -c", command=["coda advanced generate-libp2p-keypair"])
+        key_raw = client.containers.run(CODA_DAEMON_IMAGE, entrypoint="bash -c", command=["CODA_LIBP2P_PASS='' coda advanced generate-libp2p-keypair -privkey-path /dev/stdout"])
         key_parsed = str(key_raw).split("\\n")[1]
         all_key_file = open(SEED_KEYS_DIR / "seed_{}_libp2p.txt".format(seed_number), "w")
 
-        client_id = copy(key_parsed).split(",")[2]
+        client_id = key_parsed[:].split(",")[2]
         client_id_file = open(SEED_KEYS_DIR / "seed_{}_client_id.txt".format(seed_number), "w")
         # Write Key to file
         all_key_file.write(key_parsed)
