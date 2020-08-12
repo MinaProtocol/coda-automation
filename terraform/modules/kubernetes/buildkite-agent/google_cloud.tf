@@ -1,6 +1,7 @@
 locals {
   k8s_context = "minikube"
   gke_project = "o1labs-192920"
+  gcs_artifact_bucket = "buildkite_k8s"
 }
 
 resource "google_service_account" "gcp_buildkite_account" {
@@ -12,19 +13,16 @@ resource "google_service_account" "gcp_buildkite_account" {
   project      = local.gke_project
 }
 
-# resource "google_project_iam_member" "buildkite_artifact_admin" {
-#   count = var.enable_gcs_access ? 1 : 0
+resource "google_storage_bucket_iam_binding" "binding" {
+  count = var.enable_gcs_access ? 1 : 0
 
-#   project = local.gke_project
-#   role    = "roles/storage.objectCreator"
-#   member  = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
+  bucket =local.gcs_artifact_bucket
+  role = "roles/storage.objectAdmin"
 
-#   # TODO: determine necessity of this condition
-#   # condition {
-#   #   title       = "buildkite-artifacts"
-#   #   expression  = "resource.name.startsWith(\"buildkite\")"
-#   # }
-# }
+  members = [
+    "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}",
+  ]
+}
 
 resource "google_service_account_key" "buildkite_svc_key" {
   count = var.enable_gcs_access ? 1 : 0
