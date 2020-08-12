@@ -13,7 +13,7 @@ resource "google_service_account" "gcp_buildkite_account" {
   project      = local.gke_project
 }
 
-resource "google_storage_bucket_iam_binding" "binding" {
+resource "google_storage_bucket_iam_binding" "buildkite_gcs_binding" {
   count = var.enable_gcs_access ? 1 : 0
 
   bucket =local.gcs_artifact_bucket
