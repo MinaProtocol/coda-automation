@@ -29,6 +29,7 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
     actions = [
       "s3:GetObject",
       "s3:PutObject",
+      "s3:PutObjectAcl",
       "s3:DeleteObject"
     ]
 
@@ -37,7 +38,6 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
     resources = [
       "arn:aws:s3:::packages.o1test.net/*",
       "arn:aws:s3:::snark-keys.o1test.net/*",
-      "arn:aws:s3:::*.o1test.net/*"
     ]
   }
 }
