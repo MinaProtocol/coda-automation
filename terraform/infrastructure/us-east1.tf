@@ -84,14 +84,18 @@ resource "google_container_node_pool" "east_primary_nodes" {
   }
 }
 
-resource "google_container_cluster" "buildkite_cluster_east" {
+## Buildkite
+
+resource "google_container_cluster" "buildkite_infra_east1" {
   provider = google.google_east
-  name     = "buildkite-infra-east"
+  name     = "buildkite-infra-east1"
   location = "us-east1"
   min_master_version = "1.15"
 
   node_locations = [
-    "us-east1-c"
+    "us-east1-b",
+    "us-east1-c",
+    "us-east1-d"
   ]
 
   remove_default_node_pool = true
@@ -107,17 +111,22 @@ resource "google_container_cluster" "buildkite_cluster_east" {
   }
 }
 
-resource "google_container_node_pool" "east_experimental_nodes" {
+resource "google_container_node_pool" "east1_compute_nodes" {
   provider = google.google_east
-  name       = "buildkite-compute-test"
+  name       = "buildkite-east1-compute"
   location   = "us-east1"
-  cluster    = google_container_cluster.buildkite_cluster_east.name
-  initial_node_count = 1
+  cluster    = google_container_cluster.buildkite_infra_east1.name
 
+  # total nodes provisioned = node_count * # of AZs
+  node_count = 5
+  autoscaling {
+    min_node_count = 5
+    max_node_count = 5
+  }
   node_config {
-    preemptible  = false
+    preemptible  = true
     machine_type = "c2-standard-16"
-    disk_size_gb = 100
+    disk_size_gb = 500
 
     metadata = {
       disable-legacy-endpoints = "true"

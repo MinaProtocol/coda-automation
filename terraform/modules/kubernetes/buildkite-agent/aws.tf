@@ -1,6 +1,8 @@
 resource "aws_iam_user" "buildkite_aws_user" {
   name = "buildkite-${var.cluster_name}"
   path = "/service-accounts/"
+
+  force_destroy = true
 }
 
 resource "aws_iam_access_key" "buildkite_aws_key" {
@@ -22,22 +24,20 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
       "*",
     ]
   }
+
   statement {
     actions = [
-      "s3:GetObject*",
-      "s3:PutObject*",
-      "s3:ListObjects*",
-      "s3:HeadObject*",
-      "s3:CopyObject*",
-      "s3:DeleteObject*",
-      "s3:MultipartUpload*"
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:PutObjectAcl",
+      "s3:DeleteObject"
     ]
 
     effect = "Allow"
 
     resources = [
-      "arn:aws:s3:::packages.o1test.net",
-      "arn:aws:s3:::*.o1test.net"
+      "arn:aws:s3:::packages.o1test.net/*",
+      "arn:aws:s3:::snark-keys.o1test.net/*"
     ]
   }
 }

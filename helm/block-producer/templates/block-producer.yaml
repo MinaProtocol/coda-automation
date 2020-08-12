@@ -1,22 +1,22 @@
-{{ range $i, $e := until (.Values.blockProducer.numProducers | int)}}
+{{ range $config := $.Values.blockProducerConfigs}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
+  name: {{ $config.name }}
   labels:
-    app: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
+    app: {{ $config.name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
+      app: {{ $config.name }}
   template:
     metadata:
       labels:
-        app: {{ tpl $.Values.blockProducer.fullname $ }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}
+        app: {{ $config.name }}
         testnet: {{ $.Values.testnetName }}
         role: block-producer
-        class: {{ $.Values.blockProducer.class }}
+        class: {{ $config.class }}
         version: {{ (split ":" $.Values.coda.image)._1 }}
       annotations:
         prometheus.io/scrape: 'true'
@@ -33,14 +33,14 @@ spec:
         - name: private-keys
           mountPath: "/keys/"
           readOnly: true
-        {{ if has (float64 $i) $.Values.blockProducersWithBots -}}
+        {{- if $config.runWithBots }}
         - name: echo-service-key
           mountPath: "/echo-keys/"
           readOnly: true
         - name: faucet-service-key
           mountPath: "/faucet-keys/"
           readOnly: true
-        {{ end -}}
+        {{- end }}
         - name: wallet-keys
           mountPath: /wallet-keys
         securityContext:
@@ -58,57 +58,57 @@ spec:
           mountPath: /root/.coda-config
         env: 
           - name: CODA_PRIVKEY_PASS
-            value: {{ $.Values.blockProducer.codaPrivkeyPass | quote }}
+            value: {{ $.Values.coda.privkeyPass | quote }}
       containers:
-      {{ if $.Values.agent.active -}}
+      {{ if $config.runWithUserAgent -}}
       - name: user-agent
         resources:
           requests:
             memory: 512m
             cpu: 0.1
-        image: {{ $.Values.agent.image }}
+        image: {{ $.Values.userAgent.image }}
         command: ["bash"]
-        args: ["-c", {{ range $.Values.agent.command }} {{- . | quote }}, {{end}} ]
+        args: ["-c", "python3 agent.py"]
         env: 
-          {{ if ne $.Values.agent.minFee "" -}}
+          {{ if ne $.Values.userAgent.minFee "" -}}
           - name: AGENT_MIN_FEE
-            value: {{ $.Values.agent.minFee | quote }}
+            value: {{ $.Values.userAgent.minFee | quote }}
           {{ end -}}
-          {{- if ne $.Values.agent.maxFee "" -}}
+          {{- if ne $.Values.userAgent.maxFee "" -}}
           - name: AGENT_MAX_FEE
-            value: {{ $.Values.agent.maxFee | quote }}
+            value: {{ $.Values.userAgent.maxFee | quote }}
           {{ end -}}
-          {{- if ne $.Values.agent.minTx "" -}}
+          {{- if ne $.Values.userAgent.minTx "" -}}
           - name: AGENT_MIN_TX
-            value: {{ $.Values.agent.minTx | quote }}
+            value: {{ $.Values.userAgent.minTx | quote }}
           {{ end -}}
-          {{- if ne $.Values.agent.maxTx "" -}}
+          {{- if ne $.Values.userAgent.maxTx "" -}}
           - name: AGENT_MAX_TX
-            value: {{ $.Values.agent.maxTx | quote }}
+            value: {{ $.Values.userAgent.maxTx | quote }}
           {{ end -}}
           - name: AGENT_SEND_EVERY_MINUTES
             value: "10"
           - name: CODA_PUBLIC_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ $.Values.blockProducer.keySecretTemplatePrefix }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-key
+                name: {{ $config.privateKeySecret }}
                 key: pub
           - name: CODA_PRIVKEY_PASS
-            value: {{ $.Values.blockProducer.codaPrivkeyPass | quote }}
+            value: {{ $.Values.coda.privkeyPass | quote }}
           - name: PYTHONUNBUFFERED
             value: "1"
         ports: 
           - name: metrics
             containerPort: 8000
         imagePullPolicy: Always
-      {{ end -}}
-      {{- if has (float64 $i) $.Values.blockProducersWithBots }}
+      {{- end }}
+      {{ if $config.runWithBots -}}
       - name: bots
         resources:
           requests:
             memory: 512m
             cpu: 0.1
-        image: {{ $.Values.botsImage }}
+        image: {{ $.Values.bots.image }}
         env:
           - name: CODA_GRAPHQL_HOST
             value: "0.0.0.0"
@@ -120,25 +120,25 @@ spec:
                 name: echo-service-key
                 key: pub
           - name: ECHO_PASSWORD
-            value: {{ $.Values.blockProducer.codaPrivkeyPass | quote }}
+            value: {{ $.Values.coda.privkeyPass | quote }}
           - name: FAUCET_PUBLICKEY
             valueFrom:
               secretKeyRef:
                 name: faucet-service-key
                 key: pub
           - name: FAUCET_PASSWORD
-            value: {{ $.Values.blockProducer.codaPrivkeyPass | quote }}
+            value: {{ $.Values.coda.privkeyPass | quote }}
           - name: DISCORD_API_KEY
             valueFrom:
               secretKeyRef:
                 name: o1-discord-api-key
                 key: o1discord
           - name: FAUCET_AMOUNT
-            value: {{ $.Values.faucetAmount | quote }}
+            value: {{ $.Values.bots.faucet.amount | quote }}
           - name: FEE_AMOUNT
-            value: {{ $.Values.faucetFee | quote }}
+            value: {{ $.Values.bots.faucet.fee | quote }}
         imagePullPolicy: Always
-      {{ end -}}
+      {{- end }}
       - name: coda
         resources:
           limits:
@@ -146,13 +146,20 @@ spec:
           requests:
             memory: 2.0Gi
             cpu: 1
-        image: {{ $.Values.coda.image }}
+        image: {{ $.Values.coda.image | quote }}
         command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
         args: [ "daemon",
           "-log-level", {{ $.Values.coda.logLevel }},
           "-log-json",
+          {{- if $.Values.coda.logReceivedBlocks }}
           "-log-received-blocks", "true",
+          {{- end -}}
+          {{- if $.Values.coda.logSnarkWorkGossip }}
           "-log-snark-work-gossip", "true",
+          {{- end -}}
+          {{- range $.Values.coda.seedPeers }}
+          "-peer", {{ . | quote }},
+          {{- end -}}
           "-config-directory", "/root/.coda-config",
           "-client-port", "$(DAEMON_CLIENT_PORT)",
           "-rest-port", "$(DAEMON_REST_PORT)",
@@ -160,12 +167,9 @@ spec:
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-block-producer-key", "/root/wallet-keys/key",
-          {{- if $.Values.coda.genesis.active -}}
+          {{- if (ne $.Values.coda.runtimeConfig "") -}}
           "-config-file", "/config/daemon.json",
           "-generate-genesis-proof", "true",
-          {{- end -}}
-          {{- range $.Values.coda.seedPeers -}}
-          "-peer", {{ . | quote }},
           {{- end -}}
         ]
         env:
@@ -176,12 +180,12 @@ spec:
           - name: DAEMON_METRICS_PORT
             value: "10000"
           - name: DAEMON_EXTERNAL_PORT
-            value: {{ add $.Values.blockProducer.startingPorts $i $.Values.blockProducer.labelOffset | quote }}
+            value: {{ $config.externalPort | quote }}
           - name: CODA_PRIVKEY_PASS
-            value: {{ $.Values.blockProducer.codaPrivkeyPass | quote }}
+            value: {{ $.Values.coda.privkeyPass | quote }}
         ports:
-          - containerPort: {{ add $.Values.blockProducer.startingPorts $i $.Values.blockProducer.labelOffset }}
-            hostPort: {{ add $.Values.blockProducer.startingPorts $i $.Values.blockProducer.labelOffset }}
+          - containerPort: {{ $config.externalPort }}
+            hostPort: {{ $config.externalPort }}
             protocol: TCP
           - name: graphql
             containerPort: 3085
@@ -193,21 +197,21 @@ spec:
           mountPath: /root/wallet-keys
         - name: config-dir
           mountPath: /root/.coda-config
-        {{- if $.Values.coda.genesis.active }}
+        {{- if (ne $.Values.coda.runtimeConfig "") }}
         - name: daemon-config
           mountPath: "/config/"
         {{- end }}
       volumes:
       - name: private-keys
         secret:
-          secretName: {{ $.Values.blockProducer.keySecretTemplatePrefix }}-{{ add $i 1 $.Values.blockProducer.labelOffset }}-key
+          secretName: {{ $config.privateKeySecret }}
           defaultMode: 256
           items:
           - key: key
             path: key
           - key: pub
             path: key.pub
-      {{ if has (float64 $i) $.Values.blockProducersWithBots }}
+      {{ if $config.runWithBots }}
       - name: echo-service-key
         secret:
           secretName: echo-service-key
@@ -231,10 +235,10 @@ spec:
         emptyDir: {}
       - name: config-dir
         emptyDir: {}
-      {{- if $.Values.coda.genesis.active }}
+      {{- if (ne $.Values.coda.runtimeConfig "") }}
       - name: daemon-config
         configMap:
-          name: {{ tpl $.Values.blockProducer.fullname $ }}-daemon-config
+          name: block-producer-daemon-config
       {{- end }}
 ---
 {{ end }}
