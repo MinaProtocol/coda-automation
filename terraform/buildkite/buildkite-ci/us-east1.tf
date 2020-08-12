@@ -37,7 +37,7 @@ locals {
         limits = {
           cpu    = "8"
           memory = "8G"
-          ephemeral-storage = "15Gi"
+          ephemeral-storage = "50Gi"
         }
       }
       replicaCount = 12
@@ -52,7 +52,7 @@ locals {
         limits = {
           cpu    = "15.5"
           memory = "16G"
-          ephemeral-storage = "15Gi"
+          ephemeral-storage = "50Gi"
         }
       }
       replicaCount = 3
