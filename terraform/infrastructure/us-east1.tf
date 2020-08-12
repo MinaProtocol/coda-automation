@@ -120,13 +120,13 @@ resource "google_container_node_pool" "east1_compute_nodes" {
   # total nodes provisioned = node_count * # of AZs
   node_count = 5
   autoscaling {
-    min_node_count = 0
+    min_node_count = 5
     max_node_count = 5
   }
   node_config {
     preemptible  = true
     machine_type = "c2-standard-16"
-    disk_size_gb = 50
+    disk_size_gb = 500
 
     metadata = {
       disable-legacy-endpoints = "true"
