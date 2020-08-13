@@ -26,5 +26,5 @@ locals {
 }
 variable "coda_image" {
   type = string
-  default = "codaprotocol/coda-daemon:0.0.12-beta-feature-bump-genesis-timestamp-3e9b174"
+  default = "codaprotocol/coda-daemon:0.0.14-HEAD"
 }
