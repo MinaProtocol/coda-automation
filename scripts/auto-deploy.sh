@@ -21,20 +21,20 @@ fi
 
 terraform_dir="terraform/testnets/$TESTNET"
 image=$(sed -n 's|.*"\(codaprotocol/coda-daemon:[^"]*\)"|\1|p' "$terraform_dir/main.tf")
-#echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
-#for i in $(seq 60); do
-#  # this is a hack; ideally, we wouldn't actually pull the image, just check if it's there
-#  docker pull "$image" && break
-#  [ "$i" != 30 ] || (echo "expected image never appeared in docker registry" && exit 1)
-#  sleep 60
-#done
-#
-#cd $terraform_dir
-#echo 'RUNNING TERRAFORM'
-#terraform destroy -auto-approve
-#terraform apply -auto-approve
-#cd -
-#
+echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
+for i in $(seq 60); do
+  # this is a hack; ideally, we wouldn't actually pull the image, just check if it's there
+  docker pull "$image" && break
+  [ "$i" != 30 ] || (echo "expected image never appeared in docker registry" && exit 1)
+  sleep 60
+done
+
+cd $terraform_dir
+echo 'RUNNING TERRAFORM'
+terraform destroy -auto-approve
+terraform apply -auto-approve
+cd -
+
 echo 'UPLOADING KEYS'
 python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --namespace "$TESTNET" \

@@ -88,7 +88,7 @@ module "testnet_east" {
 
   snark_worker_replicas = 8
   snark_worker_fee      = "0.025"
-  snark_worker_public_key = "4vsRCVQZ41uqXfVVfkBNUuNNS7PgSJGdMDNAyKGDdU1WkdxxyxQ7oMdFcjDRf45fiGKkdYKkLPBrE1KnxmyBuvaTW97A5C8XjNSiJmvo9oHa4AwyVsZ3ACaspgQ3EyxQXk6uujaxzvQhbLDx"
+  snark_worker_public_key = "B62qoZU96sukg6zfUvWZKn3s9teefVXfU85p4nKw7quANMyTrmtAu5D"
   snark_worker_host_port = 10400
 
   agent_min_fee = "0.06"
