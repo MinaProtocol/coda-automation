@@ -25,6 +25,12 @@ resource "google_project_iam_member" "buildkite_container_developer" {
   member  = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
 }
 
+resource "google_project_iam_member" "buildkite_pubsub_editor" {
+  project = local.gke_project
+  role    = "roles/pubsub.editor"
+  member  = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
+}
+
 resource "google_storage_bucket_iam_binding" "buildkite_gcs_binding" {
   count = var.enable_gcs_access ? 1 : 0
 
