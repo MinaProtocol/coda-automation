@@ -26,10 +26,10 @@ spec:
       - name: worker
         resources:
           limits:
-            memory: 3.0Gi
+            memory: 6.0Gi
           requests:
-            memory: 2.0Gi
-            cpu: 1000m
+            memory: 4.0Gi
+            cpu: 2
         image: {{ $.Values.coda.image }}
         command: ["bash", "-c"]
         args: [ "sleep 120 && coda internal snark-worker -proof-level full -daemon-address '{{ tpl $.Values.worker.remoteCoordinatorHost . }}:{{ $.Values.worker.remoteCoordinatorPort }}'" ]
