@@ -17,9 +17,9 @@ resource "google_service_account" "gcp_buildkite_account" {
 resource "google_project_iam_member" "buildkite_iam_memberships" {
   count = var.enable_gcs_access ? length(local.buildkite_roles) : 0
 
-  project    =  local.gke_project
+  project      =  local.gke_project
   role         =  local.buildkite_roles[count.index]
-  member  = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
+  member       = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
 }
 
 # Specifically bind IAM to designated bucket resource to limit access vulnerability
