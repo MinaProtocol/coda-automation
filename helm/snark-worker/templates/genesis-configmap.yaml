@@ -8,17 +8,5 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 data:
-  daemon.json: |-
-    {
-      "daemon": {},
-      "genesis": { 
-        "genesis_state_timestamp": {{ $.Values.coda.genesis.genesis_state_timestamp | quote}},
-        "k": 20, 
-        "delta": 3
-      },
-      "proof": {
-        "c": 8
-      },
-      "ledger": {{ $.Values.coda.genesis.ledger }}
-    }
+  daemon.json: {{ $.Values.coda.runtimeConfig | quote }}
 {{- end}}
