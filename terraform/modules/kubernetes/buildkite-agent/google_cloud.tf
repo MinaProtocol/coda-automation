@@ -2,6 +2,7 @@ locals {
   k8s_context = "minikube"
   gke_project = "o1labs-192920"
   gcs_artifact_bucket = "buildkite_k8s"
+  buildkite_roles = ["roles/container.developer", "roles/stackdriver.accounts.viewer", "roles/pubsub.editor"]
 }
 
 resource "google_service_account" "gcp_buildkite_account" {
@@ -13,24 +14,15 @@ resource "google_service_account" "gcp_buildkite_account" {
   project      = local.gke_project
 }
 
-resource "google_project_iam_member" "buildkite_stackdriver_viewer" {
-  project = local.gke_project
-  role    = "roles/stackdriver.accounts.viewer"
-  member  = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
+resource "google_project_iam_member" "buildkite_iam_memberships" {
+  count = var.enable_gcs_access ? length(local.buildkite_roles) : 0
+
+  project      =  local.gke_project
+  role         =  local.buildkite_roles[count.index]
+  member       = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
 }
 
-resource "google_project_iam_member" "buildkite_container_developer" {
-  project = local.gke_project
-  role    = "roles/container.developer"
-  member  = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
-}
-
-resource "google_project_iam_member" "buildkite_pubsub_editor" {
-  project = local.gke_project
-  role    = "roles/pubsub.editor"
-  member  = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
-}
-
+# Specifically bind IAM to designated bucket resource to limit access vulnerability
 resource "google_storage_bucket_iam_binding" "buildkite_gcs_binding" {
   count = var.enable_gcs_access ? 1 : 0
 
