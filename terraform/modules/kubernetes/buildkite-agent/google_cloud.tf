@@ -5,14 +5,6 @@ locals {
   buildkite_roles = ["roles/container.developer", "roles/stackdriver.accounts.viewer", "roles/pubsub.editor"]
 }
 
-resource "google_project_iam_member" "buildkite_iam_memberships" {
-  count = var.enable_gcs_access ? length(local.buildkite_roles) : 0
-
-  project    =  local.gke_project
-  role         =  local.buildkite_roles[count.index]
-  member  = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
-}
-
 resource "google_service_account" "gcp_buildkite_account" {
   count = var.enable_gcs_access ? 1 : 0
 
@@ -22,6 +14,15 @@ resource "google_service_account" "gcp_buildkite_account" {
   project      = local.gke_project
 }
 
+resource "google_project_iam_member" "buildkite_iam_memberships" {
+  count = var.enable_gcs_access ? length(local.buildkite_roles) : 0
+
+  project    =  local.gke_project
+  role         =  local.buildkite_roles[count.index]
+  member  = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
+}
+
+# Specifically bind IAM to designated bucket resource to limit access vulnerability
 resource "google_storage_bucket_iam_binding" "buildkite_gcs_binding" {
   count = var.enable_gcs_access ? 1 : 0
 
