@@ -35,6 +35,10 @@ spec:
         args: [ "sleep 120 && coda internal snark-worker -proof-level full -daemon-address '{{ tpl $.Values.worker.remoteCoordinatorHost . }}:{{ $.Values.worker.remoteCoordinatorPort }}'" ]
         env:
           - name: "RAYON_NUM_THREADS"
+<<<<<<< HEAD
             value: "4"
+=======
+            value: "2"
+>>>>>>> pickles
         imagePullPolicy: Always
 {{ end }}
