@@ -139,8 +139,8 @@ module "testnet_east" {
         private_key_secret     = "online-fish-account-${i + 1}-key"
 >>>>>>> pickles
         enable_gossip_flooding = false
-        run_with_user_agent    = false
-        run_with_bots          = false
+        run_with_user_agent    = true
+        run_with_bots          = true
       }
     ]
   )
