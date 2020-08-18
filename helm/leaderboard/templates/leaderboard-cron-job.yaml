@@ -1,0 +1,24 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: { { .Values.leaderboard.name } }
+spec:
+  schedule: { { .Values.leaderboard.schedule } }
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: leaderboard
+              image: { { .Values.leaderboard.image } }
+              command: ["bash", "-c"]
+              imagePullPolicy: Always
+              env:
+                - name: GOOGLE_SHEET_CREDENTIALS
+                  valueFrom:
+                    secretKeyRef:
+                      name: credentials
+                      key: google_sheets_credentials.json
+                - name: PGCONN
+                  value: { { .Values.postgresUri . } }

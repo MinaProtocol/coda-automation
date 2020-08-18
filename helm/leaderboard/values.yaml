@@ -1,0 +1,14 @@
+leaderboard:
+  name: "leaderboard-cron"
+  schedule: "*/10 * * * *"
+  image: "" # TODO: Not sure where the leaderboard image is built and is pulled from currently
+
+# TODO: Not entirely sure if these fields are correct to get access to the archive node DB
+postgresql:
+  postgresqlPassword: "foobar"
+  postgresqlUsername: "postgres"
+
+postgresHost: "{{ .Release.Name }}-postgresql"
+postgresPort: "5432"
+postgresDB: "archive"
+postgresUri: postgres://{{ .Values.postgresql.postgresqlUsername }}:{{ .Values.postgresql.postgresqlPassword }}@{{ tpl .Values.postgresHost . }}:{{ .Values.postgresPort }}/{{ .Values.postgresDB }}
