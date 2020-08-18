@@ -29,30 +29,30 @@
 #   }
 # }
 
-# resource "google_container_node_pool" "west_primary_nodes" {
-#   provider = google.google_west
-#   name       = "buildkite-infra-west"
-#   location   = "us-west1"
-#   cluster    = google_container_cluster.buildkite_cluster_west.name
+# # resource "google_container_node_pool" "west_primary_nodes" {
+# #   provider = google.google_west
+# #   name       = "buildkite-infra-west"
+# #   location   = "us-west1"
+# #   cluster    = google_container_cluster.buildkite_cluster_west.name
 
-#   # total nodes provisioned = node_count * # of AZs
-#   node_count = 4
-#   autoscaling {
-#     min_node_count = 0
-#     max_node_count = 4
-#   }
-#   node_config {
-#     preemptible  = true
-#     machine_type = "n1-standard-16"
-#     disk_size_gb = 100
+# #   # total nodes provisioned = node_count * # of AZs
+# #   node_count = 4
+# #   autoscaling {
+# #     min_node_count = 0
+# #     max_node_count = 4
+# #   }
+# #   node_config {
+# #     preemptible  = true
+# #     machine_type = "n1-standard-16"
+# #     disk_size_gb = 100
 
-#     metadata = {
-#       disable-legacy-endpoints = "true"
-#     }
+# #     metadata = {
+# #       disable-legacy-endpoints = "true"
+# #     }
 
-#     oauth_scopes = [
-#       "https://www.googleapis.com/auth/logging.write",
-#       "https://www.googleapis.com/auth/monitoring",
-#     ]
-#   }
-# }
+# #     oauth_scopes = [
+# #       "https://www.googleapis.com/auth/logging.write",
+# #       "https://www.googleapis.com/auth/monitoring",
+# #     ]
+# #   }
+# # }
