@@ -1,24 +1,28 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: { { .Values.leaderboard.name } }
+  name: { { .Values.name } }
 spec:
-  schedule: { { .Values.leaderboard.schedule } }
+  schedule: { { .Values.schedule } }
   jobTemplate:
     spec:
       template:
         spec:
           restartPolicy: Never
+          volumes:
+            - name: { { .Values.volume.name } }
+              secret:
+                secretName: { { .Values.volume.secretName } }
           containers:
-            - name: leaderboard
-              image: { { .Values.leaderboard.image } }
+            - name: { { .Values.containerName } }
+              image: { { .Values.image } }
               command: ["bash", "-c"]
               imagePullPolicy: Always
               env:
-                - name: GOOGLE_SHEET_CREDENTIALS
-                  valueFrom:
-                    secretKeyRef:
-                      name: credentials
-                      key: google_sheets_credentials.json
                 - name: PGCONN
-                  value: { { .Values.postgresUri . } }
+                  value: { { .Values.postgresUri } }
+              volumeMounts:
+                - name: { { .Values.volume.name } }
+                  mountPath: { { .Values.volume.mountPath } }
+                  subPath: { { .Values.volume.subPath } }
+                  readOnly: true

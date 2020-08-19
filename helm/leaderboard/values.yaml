@@ -1,7 +1,13 @@
-leaderboard:
-  name: "leaderboard-cron"
-  schedule: "*/10 * * * *"
-  image: "" # TODO: Not sure where the leaderboard image is built and is pulled from currently
+name: "leaderboard-cron"
+containerName: "leaderboard"
+image: "" # TODO: Not sure where the leaderboard image is built and is pulled from currently
+schedule: "*/10 * * * *"
+
+volume:
+  name: "credentials"
+  secretName: "sheets-credentials"
+  mountPath: "/src/google_sheets_credentials.json"
+  subPath: "google_sheets_credentials.json"
 
 # TODO: Not entirely sure if these fields are correct to get access to the archive node DB
 postgresql:
