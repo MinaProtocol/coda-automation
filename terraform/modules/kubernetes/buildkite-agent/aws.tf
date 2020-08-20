@@ -49,7 +49,8 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
     effect = "Allow"
 
     resources = [
-      "arn:aws:s3:::o1labs-terraform-state.*/*"
+      "arn:aws:s3:::o1labs-terraform-state/*",
+      "arn:aws:s3:::o1labs-terraform-state-destination/*"
     ]
   }
 }
