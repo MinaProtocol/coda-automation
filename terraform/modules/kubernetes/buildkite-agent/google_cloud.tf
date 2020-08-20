@@ -2,7 +2,12 @@ locals {
   k8s_context = "minikube"
   gke_project = "o1labs-192920"
   gcs_artifact_bucket = "buildkite_k8s"
-  buildkite_roles = ["roles/container.developer", "roles/stackdriver.accounts.viewer", "roles/pubsub.editor"]
+  buildkite_roles = [
+    "roles/container.developer",
+    "roles/compute.viewer",
+    "roles/stackdriver.accounts.viewer",
+    "roles/pubsub.editor"
+  ]
 }
 
 resource "google_service_account" "gcp_buildkite_account" {
