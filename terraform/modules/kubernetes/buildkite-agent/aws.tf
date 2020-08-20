@@ -40,6 +40,18 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
       "arn:aws:s3:::snark-keys.o1test.net/*"
     ]
   }
+
+  statement {
+    actions = [
+      "s3:GetObject"
+    ]
+
+    effect = "Allow"
+
+    resources = [
+      "arn:aws:s3:::o1labs-terraform-state.*/*"
+    ]
+  }
 }
 
 resource "aws_iam_user_policy" "buildkite_aws_policy" {
