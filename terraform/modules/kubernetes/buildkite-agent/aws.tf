@@ -43,7 +43,8 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
 
   statement {
     actions = [
-      "s3:GetObject"
+      "s3:GetObject",
+      "s3:PutObject"
     ]
 
     effect = "Allow"
