@@ -54,6 +54,17 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
       "arn:aws:s3:::o1labs-terraform-state-destination/*"
     ]
   }
+
+  statement {
+    actions = [ "s3:ListBucket" ]
+
+    effect = "Allow"
+
+    resources = [
+      "arn:aws:s3:::o1labs-terraform-state",
+      "arn:aws:s3:::o1labs-terraform-state-destination"
+    ]
+  }
 }
 
 resource "aws_iam_user_policy" "buildkite_aws_policy" {
