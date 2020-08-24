@@ -40,13 +40,6 @@ variable "agent_vcs_privkey" {
   default     = ""
 }
 
-variable "agent_version" {
-  type = string
-
-  description = "Version of Buildkite agent to launch"
-  default     = "3-ubuntu"
-}
-
 variable "agent_config" {
   type = map(string)
 
@@ -105,11 +98,18 @@ variable "helm_repo" {
   default     = "https://buildkite.github.io/charts/"
 }
 
+variable "agent_version" {
+  type = string
+
+  description = "Version of Buildkite agent to launch"
+  default     = "3-ubuntu"
+}
+
 variable "chart_version" {
   type = string
 
   description = "Buildkite chart version to provision"
-  default     = "0.3.18"
+  default     = "0.4.6"
 }
 
 variable "image_pullPolicy" {
