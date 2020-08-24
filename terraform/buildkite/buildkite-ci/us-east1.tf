@@ -6,6 +6,10 @@ locals {
         token = data.aws_secretsmanager_secret_version.buildkite_agent_token.secret_string
       }
       resources = {
+        requests = {
+          cpu    = "1"
+          memory = "1G"
+        }
         limits = {
           cpu    = "2"
           memory = "2G"
@@ -20,6 +24,10 @@ locals {
         token = data.aws_secretsmanager_secret_version.buildkite_agent_token.secret_string
       }
       resources = {
+        requests = {
+          cpu    = "2"
+          memory = "2G"
+        }
         limits = {
           cpu    = "4"
           memory = "4G"
@@ -34,6 +42,10 @@ locals {
         token = data.aws_secretsmanager_secret_version.buildkite_agent_token.secret_string
       }
       resources = {
+        requests = {
+          cpu    = "4"
+          memory = "4G"
+        }
         limits = {
           cpu    = "8"
           memory = "8G"
@@ -49,6 +61,10 @@ locals {
         token = data.aws_secretsmanager_secret_version.buildkite_agent_token.secret_string
       }
       resources = {
+        requests = {
+          cpu    = "8"
+          memory = "8G"
+        }
         limits = {
           cpu    = "15.5"
           memory = "16G"
