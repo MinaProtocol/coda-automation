@@ -43,7 +43,8 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
 
   statement {
     actions = [
-      "s3:GetObject"
+      "s3:GetObject",
+      "s3:PutObject"
     ]
 
     effect = "Allow"
@@ -51,6 +52,17 @@ data "aws_iam_policy_document" "buildkite_aws_policydoc" {
     resources = [
       "arn:aws:s3:::o1labs-terraform-state/*",
       "arn:aws:s3:::o1labs-terraform-state-destination/*"
+    ]
+  }
+
+  statement {
+    actions = [ "s3:ListBucket" ]
+
+    effect = "Allow"
+
+    resources = [
+      "arn:aws:s3:::o1labs-terraform-state",
+      "arn:aws:s3:::o1labs-terraform-state-destination"
     ]
   }
 }
