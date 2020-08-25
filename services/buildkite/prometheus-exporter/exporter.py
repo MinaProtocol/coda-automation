@@ -4,7 +4,7 @@ import os
 import time
 
 from python_graphql_client import GraphqlClient
-from prometheus_client import Gauge, Counter, start_http_server
+from prometheus_client import Histogram, start_http_server
 
 
 API_URL = os.getenv("BUILDKITE_API_URL", "https://graphql.buildkite.com/v1")
@@ -45,7 +45,7 @@ AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
 
 ## Prometheus Metrics
 
-JOB_RUNTIME = Gauge('job_runtime', 'Total job runtime.', ['branch', 'exitStatus', 'state', 'passed', 'job'])
+JOB_RUNTIME = Histogram('job_runtime', 'Total job runtime.', ['branch', 'exitStatus', 'state', 'passed', 'job'])
 
 class Exporter(object):
     """Represents a generic agent that operates on the coda blockchain"""
@@ -136,7 +136,7 @@ class Exporter(object):
                         state=d['node']['jobs']['edges'][0]['node']['state'],
                         passed=d['node']['jobs']['edges'][0]['node']['passed'],
                         job=j
-                    ).set((end_time - start_time).seconds)
+                    ).observe((end_time - start_time).seconds)
 
 def main():
     exporter = Exporter()
