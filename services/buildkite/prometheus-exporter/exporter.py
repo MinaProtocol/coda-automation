@@ -50,7 +50,7 @@ JOB_STATUS = Counter('job_status', 'Count of in-progress job statuses', ['branch
 JOB_EXIT_STATUS = Counter('job_exit_status', 'Count of job exit statuses', ['branch', 'exitStatus', 'state', 'passed', 'job'])
 
 class Exporter(object):
-    """Represents a generic agent that operates on the coda blockchain"""
+    """Represents a (Coda) Buildkite pipeline exporter"""
 
     def __init__(self, api_key=API_KEY, pipeline_slug=PIPELINE_SLUG, branch=BRANCH, interval=EXPORTER_SCAN_INTERVAL):
         self.api_key = api_key
