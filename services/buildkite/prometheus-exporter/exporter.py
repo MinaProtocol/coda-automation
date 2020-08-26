@@ -45,9 +45,9 @@ AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
 
 ## Prometheus Metrics
 
-JOB_RUNTIME = Gauge('job_runtime', 'Total job runtime.', ['branch', 'exitStatus', 'state', 'passed', 'job'])
-JOB_STATUS = Counter('job_status', 'Count of in-progress job statuses', ['branch', 'state', 'job'])
-JOB_EXIT_STATUS = Counter('job_exit_status', 'Count of job exit statuses', ['branch', 'exitStatus', 'state', 'passed', 'job'])
+JOB_RUNTIME = Gauge('job_runtime', 'Total job runtime', ['branch', 'exitStatus', 'state', 'passed', 'job'])
+JOB_STATUS = Counter('job_status', 'Count of in-progress job statuses over <scan-interval>', ['branch', 'state', 'job'])
+JOB_EXIT_STATUS = Counter('job_exit_status', 'Count of job exit statuses over <scan-interval>', ['branch', 'exitStatus', 'state', 'passed', 'job'])
 
 class Exporter(object):
     """Represents a (Coda) Buildkite pipeline exporter"""
@@ -60,10 +60,10 @@ class Exporter(object):
 
     def collect_job_data(self):
         headers = {
-            'Authorization': 'Bearer {api_key}'.format(api_key=API_KEY),
+            'Authorization': 'Bearer {api_key}'.format(api_key=self.api_key),
             'Content-Type': 'application/json'
             }
-        scan_from = datetime.now() - timedelta(seconds=EXPORTER_SCAN_INTERVAL)
+        scan_from = datetime.now() - timedelta(seconds=self.interval)
 
         client = GraphqlClient(endpoint=API_URL, headers=headers)
         for j in JOBS.split(','):
@@ -117,15 +117,14 @@ class Exporter(object):
                     }
                 }
             ''' % (
-                    PIPELINE_SLUG,
+                    self.pipeline_slug,
                     scan_from.isoformat(),
-                    BRANCH,
+                    self.branch,
                     MAX_JOB_COUNT,
                     j
                 )
 
             data = client.execute(query=query, variables={})
-            # print(json.dumps(data))
 
             for d in data['data']['pipeline']['builds']['edges']:
                 if len(d['node']['jobs']['edges']) > 0:
