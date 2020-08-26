@@ -190,7 +190,7 @@ class Exporter(object):
                             JOB_STATUS.labels(
                                 branch=d['node']['branch'],
                                 state=d['node']['jobs']['edges'][0]['node']['state'],
-                                job=j
+                                job=job
                             ).inc()
 
     def collect_agent_data(self):
