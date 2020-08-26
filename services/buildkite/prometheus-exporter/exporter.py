@@ -41,6 +41,8 @@ MAX_JOB_COUNT = os.getenv("BUILDKITE_MAX_JOB_COUNT", 500)
 
 MAX_AGENT_COUNT = os.getenv("BUILDKITE_MAX_AGENT_COUNT", 500)
 
+MAX_ARTIFACTS_COUNT = os.getenv("BUILDKITE_MAX_ARTIFACT_COUNT", 500)
+
 EXPORTER_SCAN_INTERVAL = os.getenv("BUILDKITE_EXPORTER_SCAN_INTERVAL", 24*3600)
 POLL_INTERVAL = os.getenv("BUILDKITE_POLL_INTERVAL", 10)
 
@@ -125,7 +127,7 @@ class Exporter(object):
                                         softFailed
                                         passed
                                         state
-                                        artifacts(first: 5) {
+                                        artifacts(first: %s) {
                                             edges {
                                                 node {
                                                     path
@@ -151,7 +153,8 @@ class Exporter(object):
                     scan_from.isoformat(),
                     self.branch,
                     MAX_JOB_COUNT,
-                    job
+                    job,
+                    MAX_ARTIFACTS_COUNT
                 )
 
             data = self.ql_client.execute(query=query, variables={})
@@ -160,10 +163,9 @@ class Exporter(object):
                     for j in d['node']['jobs']['edges']:
                         # Completed job metrics
                         if j['node']['state'] == 'FINISHED':
-                            end_time = datetime.strptime(j['node']['finishedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                            start_time = datetime.strptime(j['node']['startedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
-
                             scheduled_time = datetime.strptime(j['node']['scheduledAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                            start_time = datetime.strptime(j['node']['startedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                            end_time = datetime.strptime(j['node']['finishedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
 
                             JOB_RUNTIME.labels(
                                 branch=d['node']['branch'],
@@ -202,7 +204,6 @@ class Exporter(object):
                                         mimeType=a['node']['mimeType'],
                                         job=job 
                                     ).set(a['node']['size'])
-
                         # In-progress/incomplete Job metrics
                         else:
                             JOB_STATUS.labels(
@@ -211,19 +212,11 @@ class Exporter(object):
                                 job=job
                             ).inc()
 
-                            JOB_WAITTIME.labels(
-                                branch=d['node']['branch'],
-                                exitStatus="INCOMPLETE",
-                                state=j['node']['state'],
-                                passed="INCOMPLETE",
-                                job=job
-                            ).set((start_time - scheduled_time).seconds)
-
     def collect_agent_data(self):
         query = '''
             query {
                 organization(slug: "%s") {
-                    agents(first:%s) {
+                    agents(first: %s) {
                     edges {
                         node {
                         name
