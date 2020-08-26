@@ -7,7 +7,7 @@ A prometheus exporter providing metrics for Buildkite pipeline job and agent sta
 
 ## Environment Variables
 
-The application can be run in a number of ways, the main launching point is the Docker hub image `codaprotocol/buildkite-exporter`.
+The application can be run in a number of ways though the main launching point is the Docker hub image `codaprotocol/buildkite-exporter`.
 
 **Required**
 * `BUILDKITE_API_KEY`                   - Buildkite GraphQL API access key
@@ -51,4 +51,4 @@ docker run --rm --detach --env BUILDKITE_API_KEY="XXXXXXXX" \
 
 ## Metrics
 
-Metrics will be made available on port `8000` by default, or you can pass environment variable ```METRICS_PORT``` to override this. An example printout of the metrics you should expect to see can be found in [METRICS.md](https://github.com/codaprotocol/coda-automation/blob/master/services/buildkite/prometheus_exporter/METRICS.md).
+Metrics will be made available on port `8000` by default, or you can pass environment variable ```METRICS_PORT``` to override this. An example printout of the metrics you should expect to see can be found in [METRICS.md](https://github.com/CodaProtocol/coda-automation/blob/master/services/buildkite/prometheus-exporter/METRICS.md).
