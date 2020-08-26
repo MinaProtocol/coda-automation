@@ -41,7 +41,7 @@ MAX_JOB_COUNT = os.getenv("BUILDKITE_MAX_JOB_COUNT", 500)
 
 MAX_AGENT_COUNT = os.getenv("BUILDKITE_MAX_AGENT_COUNT", 500)
 
-EXPORTER_SCAN_INTERVAL = os.getenv("BUILDKITE_EXPORTER_SCAN_INTERVAL", 3600)
+EXPORTER_SCAN_INTERVAL = os.getenv("BUILDKITE_EXPORTER_SCAN_INTERVAL", 24*3600)
 POLL_INTERVAL = os.getenv("BUILDKITE_POLL_INTERVAL", 10)
 
 AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
@@ -54,13 +54,17 @@ JOB_RUNTIME = Gauge(
     'job_runtime', 'Total job runtime',
     ['branch', 'exitStatus', 'state', 'passed', 'job']
 )
+JOB_WAITTIME = Gauge(
+    'job_waittime', 'Total time job waited to start (from time scheduled)',
+    ['branch', 'exitStatus', 'state', 'passed', 'job']
+)
 JOB_STATUS = Counter(
     'job_status', 'Count of in-progress job statuses over <scan-interval>',
     ['branch', 'state', 'job']
 )
 JOB_EXIT_STATUS = Counter(
     'job_exit_status', 'Count of job exit statuses over <scan-interval>',
-    ['branch', 'exitStatus', 'state', 'passed', 'job']
+    ['branch', 'exitStatus', 'softFailed', 'state', 'passed', 'job']
 )
 JOB_ARTIFACT_SIZE = Gauge(
     'artifact_size', 'Total size of uploaded artifact (bytes)',
@@ -116,6 +120,9 @@ class Exporter(object):
                                         exitStatus
                                         startedAt
                                         finishedAt
+                                        runnableAt
+                                        scheduledAt
+                                        softFailed
                                         passed
                                         state
                                         artifacts(first: 5) {
@@ -156,6 +163,8 @@ class Exporter(object):
                             end_time = datetime.strptime(j['node']['finishedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
                             start_time = datetime.strptime(j['node']['startedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
 
+                            scheduled_time = datetime.strptime(j['node']['scheduledAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
+
                             JOB_RUNTIME.labels(
                                 branch=d['node']['branch'],
                                 exitStatus=j['node']['exitStatus'],
@@ -164,9 +173,18 @@ class Exporter(object):
                                 job=job
                             ).set((end_time - start_time).seconds)
 
+                            JOB_WAITTIME.labels(
+                                branch=d['node']['branch'],
+                                exitStatus=j['node']['exitStatus'],
+                                state=j['node']['state'],
+                                passed=j['node']['passed'],
+                                job=job
+                            ).set((start_time - scheduled_time).seconds)
+
                             JOB_EXIT_STATUS.labels(
                                 branch=d['node']['branch'],
                                 exitStatus=j['node']['exitStatus'],
+                                softFailed=j['node']['softFailed'],
                                 state=j['node']['state'],
                                 passed=j['node']['passed'],
                                 job=job
@@ -192,6 +210,14 @@ class Exporter(object):
                                 state=d['node']['jobs']['edges'][0]['node']['state'],
                                 job=job
                             ).inc()
+
+                            JOB_WAITTIME.labels(
+                                branch=d['node']['branch'],
+                                exitStatus="INCOMPLETE",
+                                state=j['node']['state'],
+                                passed="INCOMPLETE",
+                                job=job
+                            ).set((start_time - scheduled_time).seconds)
 
     def collect_agent_data(self):
         query = '''
