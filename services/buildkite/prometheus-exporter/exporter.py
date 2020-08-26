@@ -65,8 +65,8 @@ class Exporter(object):
             }
         scan_from = datetime.now() - timedelta(seconds=EXPORTER_SCAN_INTERVAL)
 
+        client = GraphqlClient(endpoint=API_URL, headers=headers)
         for j in JOBS.split(','):
-            client = GraphqlClient(endpoint=API_URL, headers=headers)
             query = '''
                 query {
                     pipeline(slug: "%s") {
