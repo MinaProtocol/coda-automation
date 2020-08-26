@@ -4,7 +4,7 @@ import os
 import time
 
 from python_graphql_client import GraphqlClient
-from prometheus_client import Histogram, start_http_server
+from prometheus_client import Counter, Gauge, start_http_server
 
 
 API_URL = os.getenv("BUILDKITE_API_URL", "https://graphql.buildkite.com/v1")
@@ -45,7 +45,8 @@ AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
 
 ## Prometheus Metrics
 
-JOB_RUNTIME = Histogram('job_runtime', 'Total job runtime.', ['branch', 'exitStatus', 'state', 'passed', 'job'])
+JOB_RUNTIME = Gauge('job_runtime', 'Total job runtime.', ['branch', 'exitStatus', 'state', 'passed', 'job'])
+JOB_EXIT_STATUS = Counter('job_exit_status', 'Count of job exit statuses', ['branch', 'exitStatus', 'state', 'passed', 'job'])
 
 class Exporter(object):
     """Represents a generic agent that operates on the coda blockchain"""
@@ -123,7 +124,7 @@ class Exporter(object):
                 )
 
             data = client.execute(query=query, variables={})
-            print(json.dumps(data))
+            # print(json.dumps(data))
 
             for d in data['data']['pipeline']['builds']['edges']:
                 if len(d['node']['jobs']['edges']) > 0 and d['node']['jobs']['edges'][0]['node']['state'] == 'FINISHED':
@@ -136,7 +137,16 @@ class Exporter(object):
                         state=d['node']['jobs']['edges'][0]['node']['state'],
                         passed=d['node']['jobs']['edges'][0]['node']['passed'],
                         job=j
-                    ).observe((end_time - start_time).seconds)
+                    ).set((end_time - start_time).seconds)
+
+                    print("Status: ", j, d['node']['jobs']['edges'][0]['node']['exitStatus'])
+                    JOB_EXIT_STATUS.labels(
+                        branch=d['node']['branch'],
+                        exitStatus=d['node']['jobs']['edges'][0]['node']['exitStatus'],
+                        state=d['node']['jobs']['edges'][0]['node']['state'],
+                        passed=d['node']['jobs']['edges'][0]['node']['passed'],
+                        job=j
+                    ).inc()
 
 def main():
     exporter = Exporter()
