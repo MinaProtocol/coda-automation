@@ -7,7 +7,7 @@ A prometheus exporter providing metrics for Buildkite pipeline job and agent sta
 
 ## Environment Variables
 
-The application can be run in a number of ways, the main consumption is the Docker hub image `codaprotocol/buildkite-exporter`.
+The application can be run in a number of ways, the main launching point is the Docker hub image `codaprotocol/buildkite-exporter`.
 
 **Required**
 * `BUILDKITE_API_KEY`                   - Buildkite GraphQL API access key
