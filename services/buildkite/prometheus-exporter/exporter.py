@@ -57,21 +57,17 @@ TOTAL_AGENT_COUNT = Counter('agents_total', 'Count of active Buildkite agents wi
 class Exporter(object):
     """Represents a (Coda) Buildkite pipeline exporter"""
 
-    def __init__(self, api_key=API_KEY, org_slug=ORG_SLUG, pipeline_slug=PIPELINE_SLUG, branch=BRANCH, interval=EXPORTER_SCAN_INTERVAL):
+    def __init__(self, client, api_key=API_KEY, org_slug=ORG_SLUG, pipeline_slug=PIPELINE_SLUG, branch=BRANCH, interval=EXPORTER_SCAN_INTERVAL):
         self.api_key = api_key
         self.org_slug = org_slug
         self.pipeline_slug = pipeline_slug
         self.branch = branch
         self.interval = interval
 
-    def collect_job_data(self):
-        headers = {
-            'Authorization': 'Bearer {api_key}'.format(api_key=self.api_key),
-            'Content-Type': 'application/json'
-            }
-        scan_from = datetime.now() - timedelta(seconds=self.interval)
+        self.ql_client = client
 
-        client = GraphqlClient(endpoint=API_URL, headers=headers)
+    def collect_job_data(self):
+        scan_from = datetime.now() - timedelta(seconds=self.interval)
         for j in JOBS.split(','):
             query = '''
                 query {
@@ -130,8 +126,7 @@ class Exporter(object):
                     j
                 )
 
-            data = client.execute(query=query, variables={})
-
+            data = self.ql_client.execute(query=query, variables={})
             for d in data['data']['pipeline']['builds']['edges']:
                 if len(d['node']['jobs']['edges']) > 0:
                     # Completed job metrics
@@ -163,13 +158,6 @@ class Exporter(object):
                         ).inc()
 
     def collect_agent_data(self):
-        headers = {
-            'Authorization': 'Bearer {api_key}'.format(api_key=self.api_key),
-            'Content-Type': 'application/json'
-            }
-        scan_from = datetime.now() - timedelta(seconds=self.interval)
-
-        client = GraphqlClient(endpoint=API_URL, headers=headers)
         query = '''
             query {
                 organization(slug: "%s") {
@@ -204,9 +192,7 @@ class Exporter(object):
                 MAX_AGENT_COUNT,
             )
 
-        data = client.execute(query=query, variables={})
-        print(data)
-
+        data = self.ql_client.execute(query=query, variables={})
         for d in data['data']['organization']['agents']['edges']:
             TOTAL_AGENT_COUNT.labels(
                 version=d['node']['version'],
@@ -218,7 +204,13 @@ class Exporter(object):
             ).inc()
 
 def main():
-    exporter = Exporter()
+    headers = {
+        'Authorization': 'Bearer {api_key}'.format(api_key=API_KEY),
+        'Content-Type': 'application/json'
+    }
+
+    client = GraphqlClient(endpoint=API_URL, headers=headers)
+    exporter = Exporter(client)
     while True:
         exporter.collect_job_data()
         exporter.collect_agent_data()
