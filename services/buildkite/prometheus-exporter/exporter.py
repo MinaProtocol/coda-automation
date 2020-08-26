@@ -46,6 +46,7 @@ AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
 ## Prometheus Metrics
 
 JOB_RUNTIME = Gauge('job_runtime', 'Total job runtime.', ['branch', 'exitStatus', 'state', 'passed', 'job'])
+JOB_STATUS = Counter('job_status', 'Count of in-progress job statuses', ['branch', 'state', 'job'])
 JOB_EXIT_STATUS = Counter('job_exit_status', 'Count of job exit statuses', ['branch', 'exitStatus', 'state', 'passed', 'job'])
 
 class Exporter(object):
@@ -127,26 +128,36 @@ class Exporter(object):
             # print(json.dumps(data))
 
             for d in data['data']['pipeline']['builds']['edges']:
-                if len(d['node']['jobs']['edges']) > 0 and d['node']['jobs']['edges'][0]['node']['state'] == 'FINISHED':
-                    end_time = datetime.strptime(d['node']['jobs']['edges'][0]['node']['finishedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                    start_time = datetime.strptime(d['node']['jobs']['edges'][0]['node']['startedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                    print("Times: ", start_time, end_time, (end_time - start_time), "Job:", j)
-                    JOB_RUNTIME.labels(
-                        branch=d['node']['branch'],
-                        exitStatus=d['node']['jobs']['edges'][0]['node']['exitStatus'],
-                        state=d['node']['jobs']['edges'][0]['node']['state'],
-                        passed=d['node']['jobs']['edges'][0]['node']['passed'],
-                        job=j
-                    ).set((end_time - start_time).seconds)
+                if len(d['node']['jobs']['edges']) > 0:
+                    # Completed job metrics
+                    if d['node']['jobs']['edges'][0]['node']['state'] == 'FINISHED':
+                        end_time = datetime.strptime(d['node']['jobs']['edges'][0]['node']['finishedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                        start_time = datetime.strptime(d['node']['jobs']['edges'][0]['node']['startedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                        print("Times: ", start_time, end_time, (end_time - start_time), "Job:", j)
+                        JOB_RUNTIME.labels(
+                            branch=d['node']['branch'],
+                            exitStatus=d['node']['jobs']['edges'][0]['node']['exitStatus'],
+                            state=d['node']['jobs']['edges'][0]['node']['state'],
+                            passed=d['node']['jobs']['edges'][0]['node']['passed'],
+                            job=j
+                        ).set((end_time - start_time).seconds)
 
-                    print("Status: ", j, d['node']['jobs']['edges'][0]['node']['exitStatus'])
-                    JOB_EXIT_STATUS.labels(
-                        branch=d['node']['branch'],
-                        exitStatus=d['node']['jobs']['edges'][0]['node']['exitStatus'],
-                        state=d['node']['jobs']['edges'][0]['node']['state'],
-                        passed=d['node']['jobs']['edges'][0]['node']['passed'],
-                        job=j
-                    ).inc()
+                        print("Status: ", j, d['node']['jobs']['edges'][0]['node']['exitStatus'])
+                        JOB_EXIT_STATUS.labels(
+                            branch=d['node']['branch'],
+                            exitStatus=d['node']['jobs']['edges'][0]['node']['exitStatus'],
+                            state=d['node']['jobs']['edges'][0]['node']['state'],
+                            passed=d['node']['jobs']['edges'][0]['node']['passed'],
+                            job=j
+                        ).inc()
+
+                    # In-progress Job metrics
+                    if d['node']['jobs']['edges'][0]['node']['state'] != 'FINISHED':
+                        JOB_STATUS.labels(
+                            branch=d['node']['branch'],
+                            state=d['node']['jobs']['edges'][0]['node']['state'],
+                            job=j
+                        ).inc()
 
 def main():
     exporter = Exporter()
