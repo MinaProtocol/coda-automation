@@ -10,6 +10,7 @@ from prometheus_client import Counter, Gauge, start_http_server
 API_URL = os.getenv("BUILDKITE_API_URL", "https://graphql.buildkite.com/v1")
 API_KEY = os.getenv("BUILDKITE_API_KEY")
 
+ORG_SLUG = os.getenv("BUILDKITE_ORG_SLUG", "o-1-labs-2")
 PIPELINE_SLUG = os.getenv("BUILDKITE_PIPELINE_SLUG", "o-1-labs-2/coda").strip()
 BRANCH = os.getenv("BUILDKITE_BRANCH", "*")
 
@@ -38,8 +39,10 @@ _monitored_jobs = [
 JOBS = os.getenv("BUILDKITE_JOBS", ','.join(_monitored_jobs))
 MAX_JOB_COUNT = os.getenv("BUILDKITE_MAX_JOB_COUNT", 100)
 
+MAX_AGENT_COUNT = os.getenv("BUILDKITE_MAX_AGENT_COUNT", 500)
+
 EXPORTER_SCAN_INTERVAL = os.getenv("BUILDKITE_EXPORTER_SCAN_INTERVAL", 3600)
-POLL_INTERVAL = os.getenv("BUILDKITE_POLL_INTERVAL", 60)
+POLL_INTERVAL = os.getenv("BUILDKITE_POLL_INTERVAL", 10)
 
 AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
 
@@ -49,11 +52,14 @@ JOB_RUNTIME = Gauge('job_runtime', 'Total job runtime', ['branch', 'exitStatus',
 JOB_STATUS = Counter('job_status', 'Count of in-progress job statuses over <scan-interval>', ['branch', 'state', 'job'])
 JOB_EXIT_STATUS = Counter('job_exit_status', 'Count of job exit statuses over <scan-interval>', ['branch', 'exitStatus', 'state', 'passed', 'job'])
 
+TOTAL_AGENT_COUNT = Counter('agents_total', 'Count of active Buildkite agents within <org>', ['version', 'versionHasKnownIssues','os', 'isRunning', 'metadata', 'connectionState'])
+
 class Exporter(object):
     """Represents a (Coda) Buildkite pipeline exporter"""
 
-    def __init__(self, api_key=API_KEY, pipeline_slug=PIPELINE_SLUG, branch=BRANCH, interval=EXPORTER_SCAN_INTERVAL):
+    def __init__(self, api_key=API_KEY, org_slug=ORG_SLUG, pipeline_slug=PIPELINE_SLUG, branch=BRANCH, interval=EXPORTER_SCAN_INTERVAL):
         self.api_key = api_key
+        self.org_slug = org_slug
         self.pipeline_slug = pipeline_slug
         self.branch = branch
         self.interval = interval
@@ -156,10 +162,67 @@ class Exporter(object):
                             job=j
                         ).inc()
 
+    def collect_agent_data(self):
+        headers = {
+            'Authorization': 'Bearer {api_key}'.format(api_key=self.api_key),
+            'Content-Type': 'application/json'
+            }
+        scan_from = datetime.now() - timedelta(seconds=self.interval)
+
+        client = GraphqlClient(endpoint=API_URL, headers=headers)
+        query = '''
+            query {
+                organization(slug: "%s") {
+                    agents(first:%s) {
+                    edges {
+                        node {
+                        name
+                        hostname
+                        ipAddress
+                        operatingSystem {
+                        name
+                        }
+                        userAgent
+                        version
+                        versionHasKnownIssues
+                        createdAt
+                        connectedAt
+                        connectionState
+                        heartbeatAt
+                        isRunningJob
+                        pid
+                        public
+                        metaData
+                        userAgent
+                        }
+                    }
+                    }
+                }
+            }
+        ''' % (
+                self.org_slug,
+                MAX_AGENT_COUNT,
+            )
+
+        data = client.execute(query=query, variables={})
+        print(data)
+
+        for d in data['data']['organization']['agents']['edges']:
+            TOTAL_AGENT_COUNT.labels(
+                version=d['node']['version'],
+                versionHasKnownIssues=d['node']['versionHasKnownIssues'],
+                os=d['node']['operatingSystem']['name'],
+                isRunning=d['node']['isRunningJob'],
+                metadata=','.join(d['node']['metaData']),
+                connectionState=d['node']['connectionState']
+            ).inc()
+
 def main():
     exporter = Exporter()
     while True:
         exporter.collect_job_data()
+        exporter.collect_agent_data()
+
         time.sleep(POLL_INTERVAL)
 
 
