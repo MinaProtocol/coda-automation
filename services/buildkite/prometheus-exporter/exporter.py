@@ -38,8 +38,8 @@ _monitored_jobs = [
 JOBS = os.getenv("BUILDKITE_JOBS", ','.join(_monitored_jobs))
 MAX_JOB_COUNT = os.getenv("BUILDKITE_MAX_JOB_COUNT", 100)
 
-EXPORTER_INTERVAL_SEC = os.getenv("EXPORTER_SCAN_INTERVAL", 86400)
-POLL_INTERVAL = os.getenv("BUILDKITE_POLL_INTERVAL", 10)
+EXPORTER_SCAN_INTERVAL = os.getenv("BUILDKITE_EXPORTER_SCAN_INTERVAL", 3600)
+POLL_INTERVAL = os.getenv("BUILDKITE_POLL_INTERVAL", 60)
 
 AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
 
@@ -52,7 +52,7 @@ JOB_EXIT_STATUS = Counter('job_exit_status', 'Count of job exit statuses', ['bra
 class Exporter(object):
     """Represents a generic agent that operates on the coda blockchain"""
 
-    def __init__(self, api_key=API_KEY, pipeline_slug=PIPELINE_SLUG, branch=BRANCH, interval=EXPORTER_INTERVAL_SEC):
+    def __init__(self, api_key=API_KEY, pipeline_slug=PIPELINE_SLUG, branch=BRANCH, interval=EXPORTER_SCAN_INTERVAL):
         self.api_key = api_key
         self.pipeline_slug = pipeline_slug
         self.branch = branch
@@ -63,7 +63,7 @@ class Exporter(object):
             'Authorization': 'Bearer {api_key}'.format(api_key=API_KEY),
             'Content-Type': 'application/json'
             }
-        scan_from = datetime.now() - timedelta(seconds=EXPORTER_INTERVAL_SEC)
+        scan_from = datetime.now() - timedelta(seconds=EXPORTER_SCAN_INTERVAL)
 
         for j in JOBS.split(','):
             client = GraphqlClient(endpoint=API_URL, headers=headers)
@@ -133,7 +133,7 @@ class Exporter(object):
                     if d['node']['jobs']['edges'][0]['node']['state'] == 'FINISHED':
                         end_time = datetime.strptime(d['node']['jobs']['edges'][0]['node']['finishedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
                         start_time = datetime.strptime(d['node']['jobs']['edges'][0]['node']['startedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                        print("Times: ", start_time, end_time, (end_time - start_time), "Job:", j)
+
                         JOB_RUNTIME.labels(
                             branch=d['node']['branch'],
                             exitStatus=d['node']['jobs']['edges'][0]['node']['exitStatus'],
@@ -142,7 +142,6 @@ class Exporter(object):
                             job=j
                         ).set((end_time - start_time).seconds)
 
-                        print("Status: ", j, d['node']['jobs']['edges'][0]['node']['exitStatus'])
                         JOB_EXIT_STATUS.labels(
                             branch=d['node']['branch'],
                             exitStatus=d['node']['jobs']['edges'][0]['node']['exitStatus'],
@@ -150,9 +149,8 @@ class Exporter(object):
                             passed=d['node']['jobs']['edges'][0]['node']['passed'],
                             job=j
                         ).inc()
-
                     # In-progress Job metrics
-                    if d['node']['jobs']['edges'][0]['node']['state'] != 'FINISHED':
+                    else:
                         JOB_STATUS.labels(
                             branch=d['node']['branch'],
                             state=d['node']['jobs']['edges'][0]['node']['state'],
