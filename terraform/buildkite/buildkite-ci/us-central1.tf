@@ -1,5 +1,5 @@
 locals {
-  east1_compute_topology = {
+  central1_compute_topology = {
     small = {
       agent = {
         tags  = "size=small"
@@ -15,7 +15,7 @@ locals {
           memory = "2G"
         }
       }
-      replicaCount = 6
+      replicaCount = 4
     }
 
     medium = {
@@ -33,7 +33,7 @@ locals {
           memory = "4G"
         }
       }
-      replicaCount = 12
+      replicaCount = 14
     }
 
     large = {
@@ -52,7 +52,7 @@ locals {
           ephemeral-storage = "50Gi"
         }
       }
-      replicaCount = 6
+      replicaCount = 10
     }
 
     xlarge = {
@@ -71,19 +71,19 @@ locals {
           ephemeral-storage = "50Gi"
         }
       }
-      replicaCount = 5
+      replicaCount = 6
     }
   }
 }
 
-module "buildkite-east1-compute" {
+module "buildkite-central1-compute" {
   source = "../../modules/kubernetes/buildkite-agent"
 
-  k8s_context             = "gke_o1labs-192920_us-east1_buildkite-infra-east1"
-  cluster_name            = "gke-east1"
+  k8s_context             = "gke_o1labs-192920_us-central1_buildkite-infra-central1"
+  cluster_name            = "gke-central1"
 
   google_app_credentials  = var.google_credentials
 
   agent_vcs_privkey       = var.agent_vcs_privkey
-  agent_topology          = local.east1_compute_topology
+  agent_topology          = local.central1_compute_topology
 }

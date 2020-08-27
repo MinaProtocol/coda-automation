@@ -15,7 +15,7 @@ locals {
           memory = "2G"
         }
       }
-      replicaCount = 10
+      replicaCount = 6
     }
 
     medium = {
@@ -33,7 +33,7 @@ locals {
           memory = "4G"
         }
       }
-      replicaCount = 6
+      replicaCount = 12
     }
 
     large = {
@@ -52,7 +52,7 @@ locals {
           ephemeral-storage = "50Gi"
         }
       }
-      replicaCount = 12
+      replicaCount = 6
     }
 
     xlarge = {
@@ -71,7 +71,7 @@ locals {
           ephemeral-storage = "50Gi"
         }
       }
-      replicaCount = 3
+      replicaCount = 5
     }
   }
 }
