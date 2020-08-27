@@ -1,0 +1,4 @@
+exporter:
+  name: "buildkite-coda"
+  image: codaprotocol/buildkite-exporter:0.1.0
+  listening_port: 8000
