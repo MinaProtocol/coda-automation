@@ -45,7 +45,6 @@ MAX_AGENT_COUNT = os.getenv("BUILDKITE_MAX_AGENT_COUNT", 500)
 MAX_ARTIFACTS_COUNT = os.getenv("BUILDKITE_MAX_ARTIFACT_COUNT", 500)
 
 EXPORTER_SCAN_INTERVAL = os.getenv("BUILDKITE_EXPORTER_SCAN_INTERVAL", 3600)
-POLL_INTERVAL = os.getenv("BUILDKITE_POLL_INTERVAL", 30)
 
 AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
 
@@ -306,8 +305,7 @@ def main():
     print("Metrics on Port {}".format(AGENT_METRICS_PORT))
 
     while True:
-        print("Sleeping for {pollInterval} seconds...".format(pollInterval=POLL_INTERVAL))
-        time.sleep(POLL_INTERVAL)
+        time.sleep(5)
 
 
 if __name__ == "__main__":
