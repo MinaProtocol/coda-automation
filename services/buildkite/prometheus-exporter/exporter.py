@@ -93,8 +93,8 @@ class Exporter(object):
         self.collect_job_data(metrics)
         self.collect_agent_data(metrics)
 
-        for c in ['job', 'agent']:
-            for m in metrics[c].values():
+        for category in ['job', 'agent']:
+            for m in metrics[category].values():
                 yield m
 
         print("Metrics collected.")
@@ -288,17 +288,14 @@ def main():
         'Content-Type': 'application/json'
     }
     client = GraphqlClient(endpoint=API_URL, headers=headers)
-    exporter = Exporter(client)
 
-    REGISTRY.register(exporter)
+    REGISTRY.register(Exporter(client))
     start_http_server(AGENT_METRICS_PORT)
     print("Metrics on Port {}".format(AGENT_METRICS_PORT))
 
     while True:
         print("Sleeping for {pollInterval} seconds...".format(pollInterval=POLL_INTERVAL))
         time.sleep(POLL_INTERVAL)
-
-        exporter.collect()
 
 
 if __name__ == "__main__":
