@@ -70,19 +70,19 @@ class Exporter(object):
         metrics['job'] = {
             'runtime':
                 GaugeMetricFamily('job_runtime', 'Total job runtime',
-                labels=['branch', 'exitStatus', 'state', 'passed', 'job']),
+                labels=['branch', 'exitStatus', 'state', 'passed', 'job', 'agentName', 'agentRules']),
             'waittime':
                 GaugeMetricFamily('job_waittime', 'Total time job waited to start (from time scheduled)',
-                labels=['branch', 'exitStatus', 'state', 'passed', 'job']),
+                labels=['branch', 'exitStatus', 'state', 'passed', 'job', 'agentName', 'agentRules']),
             'status':
                 CounterMetricFamily('job_status', 'Count of in-progress job statuses over <scan-interval>',
                 labels=['branch', 'state', 'job']),
             'exit_status':
                 CounterMetricFamily('job_exit_status', 'Count of job exit statuses over <scan-interval>',
-                labels=['branch', 'exitStatus', 'softFailed', 'state', 'passed', 'job']),
+                labels=['branch', 'exitStatus', 'softFailed', 'state', 'passed', 'job', 'agentName', 'agentRules']),
             'artifact_size':
                 GaugeMetricFamily('job_artifact_size', 'Total size of uploaded artifact (bytes)',
-                labels=['branch', 'exitStatus', 'state', 'path', 'downloadURL', 'mimeType', 'job']),
+                labels=['branch', 'exitStatus', 'state', 'path', 'downloadURL', 'mimeType', 'job', 'agentName', 'agentRules']),
         }
         metrics['agent'] = {
             'total_count':
@@ -124,6 +124,10 @@ class Exporter(object):
                                         step {
                                             key
                                         }
+                                        agent {
+                                            hostname
+                                        }
+                                        agentQueryRules
                                         command
                                         exitStatus
                                         startedAt
@@ -179,7 +183,9 @@ class Exporter(object):
                                     j['node']['exitStatus'],
                                     j['node']['state'],
                                     str(j['node']['passed']),
-                                    job
+                                    job,
+                                    j['node']['agent']['hostname'],
+                                    ','.join(j['node']['agentQueryRules'])
                                 ],
                                 value=(end_time - start_time).seconds
                             )
@@ -190,7 +196,9 @@ class Exporter(object):
                                     j['node']['exitStatus'],
                                     j['node']['state'],
                                     str(j['node']['passed']),
-                                    job
+                                    job,
+                                    j['node']['agent']['hostname'],
+                                    ','.join(j['node']['agentQueryRules'])
                                 ],
                                 value=(start_time - scheduled_time).seconds
                             )
@@ -202,7 +210,9 @@ class Exporter(object):
                                     str(j['node']['softFailed']),
                                     j['node']['state'],
                                     str(j['node']['passed']),
-                                    job
+                                    job,
+                                    j['node']['agent']['hostname'],
+                                    ','.join(j['node']['agentQueryRules'])
                                 ],
                                 value=1
                             )
@@ -218,7 +228,9 @@ class Exporter(object):
                                             a['node']['path'],
                                             a['node']['downloadURL'],
                                             a['node']['mimeType'],
-                                            job 
+                                            job ,
+                                            j['node']['agent']['hostname'],
+                                            ','.join(j['node']['agentQueryRules'])
                                         ],
                                         value=a['node']['size']
                                     )
