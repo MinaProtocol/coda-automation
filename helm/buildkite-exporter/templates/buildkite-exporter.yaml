@@ -30,7 +30,10 @@ spec:
         image: {{ $.Values.exporter.image }}
         env:
           - name: BUILDKITE_API_KEY
-            value: {{ .Values.exporter.buildkite_api_key }}
+            value: {{ .Values.exporter.buildkiteApiKey }}
+{{- if .Values.exporter.optionalEnv }}
+{{ toYaml .Values.exporter.optionalEnv | nindent 10 }}
+{{- end }}
         ports:
         - containerPort: {{ .Values.exporter.listening_port }}
           hostPort: {{ .Values.exporter.listening_port }}
