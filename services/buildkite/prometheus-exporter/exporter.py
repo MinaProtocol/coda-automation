@@ -46,7 +46,7 @@ MAX_ARTIFACTS_COUNT = os.getenv("BUILDKITE_MAX_ARTIFACT_COUNT", 500)
 
 EXPORTER_SCAN_INTERVAL = os.getenv("BUILDKITE_EXPORTER_SCAN_INTERVAL", 3600)
 
-AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
+METRICS_PORT = os.getenv("METRICS_PORT", 8000)
 
 
 class Exporter(object):
@@ -99,7 +99,7 @@ class Exporter(object):
         print("Metrics collected.")
 
     def collect_job_data(self, metrics):
-        scan_from = datetime.now() - timedelta(seconds=self.interval)
+        scan_from = datetime.now() - timedelta(seconds=int(self.interval))
         for job in JOBS.split(','):
             query = '''
                 query {
@@ -301,8 +301,8 @@ def main():
     client = GraphqlClient(endpoint=API_URL, headers=headers)
 
     REGISTRY.register(Exporter(client))
-    start_http_server(AGENT_METRICS_PORT)
-    print("Metrics on Port {}".format(AGENT_METRICS_PORT))
+    start_http_server(METRICS_PORT)
+    print("Metrics on Port {}".format(METRICS_PORT))
 
     while True:
         time.sleep(5)
