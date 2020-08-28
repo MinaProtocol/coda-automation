@@ -62,7 +62,7 @@ def timing(f):
         try:
             print("function={func}, runtime={runtime}".format(func=f.__name__, runtime=te-ts))
         except:
-            print("parse failed")
+            print("timing capture failed")
 
         return result
     return wrap
@@ -195,9 +195,9 @@ class Exporter(object):
         for d in data['data']['pipeline']['builds']['edges']:
             if len(d['node']['jobs']['edges']) > 0:
                 for j in d['node']['jobs']['edges']:
+                    scheduled_time = datetime.strptime(j['node']['scheduledAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
                     # Completed job metrics
                     if j['node']['state'] == 'FINISHED':
-                        scheduled_time = datetime.strptime(j['node']['scheduledAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
                         start_time = datetime.strptime(j['node']['startedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
                         end_time = datetime.strptime(j['node']['finishedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
 
@@ -267,6 +267,20 @@ class Exporter(object):
                                 j['node']['step']['key']
                             ],
                             value=1
+                        )
+
+                        t = datetime.strptime(j['node']['startedAt'], '%Y-%m-%dT%H:%M:%S.%fZ') if j['node']['startedAt'] else datetime.now()
+                        metrics['job']['waittime'].add_metric(
+                            labels=[
+                                d['node']['branch'],
+                                j['node']['exitStatus'] or "undefined",
+                                j['node']['state'],
+                                str(j['node']['passed'] or "undefined"),
+                                j['node']['step']['key'],
+                                j['node']['agent']['hostname'] if j['node']['agent'] else "unassigned",
+                                ','.join(j['node']['agentQueryRules'])
+                            ],
+                            value=(t - scheduled_time).seconds
                         )
 
     @timing
