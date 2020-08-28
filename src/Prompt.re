@@ -32,11 +32,9 @@ let yesNo = query => {
       res => {
         close(readline);
         switch (res) {
-        | "y" => resolve(. true)
-        | "n" => resolve(. false)
-        | _ =>
-          Js.log("Invalid response" ++ res);
-          reject(. Invalid_input);
+        | r when Js.Re.test_(yes, r) => resolve(. true)
+        | r when Js.Re.test_(no, r) => resolve(. false)
+        | _ => reject(. Invalid_input)
         };
       },
     )

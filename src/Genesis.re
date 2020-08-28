@@ -89,15 +89,13 @@ let promptEntry = () => {
          }
        )
     |> then_((((keyset, balance), delegate)) =>
-         switch (Js.String.trim(delegate)) {
+         switch (delegate) {
          | "" => resolve((keyset, balance, None))
          | delegate =>
            switch (Keyset.load(delegate)) {
            | Some(delegateKeyset) =>
              resolve((keyset, balance, Some(delegateKeyset)))
-           | None =>
-             Js.log("Invalid delegate " ++ delegate);
-             reject(Prompt.Invalid_input);
+           | None => reject(Prompt.Invalid_input)
            }
          }
        )

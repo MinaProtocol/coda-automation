@@ -60,9 +60,8 @@ let append = (keyset, ~publicKey, ~nickname) => {
 /**
  * Adds a keypair to a keyset based on it's publicKey.
  */
-let appendKeypair: (t, Keypair.t) => t =
-  (keyset, keypair) =>
-    append(keyset, ~publicKey=keypair.publicKey, ~nickname=keypair.nickname);
+let appendKeypair = (keyset, keypair) =>
+  append(keyset, ~publicKey=keypair.publicKey, ~nickname=keypair.nickname);
 
 /**
  * Uploads a serialized keyset to Storage.
@@ -70,14 +69,6 @@ let appendKeypair: (t, Keypair.t) => t =
 let upload = keyset => {
   let filename = Cache.keysetsDir ++ keyset.name;
   Storage.upload(~bucket=Storage.keysetBucket, ~filename) |> ignore;
-
-  Array.map(entry => {
-    let kpName = Belt.Option.getWithDefault(entry.nickname, entry.publicKey);
-    switch (Keypair.load(kpName)) {
-    | Some(keypair) => Keypair.upload(keypair)
-    | None => ()
-    };
-  }, keyset.entries);
 };
 
 type listResponse = {

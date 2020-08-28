@@ -15,11 +15,11 @@ locals {
       }
       resources = {
         limits = {
-          cpu    = "32"
-          memory = "20G"
+          cpu    = "15"
+          memory = "10G"
         }
       }
-      replicaCount = 3
+      replicaCount = 1
     }
   }
 }
@@ -27,11 +27,11 @@ locals {
 module "buildkite-ci-compute" {
   source = "../../modules/kubernetes/buildkite-agent"
 
-  k8s_context             = "gke_o1labs-192920_us-central1_buildkite-infra-central"
-  cluster_name            = "gke-benchmark"
+  google_app_credentials = var.google_credentials
+  k8s_context           = var.k8s_context
 
-  google_app_credentials  = var.google_credentials
+  cluster_name      = var.cluster_name
 
-  agent_vcs_privkey       = var.agent_vcs_privkey
-  agent_topology          = local.experimental_topology
+  agent_vcs_privkey = var.agent_vcs_privkey
+  agent_topology    = local.experimental_topology
 }
