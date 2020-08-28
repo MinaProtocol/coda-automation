@@ -12,6 +12,7 @@ The application can be run in a number of ways though the main launching point i
 * `BUILDKITE_API_KEY`                   - Buildkite GraphQL API access key
 
 **Optional**
+* `METRICS_PORT`                        - port to listen on for metrics queries
 
 * `BUILDKITE_ORG_SLUG`                  - organization's Buildkite SLUG identifier
 * `BUILDKITE_PIPELINE_SLUG`             - SLUG identifier of pipeline to query
