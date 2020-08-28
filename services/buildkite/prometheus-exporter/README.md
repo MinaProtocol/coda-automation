@@ -2,7 +2,7 @@
 
 # Buildkite :cloud: Exporter
 
-A Buildkite pipeline metrics exporter providing job and agent statistics via Buildkite's GraphQL API.
+A Buildkite GraphQL API metrics exporter providing job and agent statistics to a Prometheus compatible endpoint.
 
 ## Config :: Environment Variables
 
