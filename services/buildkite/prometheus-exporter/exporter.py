@@ -4,7 +4,8 @@ import os
 import time
 
 from python_graphql_client import GraphqlClient
-from prometheus_client import Counter, Gauge, start_http_server
+from prometheus_client import start_http_server
+from prometheus_client.core import CounterMetricFamily, GaugeMetricFamily, REGISTRY
 
 
 API_KEY = os.getenv("BUILDKITE_API_KEY")
@@ -43,42 +44,9 @@ MAX_AGENT_COUNT = os.getenv("BUILDKITE_MAX_AGENT_COUNT", 500)
 
 MAX_ARTIFACTS_COUNT = os.getenv("BUILDKITE_MAX_ARTIFACT_COUNT", 500)
 
-EXPORTER_SCAN_INTERVAL = os.getenv("BUILDKITE_EXPORTER_SCAN_INTERVAL", 24*3600)
-POLL_INTERVAL = os.getenv("BUILDKITE_POLL_INTERVAL", 10)
+EXPORTER_SCAN_INTERVAL = os.getenv("BUILDKITE_EXPORTER_SCAN_INTERVAL", 3600)
 
 AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
-
-## Prometheus Metrics
-
-# -- job metrics
-
-JOB_RUNTIME = Gauge(
-    'job_runtime', 'Total job runtime',
-    ['branch', 'exitStatus', 'state', 'passed', 'job']
-)
-JOB_WAITTIME = Gauge(
-    'job_waittime', 'Total time job waited to start (from time scheduled)',
-    ['branch', 'exitStatus', 'state', 'passed', 'job']
-)
-JOB_STATUS = Counter(
-    'job_status', 'Count of in-progress job statuses over <scan-interval>',
-    ['branch', 'state', 'job']
-)
-JOB_EXIT_STATUS = Counter(
-    'job_exit_status', 'Count of job exit statuses over <scan-interval>',
-    ['branch', 'exitStatus', 'softFailed', 'state', 'passed', 'job']
-)
-JOB_ARTIFACT_SIZE = Gauge(
-    'artifact_size', 'Total size of uploaded artifact (bytes)',
-    ['branch', 'exitStatus', 'state', 'path', 'downloadURL', 'mimeType', 'job']
-)
-
-# -- agent metrics
-
-TOTAL_AGENT_COUNT = Counter(
-    'agents_total', 'Count of active Buildkite agents within <org>',
-    ['version', 'versionHasKnownIssues','os', 'isRunning', 'metadata', 'connectionState']
-)
 
 
 class Exporter(object):
@@ -93,7 +61,44 @@ class Exporter(object):
 
         self.ql_client = client
 
-    def collect_job_data(self):
+    def collect(self):
+        print("Collecting...")
+
+        # The metrics we want to export.
+        metrics = {}
+        metrics['job'] = {
+            'runtime':
+                GaugeMetricFamily('job_runtime', 'Total job runtime',
+                labels=['branch', 'exitStatus', 'state', 'passed', 'job', 'agentName', 'agentRules']),
+            'waittime':
+                GaugeMetricFamily('job_waittime', 'Total time job waited to start (from time scheduled)',
+                labels=['branch', 'exitStatus', 'state', 'passed', 'job', 'agentName', 'agentRules']),
+            'status':
+                CounterMetricFamily('job_status', 'Count of in-progress job statuses over <scan-interval>',
+                labels=['branch', 'state', 'job']),
+            'exit_status':
+                CounterMetricFamily('job_exit_status', 'Count of job exit statuses over <scan-interval>',
+                labels=['branch', 'exitStatus', 'softFailed', 'state', 'passed', 'job', 'agentName', 'agentRules']),
+            'artifact_size':
+                GaugeMetricFamily('job_artifact_size', 'Total size of uploaded artifact (bytes)',
+                labels=['branch', 'exitStatus', 'state', 'path', 'downloadURL', 'mimeType', 'job', 'agentName', 'agentRules']),
+        }
+        metrics['agent'] = {
+            'total_count':
+                CounterMetricFamily('agent_total_count', 'Count of active Buildkite agents within <org>',
+                labels=['version', 'versionHasKnownIssues','os', 'isRunning', 'metadata', 'connectionState'])
+        }
+
+        self.collect_job_data(metrics)
+        self.collect_agent_data(metrics)
+
+        for category in ['job', 'agent']:
+            for m in metrics[category].values():
+                yield m
+
+        print("Metrics collected.")
+
+    def collect_job_data(self, metrics):
         scan_from = datetime.now() - timedelta(seconds=self.interval)
         for job in JOBS.split(','):
             query = '''
@@ -118,6 +123,10 @@ class Exporter(object):
                                         step {
                                             key
                                         }
+                                        agent {
+                                            hostname
+                                        }
+                                        agentQueryRules
                                         command
                                         exitStatus
                                         startedAt
@@ -167,52 +176,75 @@ class Exporter(object):
                             start_time = datetime.strptime(j['node']['startedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
                             end_time = datetime.strptime(j['node']['finishedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
 
-                            JOB_RUNTIME.labels(
-                                branch=d['node']['branch'],
-                                exitStatus=j['node']['exitStatus'],
-                                state=j['node']['state'],
-                                passed=j['node']['passed'],
-                                job=job
-                            ).set((end_time - start_time).seconds)
+                            metrics['job']['runtime'].add_metric(
+                                labels=[
+                                    d['node']['branch'],
+                                    j['node']['exitStatus'],
+                                    j['node']['state'],
+                                    str(j['node']['passed']),
+                                    job,
+                                    j['node']['agent']['hostname'],
+                                    ','.join(j['node']['agentQueryRules'])
+                                ],
+                                value=(end_time - start_time).seconds
+                            )
 
-                            JOB_WAITTIME.labels(
-                                branch=d['node']['branch'],
-                                exitStatus=j['node']['exitStatus'],
-                                state=j['node']['state'],
-                                passed=j['node']['passed'],
-                                job=job
-                            ).set((start_time - scheduled_time).seconds)
+                            metrics['job']['waittime'].add_metric(
+                                labels=[
+                                    d['node']['branch'],
+                                    j['node']['exitStatus'],
+                                    j['node']['state'],
+                                    str(j['node']['passed']),
+                                    job,
+                                    j['node']['agent']['hostname'],
+                                    ','.join(j['node']['agentQueryRules'])
+                                ],
+                                value=(start_time - scheduled_time).seconds
+                            )
 
-                            JOB_EXIT_STATUS.labels(
-                                branch=d['node']['branch'],
-                                exitStatus=j['node']['exitStatus'],
-                                softFailed=j['node']['softFailed'],
-                                state=j['node']['state'],
-                                passed=j['node']['passed'],
-                                job=job
-                            ).inc()
+                            metrics['job']['exit_status'].add_metric(
+                                labels=[
+                                    d['node']['branch'],
+                                    j['node']['exitStatus'],
+                                    str(j['node']['softFailed']),
+                                    j['node']['state'],
+                                    str(j['node']['passed']),
+                                    job,
+                                    j['node']['agent']['hostname'],
+                                    ','.join(j['node']['agentQueryRules'])
+                                ],
+                                value=1
+                            )
 
-                            # Emit artifact upload size and metadata if applicable
                             if len(j['node']['artifacts']['edges']) > 0:
                                 for a in j['node']['artifacts']['edges']:
-                                    JOB_ARTIFACT_SIZE.labels(
-                                        branch=d['node']['branch'],
-                                        exitStatus=j['node']['exitStatus'],
-                                        state=a['node']['state'],
-                                        path=a['node']['path'],
-                                        downloadURL=a['node']['downloadURL'],
-                                        mimeType=a['node']['mimeType'],
-                                        job=job 
-                                    ).set(a['node']['size'])
-                        # In-progress/incomplete Job metrics
+                                    # Emit artifact upload size and metadata if applicable
+                                    metrics['job']['artifact_size'].add_metric(
+                                        labels=[
+                                            d['node']['branch'],
+                                            j['node']['exitStatus'],
+                                            a['node']['state'],
+                                            a['node']['path'],
+                                            a['node']['downloadURL'],
+                                            a['node']['mimeType'],
+                                            job ,
+                                            j['node']['agent']['hostname'],
+                                            ','.join(j['node']['agentQueryRules'])
+                                        ],
+                                        value=a['node']['size']
+                                    )
                         else:
-                            JOB_STATUS.labels(
-                                branch=d['node']['branch'],
-                                state=d['node']['jobs']['edges'][0]['node']['state'],
-                                job=job
-                            ).inc()
+                            # In-progress/incomplete Job metrics
+                            metrics['job']['status'].add_metric(
+                                labels=[
+                                    d['node']['branch'],
+                                    j['node']['state'],
+                                    job
+                                ],
+                                value=1
+                            )
 
-    def collect_agent_data(self):
+    def collect_agent_data(self, metrics):
         query = '''
             query {
                 organization(slug: "%s") {
@@ -249,34 +281,33 @@ class Exporter(object):
 
         data = self.ql_client.execute(query=query, variables={})
         for d in data['data']['organization']['agents']['edges']:
-            TOTAL_AGENT_COUNT.labels(
-                version=d['node']['version'],
-                versionHasKnownIssues=d['node']['versionHasKnownIssues'],
-                os=d['node']['operatingSystem']['name'],
-                isRunning=d['node']['isRunningJob'],
-                metadata=','.join(d['node']['metaData']),
-                connectionState=d['node']['connectionState']
-            ).inc()
+            metrics['agent']['total_count'].add_metric(
+                labels=[
+                    d['node']['version'],
+                    str(d['node']['versionHasKnownIssues']),
+                    d['node']['operatingSystem']['name'],
+                    str(d['node']['isRunningJob']),
+                    ','.join(d['node']['metaData']),
+                    d['node']['connectionState']
+                ],
+                value=1
+            )
 
 def main():
     headers = {
         'Authorization': 'Bearer {api_key}'.format(api_key=API_KEY),
         'Content-Type': 'application/json'
     }
-
     client = GraphqlClient(endpoint=API_URL, headers=headers)
-    exporter = Exporter(client)
-    while True:
-        print("Collecting...")
-        exporter.collect_job_data()
-        exporter.collect_agent_data()
 
-        print("Sleeping for {pollInterval} seconds...".format(pollInterval=POLL_INTERVAL))
-        time.sleep(POLL_INTERVAL)
+    REGISTRY.register(Exporter(client))
+    start_http_server(AGENT_METRICS_PORT)
+    print("Metrics on Port {}".format(AGENT_METRICS_PORT))
+
+    while True:
+        time.sleep(5)
 
 
 if __name__ == "__main__":
     print("Starting up...")
-    start_http_server(AGENT_METRICS_PORT)
-    print("Metrics on Port {}".format(AGENT_METRICS_PORT))
     main()
