@@ -3,6 +3,8 @@ import json
 import os
 import time
 
+import asyncio
+
 from python_graphql_client import GraphqlClient
 from prometheus_client import start_http_server
 from prometheus_client.core import CounterMetricFamily, GaugeMetricFamily, REGISTRY
@@ -48,6 +50,23 @@ EXPORTER_SCAN_INTERVAL = os.getenv("BUILDKITE_EXPORTER_SCAN_INTERVAL", 3600)
 
 METRICS_PORT = os.getenv("METRICS_PORT", 8000)
 
+from functools import wraps
+
+def timing(f):
+    @wraps(f)
+    def wrap(*args, **kw):
+        ts = time.time()
+        result = f(*args, **kw)
+        te = time.time()
+
+        try:
+            print("function={func}, runtime={runtime}".format(func=f.__name__, runtime=te-ts))
+        except:
+            print("parse failed")
+
+        return result
+    return wrap
+
 
 class Exporter(object):
     """Represents a (Coda) Buildkite pipeline exporter"""
@@ -61,6 +80,11 @@ class Exporter(object):
 
         self.ql_client = client
 
+    @timing
+    def execute_qlquery(self, query, vars=dict()):
+        return asyncio.run(self.ql_client.execute_async(query=query, variables=vars))
+
+    @timing
     def collect(self):
         print("Collecting...")
 
@@ -98,153 +122,154 @@ class Exporter(object):
 
         print("Metrics collected.")
 
+    @timing
     def collect_job_data(self, metrics):
         scan_from = datetime.now() - timedelta(seconds=int(self.interval))
-        for job in JOBS.split(','):
-            query = """
-                query jobQuery($slug: ID!, $createdAtFrom: DateTime, $branch: [String!], $jobLimit: Int, $jobKey: [String!], $jobArtifactLimit: Int){
-                    pipeline(slug:$slug) {
-                        builds(createdAtFrom:$createdAtFrom, branch:$branch) {
-                        edges {
-                            node {
-                            id
-                            branch
-                            commit
-                            state
-                            startedAt
-                            finishedAt
-                            message
-                            jobs(first:$jobLimit, , step: { key:$jobKey }) {
-                                edges {
-                                    node {
-                                    __typename
-                                    ... on JobTypeCommand {
-                                        label
-                                        step {
-                                            key
-                                        }
-                                        agent {
-                                            hostname
-                                        }
-                                        agentQueryRules
-                                        command
-                                        exitStatus
-                                        startedAt
-                                        finishedAt
-                                        runnableAt
-                                        scheduledAt
-                                        softFailed
-                                        passed
-                                        state
-                                        artifacts(first:$jobArtifactLimit) {
-                                            edges {
-                                                node {
-                                                    path
-                                                    downloadURL
-                                                    size
-                                                    state
-                                                    mimeType
-                                                    sha1sum
-                                                }
+        query = """
+            query jobQuery($slug: ID!, $createdAtFrom: DateTime, $branch: [String!], $jobLimit: Int, $jobKey: [String!], $jobArtifactLimit: Int){
+                pipeline(slug:$slug) {
+                    builds(createdAtFrom:$createdAtFrom, branch:$branch) {
+                    edges {
+                        node {
+                        id
+                        branch
+                        commit
+                        state
+                        startedAt
+                        finishedAt
+                        message
+                        jobs(first:$jobLimit, , step: { key:$jobKey }) {
+                            edges {
+                                node {
+                                __typename
+                                ... on JobTypeCommand {
+                                    label
+                                    step {
+                                        key
+                                    }
+                                    agent {
+                                        hostname
+                                    }
+                                    agentQueryRules
+                                    command
+                                    exitStatus
+                                    startedAt
+                                    finishedAt
+                                    runnableAt
+                                    scheduledAt
+                                    softFailed
+                                    passed
+                                    state
+                                    artifacts(first:$jobArtifactLimit) {
+                                        edges {
+                                            node {
+                                                path
+                                                downloadURL
+                                                size
+                                                state
+                                                mimeType
+                                                sha1sum
                                             }
                                         }
-                                    }
                                     }
                                 }
                                 }
                             }
-                        }
+                            }
                         }
                     }
+                    }
                 }
-            """
-
-            vars = {
-                "slug": self.pipeline_slug,
-                "createdAtFrom": scan_from.isoformat(),
-                "branch": self.branch,
-                "jobLimit": MAX_JOB_COUNT,
-                "jobKey": job,
-                "jobArtifactLimit": MAX_ARTIFACTS_COUNT
             }
-            data = self.ql_client.execute(query=query, variables=vars)
-            for d in data['data']['pipeline']['builds']['edges']:
-                if len(d['node']['jobs']['edges']) > 0:
-                    for j in d['node']['jobs']['edges']:
-                        # Completed job metrics
-                        if j['node']['state'] == 'FINISHED':
-                            scheduled_time = datetime.strptime(j['node']['scheduledAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                            start_time = datetime.strptime(j['node']['startedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                            end_time = datetime.strptime(j['node']['finishedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        """
 
-                            metrics['job']['runtime'].add_metric(
-                                labels=[
-                                    d['node']['branch'],
-                                    j['node']['exitStatus'],
-                                    j['node']['state'],
-                                    str(j['node']['passed']),
-                                    job,
-                                    j['node']['agent']['hostname'],
-                                    ','.join(j['node']['agentQueryRules'])
-                                ],
-                                value=(end_time - start_time).seconds
-                            )
+        vars = {
+            "slug": self.pipeline_slug,
+            "createdAtFrom": scan_from.isoformat(),
+            "branch": self.branch,
+            "jobLimit": MAX_JOB_COUNT,
+            "jobKey": JOBS.split(','),
+            "jobArtifactLimit": MAX_ARTIFACTS_COUNT
+        }
+        data = self.execute_qlquery(query=query, vars=vars)
+        for d in data['data']['pipeline']['builds']['edges']:
+            if len(d['node']['jobs']['edges']) > 0:
+                for j in d['node']['jobs']['edges']:
+                    # Completed job metrics
+                    if j['node']['state'] == 'FINISHED':
+                        scheduled_time = datetime.strptime(j['node']['scheduledAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                        start_time = datetime.strptime(j['node']['startedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                        end_time = datetime.strptime(j['node']['finishedAt'], '%Y-%m-%dT%H:%M:%S.%fZ')
 
-                            metrics['job']['waittime'].add_metric(
-                                labels=[
-                                    d['node']['branch'],
-                                    j['node']['exitStatus'],
-                                    j['node']['state'],
-                                    str(j['node']['passed']),
-                                    job,
-                                    j['node']['agent']['hostname'],
-                                    ','.join(j['node']['agentQueryRules'])
-                                ],
-                                value=(start_time - scheduled_time).seconds
-                            )
+                        metrics['job']['runtime'].add_metric(
+                            labels=[
+                                d['node']['branch'],
+                                j['node']['exitStatus'],
+                                j['node']['state'],
+                                str(j['node']['passed']),
+                                j['node']['step']['key'],
+                                j['node']['agent']['hostname'],
+                                ','.join(j['node']['agentQueryRules'])
+                            ],
+                            value=(end_time - start_time).seconds
+                        )
 
-                            metrics['job']['exit_status'].add_metric(
-                                labels=[
-                                    d['node']['branch'],
-                                    j['node']['exitStatus'],
-                                    str(j['node']['softFailed']),
-                                    j['node']['state'],
-                                    str(j['node']['passed']),
-                                    job,
-                                    j['node']['agent']['hostname'],
-                                    ','.join(j['node']['agentQueryRules'])
-                                ],
-                                value=1
-                            )
+                        metrics['job']['waittime'].add_metric(
+                            labels=[
+                                d['node']['branch'],
+                                j['node']['exitStatus'],
+                                j['node']['state'],
+                                str(j['node']['passed']),
+                                j['node']['step']['key'],
+                                j['node']['agent']['hostname'],
+                                ','.join(j['node']['agentQueryRules'])
+                            ],
+                            value=(start_time - scheduled_time).seconds
+                        )
 
-                            if len(j['node']['artifacts']['edges']) > 0:
-                                for a in j['node']['artifacts']['edges']:
-                                    # Emit artifact upload size and metadata if applicable
-                                    metrics['job']['artifact_size'].add_metric(
-                                        labels=[
-                                            d['node']['branch'],
-                                            j['node']['exitStatus'],
-                                            a['node']['state'],
-                                            a['node']['path'],
-                                            a['node']['downloadURL'],
-                                            a['node']['mimeType'],
-                                            job ,
-                                            j['node']['agent']['hostname'],
-                                            ','.join(j['node']['agentQueryRules'])
-                                        ],
-                                        value=a['node']['size']
-                                    )
-                        else:
-                            # In-progress/incomplete Job metrics
-                            metrics['job']['status'].add_metric(
-                                labels=[
-                                    d['node']['branch'],
-                                    j['node']['state'],
-                                    job
-                                ],
-                                value=1
-                            )
+                        metrics['job']['exit_status'].add_metric(
+                            labels=[
+                                d['node']['branch'],
+                                j['node']['exitStatus'],
+                                str(j['node']['softFailed']),
+                                j['node']['state'],
+                                str(j['node']['passed']),
+                                j['node']['step']['key'],
+                                j['node']['agent']['hostname'],
+                                ','.join(j['node']['agentQueryRules'])
+                            ],
+                            value=1
+                        )
 
+                        if len(j['node']['artifacts']['edges']) > 0:
+                            for a in j['node']['artifacts']['edges']:
+                                # Emit artifact upload size and metadata if applicable
+                                metrics['job']['artifact_size'].add_metric(
+                                    labels=[
+                                        d['node']['branch'],
+                                        j['node']['exitStatus'],
+                                        a['node']['state'],
+                                        a['node']['path'],
+                                        a['node']['downloadURL'],
+                                        a['node']['mimeType'],
+                                        j['node']['step']['key'],
+                                        j['node']['agent']['hostname'],
+                                        ','.join(j['node']['agentQueryRules'])
+                                    ],
+                                    value=a['node']['size']
+                                )
+                    else:
+                        # In-progress/incomplete Job metrics
+                        metrics['job']['status'].add_metric(
+                            labels=[
+                                d['node']['branch'],
+                                j['node']['state'],
+                                j['node']['step']['key']
+                            ],
+                            value=1
+                        )
+
+    @timing
     def collect_agent_data(self, metrics):
         query = """
             query agentQuery($slug: ID!, $agentLimit: Int) {
@@ -281,7 +306,7 @@ class Exporter(object):
             "slug": self.org_slug,
             "agentLimit": MAX_ARTIFACTS_COUNT
         }
-        data = self.ql_client.execute(query=query, variables=vars)
+        data = self.execute_qlquery(query=query, vars=vars)
         for d in data['data']['organization']['agents']['edges']:
             metrics['agent']['total_count'].add_metric(
                 labels=[
