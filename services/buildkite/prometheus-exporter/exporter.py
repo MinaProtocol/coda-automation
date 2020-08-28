@@ -101,10 +101,10 @@ class Exporter(object):
     def collect_job_data(self, metrics):
         scan_from = datetime.now() - timedelta(seconds=int(self.interval))
         for job in JOBS.split(','):
-            query = '''
-                query {
-                    pipeline(slug: "%s") {
-                        builds(createdAtFrom: "%s", branch: "%s") {
+            query = """
+                query jobQuery($slug: ID!, $createdAtFrom: DateTime, $branch: [String!], $jobLimit: Int, $jobKey: [String!], $jobArtifactLimit: Int){
+                    pipeline(slug:$slug) {
+                        builds(createdAtFrom:$createdAtFrom, branch:$branch) {
                         edges {
                             node {
                             id
@@ -114,7 +114,7 @@ class Exporter(object):
                             startedAt
                             finishedAt
                             message
-                            jobs(first: %s, , step: { key: "%s" }) {
+                            jobs(first:$jobLimit, , step: { key:$jobKey }) {
                                 edges {
                                     node {
                                     __typename
@@ -136,7 +136,7 @@ class Exporter(object):
                                         softFailed
                                         passed
                                         state
-                                        artifacts(first: %s) {
+                                        artifacts(first:$jobArtifactLimit) {
                                             edges {
                                                 node {
                                                     path
@@ -157,16 +157,17 @@ class Exporter(object):
                         }
                     }
                 }
-            ''' % (
-                    self.pipeline_slug,
-                    scan_from.isoformat(),
-                    self.branch,
-                    MAX_JOB_COUNT,
-                    job,
-                    MAX_ARTIFACTS_COUNT
-                )
+            """
 
-            data = self.ql_client.execute(query=query, variables={})
+            vars = {
+                "slug": self.pipeline_slug,
+                "createdAtFrom": scan_from.isoformat(),
+                "branch": self.branch,
+                "jobLimit": MAX_JOB_COUNT,
+                "jobKey": job,
+                "jobArtifactLimit": MAX_ARTIFACTS_COUNT
+            }
+            data = self.ql_client.execute(query=query, variables=vars)
             for d in data['data']['pipeline']['builds']['edges']:
                 if len(d['node']['jobs']['edges']) > 0:
                     for j in d['node']['jobs']['edges']:
@@ -245,10 +246,10 @@ class Exporter(object):
                             )
 
     def collect_agent_data(self, metrics):
-        query = '''
-            query {
-                organization(slug: "%s") {
-                    agents(first: %s) {
+        query = """
+            query agentQuery($slug: ID!, $agentLimit: Int) {
+                organization(slug:$slug) {
+                    agents(first:$agentLimit) {
                     edges {
                         node {
                         name
@@ -274,12 +275,13 @@ class Exporter(object):
                     }
                 }
             }
-        ''' % (
-                self.org_slug,
-                MAX_AGENT_COUNT,
-            )
+        """
 
-        data = self.ql_client.execute(query=query, variables={})
+        vars = {
+            "slug": self.org_slug,
+            "agentLimit": MAX_ARTIFACTS_COUNT
+        }
+        data = self.ql_client.execute(query=query, variables=vars)
         for d in data['data']['organization']['agents']['edges']:
             metrics['agent']['total_count'].add_metric(
                 labels=[
