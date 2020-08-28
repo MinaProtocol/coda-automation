@@ -2,11 +2,9 @@
 
 # Buildkite :cloud: Exporter
 
-A prometheus exporter providing metrics for Buildkite pipeline job and agent statistics via Buildkite's GraphQL API to a Prometheus compatible endpoint.
+A Buildkite pipeline metrics exporter providing job and agent statistics via Buildkite's GraphQL API.
 
-## Environment Variables
-
-The application can be run in a number of ways though the main launching point is the Docker hub image `codaprotocol/buildkite-exporter`.
+## Config :: Environment Variables
 
 **Required**
 * `BUILDKITE_API_KEY`                   - Buildkite GraphQL API access key
