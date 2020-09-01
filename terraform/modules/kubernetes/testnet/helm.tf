@@ -17,7 +17,7 @@ provider helm {
 
 locals {
   seed_peers = [
-    "/dns4/seed-node.${var.testnet_name}/tcp/10001/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
+    "/dns4/seed-node.${var.testnet_name}/tcp/10001/ipfs/${split(",", var.seed_discovery_keypairs[0])[2]}"
   ]
 
   coda_vars = {
