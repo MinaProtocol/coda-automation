@@ -1,0 +1,66 @@
+{
+ "name": "release",
+ "num_accounts": 250,
+ "accounts": [
+  {
+   "pk": "B62qqRrUyycvAYa18yuxcPcXFYQuWWaGEJsPfJpxry9nUbAX3qW2bhi",
+   "sk": null,
+   "balance": "11550000.000000000",
+   "delegate": "B62qmH3HGmA613jf4BqutrM8JgeszbxHre5DVdJ5Ca3qVKRj4ShVzWD"
+  },
+  {
+   "pk": "B62qmH3HGmA613jf4BqutrM8JgeszbxHre5DVdJ5Ca3qVKRj4ShVzWD",
+   "sk": null,
+   "balance": "0.000000000",
+   "delegate": null
+  },
+  {
+   "pk": "B62qnnhVXPXF4xsSFdq29bCHeYPnF4MapdrDRh5RBouS9N99Et57YDt",
+   "sk": null,
+   "balance": "11550000.000000000",
+   "delegate": "B62qnz8LS6SspuyEs16vSJBayh8YB5JAPQbYuXEVhbtzZj9QouuGpAn"
+  },
+  {
+   "pk": "B62qnz8LS6SspuyEs16vSJBayh8YB5JAPQbYuXEVhbtzZj9QouuGpAn",
+   "sk": null,
+   "balance": "0.000000000",
+   "delegate": null
+  },
+  {
+   "pk": "B62qqho1RT8TcjEGcxBvMDoW19PuHkk3H2QVbe9DUWBDGTUnXe8p7EK",
+   "sk": null,
+   "balance": "11550000.000000000",
+   "delegate": "B62qofudrj4mDZSVk3YUn2aSf5FyjeVhBjxvUW3uhweiyuwkWzSfaFY"
+  },
+  {
+   "pk": "B62qofudrj4mDZSVk3YUn2aSf5FyjeVhBjxvUW3uhweiyuwkWzSfaFY",
+   "sk": null,
+   "balance": "0.000000000",
+   "delegate": null
+  },
+  {
+   "pk": "B62qqPa9PPWTvmKDtaaXBct4fLnPFJg8Lq2q28dNpqTPb9rZoZaRWbJ",
+   "sk": null,
+   "balance": "11550000.000000000",
+   "delegate": "B62qnSgGTcH16Ndb4kdGkzeRoHormgrQFoZyXTT2ayY9hz3ptqMyGEG"
+  },
+  {
+   "pk": "B62qnSgGTcH16Ndb4kdGkzeRoHormgrQFoZyXTT2ayY9hz3ptqMyGEG",
+   "sk": null,
+   "balance": "0.000000000",
+   "delegate": null
+  },
+  {
+   "pk": "B62qrBnFUqxKVmWVtgYKR7w5RFtBAtfiQxzTuxmCKdD7k4Lj96dKQsg",
+   "sk": null,
+   "balance": "11550000.000000000",
+   "delegate": "B62qowyVPRpYN7AaAUwJcLChJhyuHo8Giu1n4zagVubPCQq8Z1MbMqj"
+  },
+  {
+   "pk": "B62qowyVPRpYN7AaAUwJcLChJhyuHo8Giu1n4zagVubPCQq8Z1MbMqj",
+   "sk": null,
+   "balance": "0.000000000",
+   "delegate": null
+  }
+ ]
+}
