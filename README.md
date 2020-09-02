@@ -79,7 +79,7 @@ QA Testnets are designed to be run internally to support feature development and
 
 Public Testnets are functionally similar to QA Testnets but have the addition of "public" seed nodes with static IP addresses. This is required due to the necessarily dynamic nature of Kubernetes, so these public seeds are launched via Google Compute Engine VMs. 
 
-# Deploy a Testnet
+# Deploy a QA Testnet
 
 Deployng a testnet is a relatively straightforward process once you have ironed out the configuration. At a high level, there are several pieces of configuration it's important to keep in mind or else your deployment might fail: 
 - Coda Keypairs 
@@ -230,6 +230,175 @@ There are several public Grafana dashboards available here:
   - [Network Overview](https://o1testnet.grafana.net/d/qx4y6dfWz/network-overview?orgId=1)
   - [Block Producer](https://o1testnet.grafana.net/d/Rgo87HhWz/block-producer-dashboard?orgId=1&refresh=1m)
   - [SNARK Worker](https://o1testnet.grafana.net/d/scQUGOhWk/snark-worker-dashboard?orgId=1&refresh=1m) 
+
+# Deploy a Public Testnet
+
+### Collect User Key Submissions
+
+The purpose of a public testnet is to allow end-users to try out the software and learn how to operate it. Thus, we accept sign-ups for stake to be allocated in the genesis, and commit those keys to the compiled genesis ledger. 
+
+For context, these keys correspond to the "Fish Keys" in the QA Net deployments, and Online Fish Keys are ommitted in a Public Testnet deployment and "Offline Fish Keys" are instead delegated to the submitted User Keys. 
+
+### Generate Keys 
+
+As in a QA Network, keys are managed by `scripts/testnet-keys.py`, you need to generate keys for each role and/or service you intend to deploy. 
+
+In the case of a public testnet, the following commands could be run:
+```
+python3 scripts/testnet-keys.py keys  generate-offline-fish-keys --count <nUserSubmissions>
+python3 scripts/testnet-keys.py keys  generate-offline-whale-keys --count 5
+python3 scripts/testnet-keys.py keys  generate-online-whale-keys --count 5
+python3 scripts/testnet-keys.py keys  generate-service-keys //(faucet, echo, etc...)
+```
+
+These commands will generate folders in the `scripts` directory by default, this output directory is a configurable location. 
+
+```
+$ python3 scripts/testnet-keys.py keys generate-offline-fish-keys --help
+Usage: testnet-keys.py keys generate-offline-fish-keys [OPTIONS]
+
+  Generate Public Keys for Offline Fish Accounts
+
+Options:
+  --count INTEGER      Number of Fish Account keys to generate.
+  --output-dir TEXT    Directory to output Fish Account Keys to.
+  --privkey-pass TEXT  The password to use when generating keys.
+  --help               Show this message and exit.
+```
+
+### Generate Genesis Ledger 
+
+Once you have the keys for your deploymenet created, and the Staker Keys saved to a CSV, you can use them to generate a genesis ledger with the following command. 
+
+```
+python3 scripts/testnet-keys.py ledger generate-ledger
+```
+
+The script will try to load keys from the default directories here, so if you wrote them to a different spot (or moved them), you can pass the location via the CLI. 
+
+```
+$ python3 scripts/testnet-keys.py ledger generate-ledger --help
+Usage: testnet-keys.py ledger generate-ledger [OPTIONS]
+
+  Generates a Genesis Ledger based on previously generated Whale, Fish, and
+  Block Producer keys.  If keys are not present on the filesystem at the
+  specified location, they are not generated.
+
+Options:
+  --generate-remainder TEXT       Indicates that keys should be generated if
+                                  there are not a sufficient number of keys
+                                  present.
+  --service-accounts-directory TEXT
+                                  Directory where Service Account Keys will be
+                                  stored.
+  --num-whale-accounts INTEGER    Number of Whale accounts to be generated.
+  --online-whale-accounts-directory TEXT
+                                  Directory where Offline Whale Account Keys
+                                  will be stored.
+  --offline-whale-accounts-directory TEXT
+                                  Directory where Offline Whale Account Keys
+                                  will be stored.
+  --num-fish-accounts INTEGER     Number of Fish accounts to be generated.
+  --online-fish-accounts-directory TEXT
+                                  Directory where Online Fish Account Keys
+                                  will be stored.
+  --offline-fish-accounts-directory TEXT
+                                  Directory where Offline Fish Account Keys
+                                  will be stored.
+  --staker-csv-file TEXT          Location of a CSV file detailing Discord
+                                  Username and Public Key for Stakers.
+  --help                          Show this message and exit.
+```
+
+
+There's several gotchas here that the script will check for:
+- For a particular block producer "class", number of offline and online keys must be equal
+- Remember the path to the ledger file here, you will need it as an input to your deployment
+
+### Create a Testnet
+
+Next, you must create a new testnet in `terraform/testnets/`. For ease of use, you can copy-paste an existing one, however it's important to go through the terraform and change the following things: 
+- location of Terraform state file 
+- Name of testnet
+- number of nodes to deploy 
+- Location of the Genesis Ledger
+
+In addition, you must include one or more public seed nodes for users to bootstrap with: 
+
+```
+module "network" {
+  source         = "../../modules/google-cloud/vpc-network"
+  network_name   = "${local.netname}-testnet-network"
+  network_region = "us-west1"
+  subnet_name    = "${local.netname}-testnet-subnet"
+}
+
+module "seed_one" {
+  source             = "../../modules/google-cloud/coda-seed-node"
+  coda_image         = local.coda_image
+  project_id         = data.google_project.project.project_id
+  subnetwork_project = data.google_project.project.project_id
+  subnetwork         = module.network.subnet_link
+  network            = module.network.network_link
+  instance_name      = "${local.netname}-seed-one"
+  zone               = "us-west1-a"
+  region             = "us-west1"
+  client_email       = "1020762690228-compute@developer.gserviceaccount.com"
+  discovery_keypair  = "23jhTeLbLKJSM9f3xgbG1M6QRHJksFtjP9VUNUmQ9fq3urSovGVS25k8LLn8mgdyKcYDSteRcdZiNvXXXAvCUnST6oufs,4XTTMESM7AkSo5yfxJFBpLr65wdVt8dfuQTuhgQgtnADryQwP,12D3KooWP7fTKbyiUcYJGajQDpCFo2rDexgTHFJTxCH8jvcL1eAH"
+  seed_peers         = ""
+}
+
+module "seed_two" {
+  source             = "../../modules/google-cloud/coda-seed-node"
+  coda_image         = local.coda_image
+  project_id         = data.google_project.project.project_id
+  subnetwork_project = data.google_project.project.project_id
+  subnetwork         = module.network.subnet_link
+  network            = module.network.network_link
+  instance_name      = "${local.netname}-seed-two"
+  zone               = "us-west1-a"
+  region             = "us-west1"
+  client_email       = "1020762690228-compute@developer.gserviceaccount.com"
+  discovery_keypair  = "23jhTbijdCA9zioRbv7HboRs7F8qZL59N5GQvGzhfB3MrS5qNrQK5fEdWyB5wno9srsDFNRc4FaNUDCEnzJGHG9XX6iSe,4XTTMBUfbSrzTGiKVp8mhZCuE9nDwj3USx3WL2YmFpP4zM2DG,12D3KooWL9ywbiXNfMBqnUKHSB1Q1BaHFNUzppu6JLMVn9TTPFSA"
+  seed_peers         = "-peer /ip4/${module.seed_one.instance_external_ip}/tcp/10002/p2p/12D3KooWP7fTKbyiUcYJGajQDpCFo2rDexgTHFJTxCH8jvcL1eAH"
+}
+
+# Seed DNS
+data "aws_route53_zone" "selected" {
+  name = "o1test.net."
+}
+
+resource "aws_route53_record" "seed_one" {
+  zone_id = "${data.aws_route53_zone.selected.zone_id}"
+  name    = "seed-one.${local.netname}.${data.aws_route53_zone.selected.name}"
+  type    = "A"
+  ttl     = "300"
+  records = [module.seed_one.instance_external_ip]
+}
+
+resource "aws_route53_record" "seed_two" {
+  zone_id = "${data.aws_route53_zone.selected.zone_id}"
+  name    = "seed-two.${local.netname}.${data.aws_route53_zone.selected.name}"
+  type    = "A"
+  ttl     = "300"
+  records = [module.seed_two.instance_external_ip]
+}
+```
+
+### Autodeploy.sh
+
+Assuming the hard task of configuration has been completed without error, this script will make your deployment experience a *breeze*. 
+
+This script will do the following: 
+- Attempt to tear down (aka "destroy") the existing testnet, should it exist 
+- Deploy anew the testnet as defined in the previous section 
+- Upload the online keys you generated to Kubernetes as Secrets for use at runtime
+
+Note: The deployment of keys relies on kubectl being properly configured for the cluster you are deploying to!
+
+```
+./scripts/auto-deploy.sh <testnet>
+```
 
 
 # Testnet SDK
