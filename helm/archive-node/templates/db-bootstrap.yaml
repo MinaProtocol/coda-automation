@@ -9,10 +9,10 @@ spec:
       - name: create-db
         image: bitnami/postgresql
         command: ["bash", "-c"]
-        args: ["PGPASSWORD={{ .Values.postgresql.postgresqlPassword }} createdb --username {{ .Values.postgresql.postgresqlUsername }} --host {{ tpl .Values.postgresHost . }} --port {{ .Values.postgresPort }} --echo {{ .Values.postgresDB}}"]
+        args: ["PGPASSWORD={{ .Values.postgresql.postgresqlPassword }} createdb --username {{ .Values.postgresql.postgresqlUsername }} --host {{ tpl .Values.archive.postgresHost . }} --port {{ .Values.archive.postgresPort }} --echo {{ .Values.archive.postgresDB}}"]
       - name: import-schema
         image: bitnami/postgresql
         command: ["bash", "-c"]
-        args: ["PGPASSWORD={{ .Values.postgresql.postgresqlPassword }} psql --username {{ .Values.postgresql.postgresqlUsername }} --host {{ tpl .Values.postgresHost . }} --port {{ .Values.postgresPort }} --dbname {{ .Values.postgresDB}} -f <(curl -Ls {{ .Values.remoteSchemaFile }})"]
+        args: ["PGPASSWORD={{ .Values.postgresql.postgresqlPassword }} psql --username {{ .Values.postgresql.postgresqlUsername }} --host {{ tpl .Values.archive.postgresHost . }} --port {{ .Values.archive.postgresPort }} --dbname {{ .Values.archive.postgresDB}} -f <(curl -Ls {{ .Values.archive.remoteSchemaFile }})"]
       restartPolicy: Never
   backoffLimit: 10
