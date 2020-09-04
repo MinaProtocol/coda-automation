@@ -81,3 +81,11 @@ data "aws_secretsmanager_secret" "buildkite_docker_token_metadata" {
 data "aws_secretsmanager_secret_version" "buildkite_docker_token" {
   secret_id = "${data.aws_secretsmanager_secret.buildkite_docker_token_metadata.id}"
 }
+
+data "aws_secretsmanager_secret" "prometheus_remote_write_config" {
+  name = "coda-services/prometheus/remote_write_config"
+}
+
+data "aws_secretsmanager_secret_version" "current_prometheus_remote_write_config" {
+  secret_id = "${data.aws_secretsmanager_secret.prometheus_remote_write_config.id}"
+}
