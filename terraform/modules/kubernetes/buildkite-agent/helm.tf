@@ -89,6 +89,11 @@ locals {
       enabled = var.dind_enabled
     }
 
+    podAnnotations = {
+      "prometheus.io/scrape" = "true"
+      "prometheus.io/path" = "/metrics"
+    }
+
     entrypointd = {
       "01-install-gsutil" = <<-EOF
         #!/bin/bash
