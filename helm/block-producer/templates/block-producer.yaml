@@ -142,10 +142,10 @@ spec:
       - name: coda
         resources:
           limits:
-            memory: 6.0Gi
+            memory: 12.0Gi
           requests:
-            memory: 2.0Gi
-            cpu: 1
+            memory: 12.0Gi
+            cpu: 8
         image: {{ $.Values.coda.image | quote }}
         command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
         args: [ "daemon",
