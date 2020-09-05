@@ -173,6 +173,8 @@ spec:
           {{- end -}}
         ]
         env:
+          - name: "RAYON_NUM_THREADS"
+            value: "8"
           - name: DAEMON_REST_PORT
             value: "3085"
           - name: DAEMON_CLIENT_PORT
