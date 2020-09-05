@@ -1,4 +1,4 @@
-// K8s Cluster Vars
+# K8s Cluster Vars
 
 variable "cluster_name" {
   type = string
@@ -6,6 +6,15 @@ variable "cluster_name" {
 
 variable "cluster_region" {
   type = string
+}
+
+# Genesis Ledger Vars
+
+# Empty ledger variable by default
+# Optionally load a new ledger
+variable "ledger_config_location" {
+  type = string
+  default = "./templates/default_ledger.json"
 }
 
 # Global Vars
@@ -57,10 +66,8 @@ variable "additional_seed_peers" {
   default = []
 }
 
-# empty string means that the deployment will use compile time constants
-variable "runtime_config" {
-  type    = string
-  default = ""
+variable "genesis_timestamp" {
+  type = string
 }
 
 # Seed Vars
@@ -85,6 +92,25 @@ variable "seed_discovery_keypairs" {
 
 # Block Producer Vars
 
+variable "block_producer_key_pass" {
+  type = string
+}
+
+variable "block_producer_starting_host_port" {
+  type    = number
+  default = 10000
+}
+
+variable "num_whale_block_producers" {
+  type    = number
+  default = 3
+}
+
+variable "num_fish_block_producers" {
+  type    = number
+  default = 5
+}
+
 variable "log_level" {
   type    = string
   default = "Trace"
@@ -95,36 +121,28 @@ variable "log_received_blocks" {
   default = false
 }
 
-variable "log_snark_work_gossip" {
-  type    = bool
-  default = false
+variable "whale_block_producers_with_bots" {
+  type = list(number)
+  default = []
 }
 
-variable "log_txn_pool_gossip" {
-  type    = bool
-  default = false
+variable "whale_block_producers_with_points" {
+  type = list(number)
+  default = []
 }
 
-variable "block_producer_key_pass" {
-  type = string
+variable "fish_block_producer_label_offset" {
+  type = number
+  default = 0
 }
 
-variable "block_producer_starting_host_port" {
-  type    = number
-  default = 10000
+variable "fish_block_producers_with_bots" {
+  type = list(number)
+  default = []
 }
 
-variable "block_producer_configs" {
-  type = list(
-    object({
-      name = string,
-      class = string,
-      private_key_secret = string,
-      enable_gossip_flooding = bool,
-      run_with_user_agent = bool,
-      run_with_bots = bool
-    })
-  )
+variable "fish_block_producers_with_points" {
+  type = list(number)
   default = []
 }
 

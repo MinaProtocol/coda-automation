@@ -74,7 +74,7 @@ module "testnet_east" {
       }
     ],
     [
-      for i in range(400): {
+      for i in range(200): {
         name                   = "fish-block-producer-${i + 1}"
         class                  = "fish"
         id                     = i + 1

@@ -1,5 +1,4 @@
 provider helm {
-  debug = true
   kubernetes {
     host                   = "https://${data.google_container_cluster.cluster.endpoint}"
     client_certificate     = base64decode(data.google_container_cluster.cluster.master_auth[0].client_certificate)
@@ -15,67 +14,83 @@ provider helm {
 #   url  = var.coda_helm_repo
 # }
 
+
 locals {
   seed_peers = [
     "/dns4/seed-node.${var.testnet_name}/tcp/10001/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
+    # "/ip4/${module.seed_one.instance_external_ip}/tcp/10001/p2p/${split(",", module.seed_one.discovery_keypair)[2]}",
+    # "/ip4/${module.seed_two.instance_external_ip}/tcp/10001/p2p/${split(",", module.seed_two.discovery_keypair)[2]}"
   ]
 
-  coda_vars = {
-    runtimeConfig      = var.runtime_config
-    image              = var.coda_image
-    privkeyPass        = var.block_producer_key_pass
-    seedPeers          = concat(var.additional_seed_peers, local.seed_peers)
-    logLevel           = var.log_level
-    logReceivedBlocks  = var.log_received_blocks
-    logSnarkWorkGossip = var.log_snark_work_gossip
-  }
+  coda_values = {
+      genesis = {
+        active = true
+        genesis_state_timestamp = var.genesis_timestamp
+        ledger = file(var.ledger_config_location)
+      }
+      image = var.coda_image
+      seedPeers = concat(var.additional_seed_peers, local.seed_peers)
+      logLevel             = var.log_level
+      logReceivedBlocks    = var.log_received_blocks
+    }
 
-  seed_vars = {
+  seed_values = {
     testnetName = var.testnet_name
-    coda        = local.coda_vars
-    seed        = {
+    coda = local.coda_values
+    seed = {
       active = true
       discovery_keypair = var.seed_discovery_keypairs[0]
     }
   }
 
-  block_producer_vars = {
+  whale_producer_vars = {
     testnetName = var.testnet_name
+    coda = local.coda_values
+    blockProducersWithBots   = var.whale_block_producers_with_bots
+    blockProducersWithPoints = var.whale_block_producers_with_points
+    botsImage                = var.coda_bots_image
+    pointsImage              = var.coda_points_image
 
-    coda = local.coda_vars
-
-    userAgent = {
-      image  = var.coda_agent_image
-      minFee = var.agent_min_fee
-      maxFee = var.agent_max_fee
-      minTx  = var.agent_min_tx
-      maxTx  = var.agent_max_tx
+    blockProducer = {
+      numProducers            = var.num_whale_block_producers
+      labelOffset = var.fish_block_producer_label_offset
+      codaPrivkeyPass         = var.block_producer_key_pass
+      startingPorts           = var.block_producer_starting_host_port + var.num_whale_block_producers
+      keySecretTemplatePrefix = "online-whale-account"
+      class      = "whale"
     }
+  }
 
-    bots = {
-      image  = var.coda_bots_image
-      faucet = {
-        amount = var.coda_faucet_amount
-        fee    = var.coda_faucet_fee
-      }
+  fish_producer_vars = {
+    testnetName = var.testnet_name
+    coda = local.coda_values
+    blockProducer = {
+      numProducers            = var.num_fish_block_producers
+      labelOffset = var.fish_block_producer_label_offset
+      codaPrivkeyPass         = var.block_producer_key_pass
+      startingPorts           = var.block_producer_starting_host_port + var.num_whale_block_producers
+      keySecretTemplatePrefix = "online-fish-account"
+      class      = "fish"
     }
-
-    blockProducerConfigs = [
-      for index, config in var.block_producer_configs: {
-        name                 = config.name
-        class                = config.class
-        externalPort         = var.block_producer_starting_host_port + index
-        runWithUserAgent     = config.run_with_user_agent
-        runWithBots          = config.run_with_bots
-        enableGossipFlooding = config.enable_gossip_flooding
-        privateKeySecret     = config.private_key_secret
-      }
-    ]
+    agent = {
+      active             = var.coda_agent_active
+      image              = var.coda_agent_image
+      maxTx              = var.agent_max_tx
+      minTx              = var.agent_min_tx
+      maxFee             = var.agent_max_fee
+      minFee             = var.agent_min_fee
+    }
+    blockProducersWithBots    = var.fish_block_producers_with_bots
+    blockProducersWithPoints  = var.fish_block_producers_with_points
+    botsImage                 = var.coda_bots_image
+    pointsImage               = var.coda_points_image
+    faucetAmount              = var.coda_faucet_amount
+    faucetFee                 = var.coda_faucet_fee
   }
   
   snark_worker_vars = {
     testnetName = var.testnet_name
-    coda = local.coda_vars 
+    coda = local.coda_values
     worker = {
       active = true
       numReplicas = var.snark_worker_replicas
@@ -98,13 +113,12 @@ locals {
 }
 
 # Cluster-Local Seed Node
-
 resource "helm_release" "seed" {
   name      = "${var.testnet_name}-seed"
   chart     = "../../../helm/seed-node"
   namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
-    yamlencode(local.seed_vars)
+    yamlencode(local.seed_values)
   ]
   wait       = true
 }
@@ -112,12 +126,23 @@ resource "helm_release" "seed" {
 
 # Block Producers
 
-resource "helm_release" "block_producers" {
-  name      = "${var.testnet_name}-block-producers"
+resource "helm_release" "whale_producers" {
+  name      = "${var.testnet_name}-whale-producers"
   chart     = "../../../helm/block-producer"
   namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
-    yamlencode(local.block_producer_vars)
+    yamlencode(local.whale_producer_vars)
+  ]
+  wait       = false
+  depends_on = [helm_release.seed]
+}
+
+resource "helm_release" "fish_producers" {
+  name      = "${var.testnet_name}-fish-producers"
+  chart     = "../../../helm/block-producer"
+  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  values = [
+    yamlencode(local.fish_producer_vars)
   ]
   wait       = false
   depends_on = [helm_release.seed]

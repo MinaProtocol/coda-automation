@@ -1,5 +1,5 @@
 locals {
-  east1_compute_topology = {
+  east_topology = {
     small = {
       agent = {
         tags  = "size=small"
@@ -13,21 +13,6 @@ locals {
       }
       replicaCount = 10
     }
-
-    medium = {
-      agent = {
-        tags  = "size=medium"
-        token = data.aws_secretsmanager_secret_version.buildkite_agent_token.secret_string
-      }
-      resources = {
-        limits = {
-          cpu    = "4"
-          memory = "4G"
-        }
-      }
-      replicaCount = 6
-    }
-
     large = {
       agent = {
         tags  = "size=large"
@@ -55,19 +40,19 @@ locals {
           ephemeral-storage = "50Gi"
         }
       }
-      replicaCount = 3
+      replicaCount = 5
     }
   }
 }
 
-module "buildkite-east1-compute" {
+module "buildkite-east" {
   source = "../../modules/kubernetes/buildkite-agent"
 
-  k8s_context             = "gke_o1labs-192920_us-east1_buildkite-infra-east1"
-  cluster_name            = "gke-east1"
+  google_app_credentials = var.google_credentials
+  k8s_context          = var.k8s_context
 
-  google_app_credentials  = var.google_credentials
+  cluster_name      = var.cluster_name
 
-  agent_vcs_privkey       = var.agent_vcs_privkey
-  agent_topology          = local.east1_compute_topology
+  agent_vcs_privkey = var.agent_vcs_privkey
+  agent_topology    = local.east_topology
 }

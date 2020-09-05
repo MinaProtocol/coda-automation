@@ -17,6 +17,13 @@ provider "aws" {
 # OPTIONAL: input variables
 #
 
+variable "cluster_name" {
+  type = string
+
+  description = "Name of the cluster to provision"
+  default     = "gke-experimental"
+}
+
 variable "agent_vcs_privkey" {
   type = string
 
@@ -31,3 +38,9 @@ variable "google_credentials" {
   default     = ""
 }
 
+variable "k8s_context" {
+  type = string
+
+  description = "K8s resource provider context -- generally determined by operating environment"
+  default     = "minikube"
+}
