@@ -26,9 +26,9 @@ spec:
       - name: worker
         resources:
           limits:
-            memory: 9.0Gi
+            memory: 16.0Gi
           requests:
-            memory: 8.0Gi # ember observed this 7.7Gi as a steady-state usage in pickles
+            memory: 13.0Gi # ember is confused why this is soooo much ram
             cpu: 4
         image: {{ $.Values.coda.image }}
         command: ["bash", "-c"]
