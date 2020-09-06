@@ -145,7 +145,7 @@ spec:
             memory: 16.0Gi
           requests:
             memory: 14.0Gi
-            cpu: 1.0
+            cpu: 2.0
         image: {{ $.Values.coda.image }}
         command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
         args: [ "daemon",
