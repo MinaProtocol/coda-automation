@@ -144,7 +144,7 @@ spec:
           limits:
           requests:
             memory: 14.0Gi
-            cpu: 8.0
+            cpu: 1.0
         image: {{ $.Values.coda.image }}
         command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
         args: [ "daemon",
@@ -173,7 +173,7 @@ spec:
         ]
         env:
           - name: "RAYON_NUM_THREADS"
-            value: "6"
+            value: "1"
           - name: DAEMON_REST_PORT
             value: "3085"
           - name: DAEMON_CLIENT_PORT
