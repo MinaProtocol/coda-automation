@@ -1,28 +1,28 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: { { .Values.leaderboard.name } }
+  name: {{ .Values.leaderboard.name }}
 spec:
-  schedule: { { .Values.leaderboard.schedule } }
+  schedule: "* */1 * * *"
   jobTemplate:
     spec:
       template:
         spec:
           restartPolicy: Never
           volumes:
-            - name: { { .Values.volume.name } }
+            - name: {{ .Values.volume.name }}
               secret:
-                secretName: { { .Values.volume.secretName } }
+                secretName: {{ .Values.volume.secretName }}
           containers:
-            - name: { { .Values.leaderboard.containerName } }
-              image: { { .Values.leaderboard.image } }
+            - name: {{ .Values.leaderboard.containerName }}
+              image: {{ .Values.leaderboard.image }}
               command: ["bash", "-c"]
               imagePullPolicy: Always
               env:
                 - name: PGCONN
-                  value: { { .Values.postgresql.postgresUri } }
+                  value: {{ .Values.postgresql.postgresUri }}
               volumeMounts:
-                - name: { { .Values.volume.name } }
-                  mountPath: { { .Values.volume.mountPath } }
-                  subPath: { { .Values.volume.subPath } }
+                - name: {{ .Values.volume.name }}
+                  mountPath: {{ .Values.volume.mountPath }}
+                  subPath: {{ .Values.volume.subPath }}
                   readOnly: true
