@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: {{ .Values.leaderboard.name }}
 spec:
-  schedule: "* */1 * * *"
+  schedule: "{{ .Values.leaderboard.schedule }}"
   jobTemplate:
     spec:
       template:
@@ -16,7 +16,6 @@ spec:
           containers:
             - name: {{ .Values.leaderboard.containerName }}
               image: {{ .Values.leaderboard.image }}
-              command: ["bash", "-c"]
               imagePullPolicy: Always
               env:
                 - name: PGCONN
