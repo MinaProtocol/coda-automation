@@ -34,6 +34,7 @@
 
 #   k8s_context             = "gke_o1labs-192920_us-west1_buildkite-infra-west"
 #   cluster_name            = "gke-west1"
+#   cluster_namespace       = local.project_namespace
 
 #   google_app_credentials  = var.google_credentials
 

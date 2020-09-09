@@ -3,7 +3,7 @@ locals {
     server = {
       global = {
         external_labels = {
-          origin_prometheus = "buildkite-${var.cluster_name}-prometheus"
+          origin_prometheus = "buildkite-${local.project_namespace}-prometheus"
         }
       }
       persistentVolume = {
@@ -27,17 +27,42 @@ locals {
       ]
     }
   }
+
+  exporter_vars = {
+    exporter = {
+        buildkiteApiKey = data.aws_secretsmanager_secret_version.buildkite_agent_apitoken.secret_string
+    }
+  }
+}
+
+provider helm {
+  kubernetes {
+    config_context  = var.k8s_monitoring_ctx
+  }
+}
+
+resource "helm_release" "buildkite_graphql_exporter" {
+  name      = "buildkite-coda-exporter"
+  chart     = "../../../helm/buildkite-exporter"
+  namespace = local.project_namespace
+  values = [
+    yamlencode(local.exporter_vars)
+  ]
+
+  wait       = true
+  force_update  = true
+
+  depends_on = [helm_release.buildkite_prometheus]
 }
 
 resource "helm_release" "buildkite_prometheus" {
-  name      = "buildkite-${var.cluster_name}-prometheus"
+  name      = "buildkite-${local.project_namespace}-prometheus"
   chart     = "stable/prometheus"
-  namespace = var.cluster_name
+  namespace = local.project_namespace
 
   values = [
     yamlencode(local.prometheus_helm_values)
   ]
+
   wait       = true
-  force_update  = true
-  depends_on = [helm_release.buildkite_agents]
 }

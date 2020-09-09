@@ -154,7 +154,7 @@ resource "helm_release" "buildkite_agents" {
   name              = "${var.cluster_name}-buildkite-${each.key}"
   repository        = data.helm_repository.buildkite_helm_repo.metadata[0].name
   chart             = var.helm_chart
-  namespace         = var.cluster_name
+  namespace         = var.cluster_namespace
   create_namespace  = true
   version           = var.chart_version
 
