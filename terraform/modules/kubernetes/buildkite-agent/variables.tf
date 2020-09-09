@@ -32,7 +32,7 @@ variable "cluster_name" {
 variable "cluster_namespace" {
   type = string
 
-  description = "Name of K8s Namespace to provision cluster under"
+  description = "Name of K8s namespace to provision cluster under"
 }
 
 variable "agent_topology" {

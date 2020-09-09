@@ -3,7 +3,7 @@ locals {
     server = {
       global = {
         external_labels = {
-          origin_prometheus = "buildkite-${local.project_namespace}-prometheus"
+          origin_prometheus = "${local.project_namespace}-prometheus"
         }
       }
       persistentVolume = {
@@ -56,7 +56,7 @@ resource "helm_release" "buildkite_graphql_exporter" {
 }
 
 resource "helm_release" "buildkite_prometheus" {
-  name      = "buildkite-${local.project_namespace}-prometheus"
+  name      = "${local.project_namespace}-prometheus"
   chart     = "stable/prometheus"
   namespace = local.project_namespace
 
