@@ -139,6 +139,15 @@ locals {
           tar -xzf $(basename $${SECRETSMANAGER_DOWNLOAD_URL}) -C $(dirname $${SECRETSMANAGER_LIB})
         fi
       EOF
+
+      "01-install-kubectl" = <<-EOF
+        #!/bin/bash
+        set -eou pipefail
+        
+        curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+  && chmod +x ./kubectl
+  && sudo mv ./kubectl /var/buildkite/shared/bin/kubectl
+      EOF
     }
   }
 }
