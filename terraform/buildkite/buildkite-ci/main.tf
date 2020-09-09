@@ -9,16 +9,10 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = "us-west-2"
-}
+# Main variables
 
-data "aws_secretsmanager_secret" "buildkite_agent_token_metadata" {
-  name = "buildkite/agent/access-token"
-}
-
-data "aws_secretsmanager_secret_version" "buildkite_agent_token" {
-  secret_id = "${data.aws_secretsmanager_secret.buildkite_agent_token_metadata.id}"
+locals {
+  project_namespace = "buildkite-ci"
 }
 
 #
@@ -37,4 +31,11 @@ variable "agent_vcs_privkey" {
 
   description = "Version control private key for secured repository access"
   default     = ""
+}
+
+variable "k8s_monitoring_ctx" {
+  type = string
+
+  description = "Kubernetes provider context for monitoring resources"
+  default     = "gke_o1labs-192920_us-east1_buildkite-infra-east1"
 }
