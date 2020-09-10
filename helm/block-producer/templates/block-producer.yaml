@@ -142,7 +142,6 @@ spec:
       - name: coda
         resources:
           limits:
-            memory: 16.0Gi
           requests:
             memory: 14.0Gi
             cpu: 4.0

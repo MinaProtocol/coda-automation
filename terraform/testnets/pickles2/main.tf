@@ -28,7 +28,7 @@ module "testnet_east" {
   cluster_region        = "us-east1"
   testnet_name          = "pickles2"
 
-  coda_image            = "codaprotocol/coda-daemon:0.0.15-beta-release-0.0.15-beta-ff5fade"
+  coda_image            = "codaprotocol/coda-daemon:0.0.15-beta-hotfix-prover-and-verifier-in-same-process-8afff0f"
   coda_agent_image      = "codaprotocol/coda-user-agent:0.1.5"
   coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
   coda_points_image     = "codaprotocol/coda-points-hack:32b.4"
@@ -63,7 +63,7 @@ module "testnet_east" {
 
   block_producer_configs = concat(
     [
-      for i in range(16): {
+      for i in range(5): {
         name                   = "whale-block-producer-${i + 1}"
         class                  = "whale"
         id                     = i + 1
@@ -74,7 +74,7 @@ module "testnet_east" {
       }
     ],
     [
-      for i in range(100): {
+      for i in range(70): {
         name                   = "fish-block-producer-${i + 1}"
         class                  = "fish"
         id                     = i + 1

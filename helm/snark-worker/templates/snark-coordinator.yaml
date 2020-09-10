@@ -26,7 +26,6 @@ spec:
       - name: coordinator
         resources:
           limits:
-            memory: 24.0Gi
           requests:
             memory: 18.5Gi
             cpu: 8.0
