@@ -4,6 +4,7 @@ data "google_project" "project" {
 }
 
 module "seed_network" {
+  providers = { google = google.google-us-east1 }
   source         = "../../modules/google-cloud/vpc-network"
   network_name   = "${local.testnet_name}-testnet-network-${local.seed_region}"
   network_region = local.seed_region
@@ -11,6 +12,7 @@ module "seed_network" {
 }
 
 module "seed_one" {
+  providers = { google = google.google-us-east1 }
   source             = "../../modules/google-cloud/coda-seed-node"
   coda_image         = local.coda_image
   project_id         = "o1labs-192920"
@@ -26,6 +28,7 @@ module "seed_one" {
 }
 
 module "seed_two" {
+  providers = { google = google.google-us-east1 }
   source             = "../../modules/google-cloud/coda-seed-node"
   coda_image         = local.coda_image
   project_id         = "o1labs-192920"
