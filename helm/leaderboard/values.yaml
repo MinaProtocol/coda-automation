@@ -2,7 +2,7 @@ leaderboard:
   name: "leaderboard-cron"
   containerName: "leaderboard"
   image: "gcr.io/o1labs-192920/leaderboard"
-  schedule: "* */1 * * *"
+  schedule: "* * */1 * *"
 
 volume:
   name: "credentials"
