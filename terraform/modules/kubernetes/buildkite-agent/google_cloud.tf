@@ -1,5 +1,4 @@
 locals {
-  k8s_context = "minikube"
   gke_project = "o1labs-192920"
   gcs_artifact_bucket = "buildkite_k8s"
   buildkite_roles = [

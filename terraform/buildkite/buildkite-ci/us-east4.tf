@@ -81,6 +81,7 @@ module "buildkite-east4-compute" {
 
   k8s_context             = "gke_o1labs-192920_us-east4_buildkite-infra-east4"
   cluster_name            = "gke-east4"
+  cluster_namespace       = local.project_namespace
 
   google_app_credentials  = var.google_credentials
 
