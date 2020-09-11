@@ -8,3 +8,10 @@ token.pickle
 lib
 scripts/o1-discord-api-key
 scripts/o1-google-cloud-storage-api-key.json
+
+scripts/offline_fish_keys
+scripts/offline_whale_keys
+scripts/online_fish_keys
+scripts/online_whale_keys
+scripts/service_keys
+scripts/genesis_ledger.json
