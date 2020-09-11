@@ -1,0 +1,31 @@
+
+vvvv do all of this once resource limits are raised
+
+1. I decide which branch / commit I want the image based off of
+  - add ci-build-me to anything you want circleci to make an image for
+2. go to build-artifacts-docker--testnet_postake_medium_curves--coda-daemon
+3. get the image "successfully tagged"...
+
+codaprotocol/coda-daemon:0.0.15-beta-hotfix-prover-and-verifier-in-same-process-8afff0f
+
+4. check no other network is running: kubectl get namespace - all running testnets
+
+5. change name of testnet, ex. nightly
+6. and change coda image
+7. see block_producer_config; do fewer fish for a smaller network, and change snark worker replicas
+
+8. when ready, from root of repo, run
+  ./scripts/auto-deploy.sh pickles
+
+9 to check the network
+  ./scripts/ezcheck
+  ./python scripts/testnet-validation/best_tip_trie.py pickles3
+  note: ezcheck may not fail, but will return multiple hashes of best tips. For example, block height 95/96. Some may be out of sync. Still on same chain. Check out best_tip_trie.py to get a better understanding of it.
+10. Ask Izzy/Conner on Grafana when have a network running
+
+
+Evan Todo
+
+Goals:
+- A script which takes latest develop, launches a network off of it, runs health tests on it
+- Working preemptive networks

@@ -6,3 +6,10 @@ ec2.json
 token.pickle
 .merlin
 lib
+
+scripts/offline_fish_keys
+scripts/offline_whale_keys
+scripts/online_fish_keys
+scripts/online_whale_keys
+scripts/service_keys
+scripts/genesis_ledger.json
