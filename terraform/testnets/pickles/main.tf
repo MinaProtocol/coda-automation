@@ -28,7 +28,7 @@ module "testnet_east" {
   cluster_region        = "us-east1"
   testnet_name          = "pickles"
 
-  coda_image            = "codaprotocol/coda-daemon:0.0.15-beta-release-0.0.15-beta-ff5fade"
+  coda_image            = "codaprotocol/coda-daemon:0.0.15-beta-release-0.0.15-beta-0698c8b"
   coda_agent_image      = "codaprotocol/coda-user-agent:0.1.5"
   coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
   coda_points_image     = "codaprotocol/coda-points-hack:32b.4"
