@@ -4,10 +4,14 @@ const { spawnSync } = require("child_process");
 const csv = require("csv-parser");
 const fs = require("fs");
 const path = require("path");
-const { GraphQLClient } = require("graphql-request");
+const { GraphQLClient, gql } = require("graphql-request");
+const { Headers } = require("cross-fetch");
 const fetch = require("node-fetch");
 
 global.fetch = fetch;
+
+// WORKAROUND: https://github.com/prisma-labs/graphql-request/issues/206#issuecomment-689514984
+global.Headers = global.Headers || Headers;
 
 const strip = (str) => str.replace(/\s+/g, "");
 
@@ -35,16 +39,20 @@ if (!createKeyset.error) {
 const endpoint = "http://localhost:3085/graphql";
 const client = new GraphQLClient(endpoint, {
   mode: "cors",
-  headers: { Accept: "application/json", "Content-Type": "application/json" },
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
 });
-const query = `
-query Balance($publicKey: PublicKey) {
-  account(publicKey: $publicKey) {
-    balance {
-      total
+
+const query = gql`
+  query Balance($publicKey: PublicKey) {
+    account(publicKey: $publicKey) {
+      balance {
+        total
+      }
     }
   }
-}
 `;
 
 const validateKeys = (entries) =>
@@ -53,9 +61,9 @@ const validateKeys = (entries) =>
       client
         .request(query, { publicKey: entry.publicKey })
         .then(() => entry.publicKey)
-        .catch(() => {
+        .catch((e) => {
           invalidKeys.push(entry);
-          console.log(`Unable to parse user: ${entry.username}\n`);
+          console.log(`Unable to validate user: ${entry.username}\n`);
           return null;
         })
     )
@@ -78,8 +86,8 @@ const importKeys = (keys) =>
 fs.createReadStream(filename)
   .pipe(csv())
   .on("data", (entry) => {
-    let username = entry["Discord ID"];
-    let publicKey = strip(entry["Public Key"]);
+    let username = entry["Discord ID#"];
+    let publicKey = strip(entry["Your public key"]);
 
     results.push({ username, publicKey });
   })
