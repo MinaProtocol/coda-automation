@@ -1,0 +1,11 @@
+
+1. Run `./run_nightly.sh`
+2. See Grafana pickles-nightly
+  - https://o1testnet.grafana.net/d/qx4y6dfWz/network-overview?orgId=1&from=now-12h&to=now&var-testnet=pickles-nightly
+3. See nightly-logs/ for fatal logs and timestamped trees. It is updated every 10 minutes
+
+TODOs
+- preemptive nodes
+  - https://www.terraform.io/docs/providers/google/r/container_cluster.html
+- run the script that makes transactions in run_nightly.sh
+  - need user agent keys for the fish
