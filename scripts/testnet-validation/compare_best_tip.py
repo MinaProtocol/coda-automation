@@ -30,7 +30,8 @@ sys.setrecursionlimit(1500)
 @click.command()
 @click.option('--namespace', default="regeneration", help='Namespace to Query.')
 @click.option('--remote-graphql-port', default=3085, help='Remote GraphQL Port to Query.')
-def check(namespace, remote_graphql_port):
+@click.option('--show-graph/--hide-graph', default=True, help='automatically open the graph image')
+def check(namespace, remote_graphql_port, show_graph):
   '''
   A quick hack script to tunnel into all nodes in a Testnet and query their GraphQL Endpoints. 
   This would be better as a k8s job with direct access, but the GraphQL endpoints are unsafe. 
@@ -116,10 +117,7 @@ def check(namespace, remote_graphql_port):
   #Connect fork root to graph root
   graph.edge("root", trie_root.hash)
   #print(graph.source)
-  graph.view()
-
-
-        
+  graph.render(view=show_graph)
 
 def render_fork(graph, root):
   color = "white"
