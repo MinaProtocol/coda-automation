@@ -19,3 +19,5 @@ scripts/genesis_ledger.json
 Digraph.gv
 Digraph.gv.png
 **/__pycache__/**
+
+nightly-logs

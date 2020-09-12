@@ -1,19 +1,58 @@
 #!/bin/bash
 
+genkeys=${1:-"generate-keys"}
+deploy=${2:-"deploy"}
 
-rm -rf scripts/offline_whale_keys
-rm -rf scripts/offline_fish_keys
-rm -rf scripts/online_whale_keys
-rm -rf scripts/online_fish_keys
-rm -rf scripts/service-keys
+logproc=${3:-"~/gits/coda/_build/default/src/app/logproc/logproc.exe"}
 
-python3 scripts/testnet-keys.py keys  generate-offline-fish-keys --count 2
-python3 scripts/testnet-keys.py keys  generate-online-fish-keys --count 2
-python3 scripts/testnet-keys.py keys  generate-offline-whale-keys --count 3
-python3 scripts/testnet-keys.py keys  generate-online-whale-keys --count 3
+#===================================
+if [ $genkeys == "generate-keys" ]; then
+  echo "preparing keys and ledger"
 
-python3 scripts/testnet-keys.py ledger generate-ledger --num-whale-accounts 3 --num-fish-accounts 2
+  rm -rf scripts/offline_whale_keys
+  rm -rf scripts/offline_fish_keys
+  rm -rf scripts/online_whale_keys
+  rm -rf scripts/online_fish_keys
+  rm -rf scripts/service-keys
 
-#"codaprotocol/coda-daemon:0.0.15-beta-develop"
+  python3 scripts/testnet-keys.py keys  generate-offline-fish-keys --count 2
+  python3 scripts/testnet-keys.py keys  generate-online-fish-keys --count 2
+  python3 scripts/testnet-keys.py keys  generate-offline-whale-keys --count 3
+  python3 scripts/testnet-keys.py keys  generate-online-whale-keys --count 3
 
-./scripts/auto-deploy.sh pickles-nightly
+  python3 scripts/testnet-keys.py ledger generate-ledger --num-whale-accounts 3 --num-fish-accounts 2
+fi
+
+# ===================================
+if [ $deploy == "deploy" ]; then
+  echo "deploying network"
+  ./scripts/auto-deploy.sh pickles-nightly
+fi
+
+# ===================================
+echo "getting version"
+
+version=$(./scripts/get_version.sh pickles-nightly)
+while [ -z "$version" ]; do
+  echo "retrying..."
+  version=$(./scripts/get_version.sh pickles-nightly);
+  sleep 5;
+done
+
+echo "version: $version"
+
+mkdir -p nightly-logs/$version/
+
+# ===================================
+echo "collecting logs"
+
+while true; do 
+  ./scripts/get_fatal_logs_by_machine.sh pickles-nightly $logproc nightly-logs/$version/
+
+  python3 scripts/testnet-validation/compare_best_tip.py --namespace pickles-nightly --hide-graph &>/dev/null
+
+  current_time=$(date "+%Y.%m.%d-%H.%M.%S")
+  mv Digraph.gv.png nightly-logs/$version/graph.$current_time.png
+
+  sleep 600; 
+done
