@@ -15,6 +15,7 @@ scripts/online_fish_keys
 scripts/online_whale_keys
 scripts/service_keys
 scripts/genesis_ledger.json
+scripts/annotated_ledger.json
 
 Digraph.gv
 Digraph.gv.png
