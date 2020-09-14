@@ -21,8 +21,8 @@ get_logs() {
   if [ $result == 1 ]; then
     lines=$(kubectl logs $pod -n $namespace -c coda)
   fi
-  #echo "$lines" | grep '^{' | $logproc -f ".level == \"Fatal\""
-  echo "$lines" | grep '^{' | $logproc -f ".level == \"Fatal\"" > $file
+  echo "$lines" | grep '^{' | $logproc -f ".level == \"Fatal\""
+  #echo "$lines" > $file # | grep '^{' | $logproc -f ".level == \"Fatal\"" > $file
   if [ ! -s $file ]; then
     rm $file
   fi
