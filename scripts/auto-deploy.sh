@@ -3,7 +3,7 @@
 set -e
 
 TESTNET="$1"
-CLUSTER="gke_o1labs-192920_us-east1_coda-infra-east"
+CLUSTER=${2:-"gke_o1labs-192920_us-east1_coda-infra-east"}
 
 k() { kubectl --cluster="$CLUSTER" --namespace="$TESTNET" "$@" ; }
 
