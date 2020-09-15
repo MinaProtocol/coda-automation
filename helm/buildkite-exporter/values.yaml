@@ -1,7 +1,7 @@
 exporter:
-  name: buildkite-coda
+  name: buildkite-coda-exporter
   image: codaprotocol/buildkite-exporter:0.1.0
-  listening_port: 8000
+  listening_port: "8000"
   optionalEnv:
 #  - name: BUILDKITE_EXPORTER_SCAN_INTERVAL
 #    value: 1800

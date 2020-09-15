@@ -6,9 +6,9 @@ metadata:
 spec:
   selector:
     app: {{tpl $.Values.exporter.name .}}
-  clusterIP: None
+  type: NodePort
   ports:
   - protocol: TCP
     port: {{tpl $.Values.exporter.listening_port .}}
     targetPort: {{tpl $.Values.exporter.listening_port .}}
-    name: metric_collection
+    name: metric-collection

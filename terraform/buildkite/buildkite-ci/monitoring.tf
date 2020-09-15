@@ -56,13 +56,14 @@ resource "helm_release" "buildkite_graphql_exporter" {
 }
 
 resource "helm_release" "buildkite_prometheus" {
-  name      = "${local.project_namespace}-prometheus"
-  chart     = "stable/prometheus"
-  namespace = local.project_namespace
-
+  name        = "${local.project_namespace}-prometheus"
+  repository  = "https://prometheus-community.github.io/helm-charts"
+  chart       = "prometheus"
+  namespace   = local.project_namespace
   values = [
     yamlencode(local.prometheus_helm_values)
   ]
 
-  wait       = true
+  wait          = true
+  force_update  = true
 }
