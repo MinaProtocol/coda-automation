@@ -73,8 +73,8 @@ module "testnet_east" {
     ]
   )
 
-  snark_worker_replicas = 8
-  snark_worker_fee      = "0.025"
+  snark_worker_replicas = 128
+  snark_worker_fee      = "10"
   snark_worker_public_key = "B62qotoVypDR2w7yUVSxFmyhbcn2SqdSwoJDPo5YmPyha7MyXPY891G"
   snark_worker_host_port = 10400
 }
@@ -87,5 +87,5 @@ locals {
   seed_discovery_keypairs = [
   "CAESQBEHe2zCcQDHcSaeIydGggamzmTapdCS8SP0hb5FWvYhe9XEygmlUGV4zNu2P8zAIba4X84Gm4usQFLamjRywA8=,CAESIHvVxMoJpVBleMzbtj/MwCG2uF/OBpuLrEBS2po0csAP,12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv",
   "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5" ]
-  ledger_config_location = "./genesis_ledger.json"
+  ledger_config_location = "./compact.json"
 }
