@@ -27,6 +27,7 @@ fi
 
 terraform_dir="terraform/testnets/$TESTNET"
 image=$(sed -n 's|.*"\(codaprotocol/coda-daemon:[^"]*\)"|\1|p' "$terraform_dir/main.tf")
+image=$(echo "${image}" | head -1)
 echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
 for i in $(seq 60); do
   docker_tag_exists "$image" && break
