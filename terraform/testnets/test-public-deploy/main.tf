@@ -73,7 +73,7 @@ module "testnet_east" {
     ]
   )
 
-  snark_worker_replicas = 128
+  snark_worker_replicas = 8
   snark_worker_fee      = "10"
   snark_worker_public_key = "B62qotoVypDR2w7yUVSxFmyhbcn2SqdSwoJDPo5YmPyha7MyXPY891G"
   snark_worker_host_port = 10400
