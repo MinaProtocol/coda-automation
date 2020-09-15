@@ -143,11 +143,6 @@ locals {
   }
 }
 
-# data "helm_repository" "buildkite_helm_repo" {
-#   name = "buildkite"
-#   url  = "https://buildkite.github.io/charts/"
-# }
-
 resource "helm_release" "buildkite_agents" {
   for_each   = var.agent_topology
  
