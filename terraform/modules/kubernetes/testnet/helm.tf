@@ -88,13 +88,15 @@ locals {
       hostPort    = var.snark_worker_host_port
     }
   }
+
   archive_node_vars = {
     testnetName = var.testnet_name
     seedPeers  = concat(var.additional_seed_peers, local.seed_peers)
     codaImage  = var.coda_image
     archiveImage = replace(var.coda_image, "codaprotocol/coda-daemon",
                                            "codaprotocol/coda-archive")
-  }   
+  }
+  
 }
 
 # Cluster-Local Seed Node
@@ -136,13 +138,13 @@ resource "helm_release" "snark_workers" {
   depends_on = [helm_release.seed]
 }
 
-# resource "helm_release" "archive_node" {
-#   name      = "${var.testnet_name}-archive-node"
-#   chart     = "../../../helm/archive-node"
-#   namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
-#   values = [
-#     yamlencode(local.archive_node_vars)
-#   ]
-#   wait       = false
-#   depends_on = [helm_release.seed]
-# }
+resource "helm_release" "archive_node" {
+  name      = "${var.testnet_name}-archive-node"
+  chart     = "../../../helm/archive-node"
+  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  values = [
+    yamlencode(local.archive_node_vars)
+  ]
+  wait       = false
+  depends_on = [helm_release.seed]
+}
