@@ -28,26 +28,11 @@ module "testnet_east" {
   cluster_region        = "us-east1"
   testnet_name          = "test-public-deploy"
 
-  coda_image            = "codaprotocol/coda-daemon:0.0.15-beta-hotfix-restart-libp2p-6614cb9"
+  coda_image            = "codaprotocol/coda-daemon:0.0.16-beta-with-curl"
   coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
 
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
-
-  runtime_config = <<EOT
-    {
-      "daemon": {},
-      "genesis": { 
-        "genesis_state_timestamp": "${timestamp()}",
-        "k": 20, 
-        "delta": 3
-      },
-      "proof": {
-        "c": 8
-      },
-      "ledger": ${file("./compact.json")}
-    }
-  EOT
 
   seed_zone = "us-east1-b"
   seed_region = "us-east1"
@@ -81,7 +66,7 @@ module "testnet_east" {
 
 locals {
   testnet_name = "test-public-deploy"
-  coda_image   = "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta-with-curl"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
