@@ -65,7 +65,7 @@ module "testnet_east" {
         name                   = "whale-block-producer-${i + 1}"
         class                  = "whale"
         id                     = i + 1
-        private_key_secret     = "online-whale-account-${i + 1}-key"
+        private_key_secret     = "online-whale-${i + 1}-key"
         enable_gossip_flooding = false
         run_with_user_agent    = false
         run_with_bots          = false
