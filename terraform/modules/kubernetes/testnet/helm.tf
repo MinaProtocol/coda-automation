@@ -92,9 +92,13 @@ locals {
   archive_node_vars = {
     testnetName = var.testnet_name
     seedPeers  = concat(var.additional_seed_peers, local.seed_peers)
-    codaImage  = var.coda_image
-    archiveImage = replace(var.coda_image, "codaprotocol/coda-daemon",
-                                           "codaprotocol/coda-archive")
+    coda = {
+      image  = var.coda_image
+    }
+    archive = {
+      image = replace(var.coda_image, "codaprotocol/coda-daemon",
+                                      "codaprotocol/coda-archive")
+   }
   }
   
 }
