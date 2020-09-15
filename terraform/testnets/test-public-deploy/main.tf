@@ -28,6 +28,7 @@ module "testnet_east" {
   cluster_region        = "us-east1"
   testnet_name          = "test-public-deploy"
 
+  genesis_timestamp     = 2020-09-15T20:20:20
   coda_image            = "codaprotocol/coda-daemon:0.0.16-beta-with-curl"
   coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
 
