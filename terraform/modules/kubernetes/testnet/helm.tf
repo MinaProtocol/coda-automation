@@ -96,8 +96,8 @@ locals {
       seedPeers  = concat(var.additional_seed_peers, local.seed_peers)
     }
     archive = {
-      image = replace(var.coda_image, "codaprotocol/coda-daemon",
-                                      "codaprotocol/coda-archive")
+      image = replace(var.coda_image, "/coda-daemon:",
+                                      "/coda-archive:")
    }
   }
   
