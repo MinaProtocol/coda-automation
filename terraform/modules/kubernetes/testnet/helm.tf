@@ -34,7 +34,7 @@ locals {
     testnetName = var.testnet_name
     coda        = local.coda_vars
     seed        = {
-      active = false
+      active = true
       discovery_keypair = var.seed_discovery_keypairs[0]
     }
   }
