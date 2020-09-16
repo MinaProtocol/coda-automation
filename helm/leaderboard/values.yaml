@@ -7,12 +7,12 @@ leaderboard:
 volume:
   name: "credentials"
   secretName: "sheets-credentials"
-  mountPath: "/src/google_sheets_credentials.json"
+  mountPath: "/code/google_sheets_credentials.json"
   subPath: "google_sheets_credentials.json"
 
 postgresql:
   postgresqlPassword: "foobar"
   postgresqlUsername: "postgres"
-  postgresHost: "{{ .Release.Name }}-postgresql"
+  postgresHost: "postgresql"
   postgresPort: "5432"
   postgresDB: "archive"
