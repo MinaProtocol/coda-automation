@@ -40,7 +40,7 @@ module "seed_two" {
   region             = local.seed_region
   client_email       = "1020762690228-compute@developer.gserviceaccount.com"
   discovery_keypair  = local.seed_discovery_keypairs[1]
-  seed_peers         = "-peer /ip4/${module.seed_one.instance_external_ip}/tcp/10002/p2p/${split(",", module.seed_one.discovery_keypair)[2]}"
+  seed_peers         = "-peer /ip4/${module.seed_one.instance_external_ip}/tcp/10001/p2p/${split(",", module.seed_one.discovery_keypair)[2]}"
 }
 
 # Seed DNS

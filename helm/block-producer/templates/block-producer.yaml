@@ -166,9 +166,11 @@ spec:
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-block-producer-key", "/root/wallet-keys/key",
-          {{- if (ne $.Values.coda.runtimeConfig "") -}}
+          {{- if (ne $.Values.coda.runtimeConfig "") }}
           "-config-file", "/config/daemon.json",
           "-generate-genesis-proof", "true",
+          {{- else }}
+          "-config-file", "/root/config.json",
           {{- end -}}
         ]
         env:
