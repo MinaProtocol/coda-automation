@@ -32,13 +32,13 @@ echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
 for i in $(seq 60); do
   docker_tag_exists "$image" && break
   [ "$i" != 30 ] || (echo "expected image never appeared in docker registry" && exit 1)
-  sleep 60
+  sleep 10
 done
 
 cd $terraform_dir
 echo 'RUNNING TERRAFORM'
-terraform destroy -auto-approve
-terraform apply -auto-approve
+~/coda-automation/terraform/testnets/pickles2/terraform destroy -auto-approve
+~/coda-automation/terraform/testnets/pickles2/terraform apply -auto-approve
 cd -
 
 echo 'UPLOADING KEYS'
