@@ -37,8 +37,8 @@ done
 
 cd $terraform_dir
 echo 'RUNNING TERRAFORM'
-~/coda-automation/terraform/testnets/pickles2/terraform destroy -auto-approve
-~/coda-automation/terraform/testnets/pickles2/terraform apply -auto-approve
+terraform destroy -auto-approve
+terraform apply -auto-approve
 cd -
 
 echo 'UPLOADING KEYS'
