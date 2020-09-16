@@ -1,5 +1,4 @@
 {
-  "daemon": {},
   "genesis": {
     "genesis_state_timestamp": "2020-09-15 20:20:20-07:00"
   },
