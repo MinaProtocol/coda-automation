@@ -83,7 +83,7 @@ spec:
       - name: archive
         image: {{ $.Values.archive.image }}
         command: ["bash", "-c"]
-        args: [ "coda-archive -postgres-uri {{ tpl .Values.archive.postgresUri . }} -server-port 3086" ]
+        args: [ "coda-archive run -postgres-uri {{ tpl .Values.archive.postgresUri . }} -server-port 3086" ]
         env:
         imagePullPolicy: Always
       volumes:
