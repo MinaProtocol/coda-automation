@@ -48,11 +48,11 @@ module "testnet_east" {
   log_received_blocks    = true
 
   block_producer_key_pass = "naughty blue worm"
-  block_producer_starting_host_port = 10001
+  block_producer_starting_host_port = 10005
 
   block_producer_configs = concat(
     [
-      for i in range(5): {
+      for i in range(0,1): {
         name                   = "whale-block-producer-${i + 1}"
         class                  = "whale"
         id                     = i + 1
@@ -60,6 +60,17 @@ module "testnet_east" {
         enable_gossip_flooding = false
         run_with_user_agent    = false
         run_with_bots          = true
+      }
+    ],
+    [
+      for i in range(1,5): {
+        name                   = "whale-block-producer-${i + 1}"
+        class                  = "whale"
+        id                     = i + 1
+        private_key_secret     = "online-whale-${i + 1}-key"
+        enable_gossip_flooding = false
+        run_with_user_agent    = false
+        run_with_bots          = false
       }
     ]
   )
@@ -75,7 +86,6 @@ locals {
   coda_image = "codaprotocol/coda-daemon:0.0.16-beta-with-proof"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
-  ledger_config_location = "./genesis_ledger.json"
   seed_discovery_keypairs = [
   "CAESQBEHe2zCcQDHcSaeIydGggamzmTapdCS8SP0hb5FWvYhe9XEygmlUGV4zNu2P8zAIba4X84Gm4usQFLamjRywA8=,CAESIHvVxMoJpVBleMzbtj/MwCG2uF/OBpuLrEBS2po0csAP,12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv",
   "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5" ]
