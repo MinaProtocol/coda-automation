@@ -168,7 +168,7 @@ spec:
           "-block-producer-key", "/root/wallet-keys/key",
           {{- if (ne $.Values.coda.runtimeConfig "") -}}
           "-config-file", "/config/daemon.json",
-          "-generate-genesis-proof", "true",
+          "-generate-genesis-proof", "false",
           {{- end -}}
         ]
         env:

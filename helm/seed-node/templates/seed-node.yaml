@@ -45,7 +45,7 @@ spec:
           "-discovery-keypair", "{{ $.Values.seed.discoveryKeypair }}",
           {{- if (ne $.Values.coda.runtimeConfig "") }}
           "-config-file", "/config/daemon.json",
-          "-generate-genesis-proof", "true",
+          "-generate-genesis-proof", "false",
           {{- end }}
           {{- range $.Values.coda.seedPeers }}
           "-peer", {{ . | quote }},
