@@ -53,7 +53,7 @@ spec:
           "-archive-address", "3086",
           {{- if (ne $.Values.coda.runtimeConfig "") -}}
           "-config-file", "/config/daemon.json",
-          "-generate-genesis-proof", "true",
+          "-generate-genesis-proof", "false",
           {{- end -}}
         ]
         env:
