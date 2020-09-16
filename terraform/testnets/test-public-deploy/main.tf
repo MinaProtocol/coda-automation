@@ -28,7 +28,7 @@ module "testnet_east" {
   cluster_region        = "us-east1"
   testnet_name          = "test-public-deploy"
 
-  coda_image            = "codaprotocol/coda-daemon:0.0.16-beta-time-offset"
+  coda_image            = "codaprotocol/coda-daemon:0.0.16-beta-hotfix-master-fix-genesis-timestamp-ca93dd9"
   coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
 
   coda_faucet_amount    = "10000000000"
@@ -66,7 +66,7 @@ module "testnet_east" {
 
 locals {
   testnet_name = "test-public-deploy"
-  coda_image = "codaprotocol/coda-daemon:0.0.16-beta-time-offset"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta-hotfix-master-fix-genesis-timestamp-ca93dd9"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
