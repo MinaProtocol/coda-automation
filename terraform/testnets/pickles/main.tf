@@ -22,7 +22,7 @@ provider "google" {
 
 locals {
   testnet_name = "pickles"
-  coda_image = "codaprotocol/coda-daemon:0.0.16-beta4-master-339b39e"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta5-master-fdc283b"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
