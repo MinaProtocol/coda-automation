@@ -126,7 +126,6 @@ resource "helm_release" "block_producers" {
     yamlencode(local.block_producer_vars)
   ]
   wait       = false
-  depends_on = [helm_release.seed]
 }
 
 # Snark Workers 
@@ -139,7 +138,6 @@ resource "helm_release" "snark_workers" {
     yamlencode(local.snark_worker_vars)
   ]
   wait       = false
-  depends_on = [helm_release.seed]
 }
 
 resource "helm_release" "archive_node" {
@@ -150,5 +148,4 @@ resource "helm_release" "archive_node" {
     yamlencode(local.archive_node_vars)
   ]
   wait       = false
-  depends_on = [helm_release.seed]
 }
