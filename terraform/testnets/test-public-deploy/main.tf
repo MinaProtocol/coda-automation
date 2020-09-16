@@ -28,7 +28,7 @@ module "testnet_east" {
   cluster_region        = "us-east1"
   testnet_name          = "test-public-deploy"
 
-  coda_image            = "codaprotocol/coda-daemon:0.0.16-beta-with-proof"
+  coda_image            = "codaprotocol/coda-daemon:0.0.16-beta1-fix-look-for-config-7e04b66"
   coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
 
   coda_faucet_amount    = "10000000000"
