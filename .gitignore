@@ -7,3 +7,4 @@ token.pickle
 .merlin
 lib
 scripts/o1-discord-api-key
+scripts/o1-google-cloud-storage-api-key.json
