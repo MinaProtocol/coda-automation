@@ -6,6 +6,11 @@ TESTNET="$1"
 CLUSTER="gke_o1labs-192920_us-east1_coda-infra-east"
 KEYSDIR="${2:=./scripts/online-whale-keys}"
 
+docker_tag_exists() {
+    IMAGE=$(echo $1 | awk -F: '{ print $1 }')
+    TAG=$(echo $1 | awk -F: '{ print $2 }')
+    curl --silent -f -lSL https://index.docker.io/v1/repositories/$IMAGE/tags/$TAG > /dev/null
+}
 k() { kubectl --cluster="$CLUSTER" --namespace="$TESTNET" "$@" ; }
 
 if [ -z "$TESTNET" ]; then
@@ -25,16 +30,15 @@ image=$(sed -n 's|.*"\(codaprotocol/coda-daemon:[^"]*\)"|\1|p' "$terraform_dir/m
 image=$(echo "${image}" | head -1)
 echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
 for i in $(seq 60); do
-  # this is a hack; ideally, we wouldn't actually pull the image, just check if it's there
-  docker pull "$image" && break
+  docker_tag_exists "$image" && break
   [ "$i" != 30 ] || (echo "expected image never appeared in docker registry" && exit 1)
-  sleep 60
+  sleep 10
 done
 
 cd $terraform_dir
 echo 'RUNNING TERRAFORM'
-terraform destroy -auto-approve
-terraform apply -auto-approve
+~/coda-automation/terraform/testnets/pickles2/terraform destroy -auto-approve
+~/coda-automation/terraform/testnets/pickles2/terraform apply -auto-approve
 cd -
 
 echo 'UPLOADING KEYS'
