@@ -30,14 +30,14 @@ locals {
     logSnarkWorkGossip = var.log_snark_work_gossip
   }
 
-  seed_vars = {
-    testnetName = var.testnet_name
-    coda        = local.coda_vars
-    seed        = {
-      active = false
-      discovery_keypair = var.seed_discovery_keypairs[0]
-    }
-  }
+  # seed_vars = {
+  #   testnetName = var.testnet_name
+  #   coda        = local.coda_vars
+  #   seed        = {
+  #     active = false
+  #     discovery_keypair = var.seed_discovery_keypairs[0]
+  #   }
+  # }
 
   block_producer_vars = {
     testnetName = var.testnet_name
@@ -91,7 +91,6 @@ locals {
 
   archive_node_vars = {
     testnetName = var.testnet_name
-    seedPeers  = concat(var.additional_seed_peers, local.seed_peers)
     coda = {
       image  = var.coda_image
       seedPeers  = concat(var.additional_seed_peers, local.seed_peers)
@@ -106,15 +105,15 @@ locals {
 
 # Cluster-Local Seed Node
 
-resource "helm_release" "seed" {
-  name      = "${var.testnet_name}-seed"
-  chart     = "../../../helm/seed-node"
-  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
-  values = [
-    yamlencode(local.seed_vars)
-  ]
-  wait       = true
-}
+# resource "helm_release" "seed" {
+#   name      = "${var.testnet_name}-seed"
+#   chart     = "../../../helm/seed-node"
+#   namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+#   values = [
+#     yamlencode(local.seed_vars)
+#   ]
+#   wait       = true
+# }
 
 
 # Block Producers
