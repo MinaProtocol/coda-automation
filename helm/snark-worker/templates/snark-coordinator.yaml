@@ -47,6 +47,8 @@ spec:
           {{- if (ne $.Values.coda.runtimeConfig "") }}
           "-config-file", "/config/daemon.json",
           "-generate-genesis-proof", "true",
+          {{- else }}
+          "-config-file", "/root/config.json",
           {{- end }}
           {{- range $.Values.coda.seedPeers }}
           "-peer", {{ . | quote }},
