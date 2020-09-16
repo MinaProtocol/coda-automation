@@ -46,7 +46,7 @@ spec:
           "-work-selection", "$(WORK_SELECTION)",
           {{- if (ne $.Values.coda.runtimeConfig "") }}
           "-config-file", "/config/daemon.json",
-          "-generate-genesis-proof", "false",
+          "-generate-genesis-proof", "true",
           {{- end }}
           {{- range $.Values.coda.seedPeers }}
           "-peer", {{ . | quote }},
