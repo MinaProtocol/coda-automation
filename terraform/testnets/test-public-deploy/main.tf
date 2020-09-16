@@ -34,7 +34,7 @@ module "testnet_east" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
-  runtime_config = ${file("./genesis_ledger.json")}
+  runtime_config = file("./genesis_ledger.json")
 
   seed_zone = "us-east1-b"
   seed_region = "us-east1"
