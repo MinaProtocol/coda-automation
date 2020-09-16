@@ -83,7 +83,7 @@ module "testnet_east" {
 
 locals {
   testnet_name = "test-public-deploy"
-  coda_image = "codaprotocol/coda-daemon:0.0.16-beta-with-proof"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta1-fix-look-for-config-7e04b66"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
