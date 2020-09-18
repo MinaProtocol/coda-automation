@@ -19,7 +19,7 @@ spec:
               imagePullPolicy: Always
               env:
                 - name: PGCONN
-                  value: {{ .Values.postgresql.postgresUri }}
+                  value: postgres://{{ .Values.postgresql.postgresqlUsername }}:{{ .Values.postgresql.postgresqlPassword }}@{{ .Values.postgresql.postgresHost }}:{{ .Values.postgresql.postgresPort }}/{{ .Values.postgresql.postgresDB }}
               volumeMounts:
                 - name: {{ .Values.volume.name }}
                   mountPath: {{ .Values.volume.mountPath }}
