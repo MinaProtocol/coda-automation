@@ -22,7 +22,11 @@ provider "google" {
 
 locals {
   testnet_name = "pickles"
+<<<<<<< HEAD
   coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-debug-adding-ledger-catchup-logs-049e329"
+=======
+  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7"
+>>>>>>> test-public-testnet-deploy Update docker image tag for new chain and re-deploy
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
