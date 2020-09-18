@@ -45,8 +45,8 @@ module "testnet_east" {
   coda_image            = local.coda_image
   coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
 
-  coda_faucet_amount    = "10000000000"
-  coda_faucet_fee       = "100000000"
+  coda_faucet_amount    = "100000000000"
+  coda_faucet_fee       = "1100000000"
 
   runtime_config = file("./docker-state/genesis_ledger.json")
 
