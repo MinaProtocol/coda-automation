@@ -95,4 +95,5 @@ module "testnet_east" {
   agent_max_fee = "0.1"
   agent_min_tx = "0.0015"
   agent_max_tx = "0.0015"
+  agent_send_every_mins = "1"
 }

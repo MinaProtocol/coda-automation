@@ -169,3 +169,8 @@ variable "agent_max_tx" {
   type    = string
   default = ""
 }
+
+variable "agent_send_every_mins" {
+  type    = string
+  default = ""
+}
