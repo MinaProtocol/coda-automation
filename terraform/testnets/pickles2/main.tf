@@ -28,7 +28,7 @@ module "testnet_east" {
   cluster_region        = "us-east1"
   testnet_name          = "pickles2"
 
-  coda_image            = "codaprotocol/coda-daemon:0.0.15-beta-hotfix-kill-verifier-periodically-90fa779"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-debug-adding-ledger-catchup-logs-fe8e085"
   coda_agent_image      = "codaprotocol/coda-user-agent:0.1.5"
   coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
   coda_points_image     = "codaprotocol/coda-points-hack:32b.4"
@@ -40,8 +40,8 @@ module "testnet_east" {
     {
       "daemon": {},
       "genesis": { 
-        "genesis_state_timestamp": "${timestamp()}",
-        "k": 20, 
+        "genesis_state_timestamp":"${timestamp()}",
+        "k": 5, 
         "delta": 3
       },
       "proof": {
