@@ -1,5 +1,22 @@
 locals {
   prometheus_helm_values = {
+    alertmanager = {
+      enabled = false
+    }
+    kubeStateMetrics = {
+      enabled = false
+    }
+    pushgateway = {
+      enabled = false
+    }
+    nodeExporter = {
+      service = {
+        annotations = {
+          "prometheus.io/scrape" = "true"
+          "prometheus.io/port" = "9100"
+        }
+      }
+    }
     server = {
       global = {
         external_labels = {
