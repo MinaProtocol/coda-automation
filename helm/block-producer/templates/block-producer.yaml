@@ -87,7 +87,7 @@ spec:
             value: {{ $.Values.userAgent.maxTx | quote }}
           {{ end -}}
           - name: AGENT_SEND_EVERY_MINUTES
-            value: "10"
+            value: "1"
           - name: CODA_PUBLIC_KEY
             valueFrom:
               secretKeyRef:
