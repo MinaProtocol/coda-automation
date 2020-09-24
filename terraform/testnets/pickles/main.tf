@@ -22,7 +22,7 @@ provider "google" {
 
 locals {
   testnet_name = "pickles"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta5-master-fdc283b"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-debug-adding-ledger-catchup-logs-049e329"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
@@ -44,7 +44,7 @@ module "testnet_east" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
-  # runtime_config = file("./docker-state/genesis_ledger.json")
+  runtime_config = file("./docker-state/genesis_ledger.json")
 
   seed_zone = local.seed_zone
   seed_region = local.seed_region
