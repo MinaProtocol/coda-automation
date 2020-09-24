@@ -147,6 +147,7 @@ resource "helm_release" "buildkite_agents" {
   for_each   = var.agent_topology
  
   name              = "${var.cluster_name}-buildkite-${each.key}"
+  repository        = "buildkite"
   chart             = var.helm_chart
   namespace         = var.cluster_namespace
   create_namespace  = true
