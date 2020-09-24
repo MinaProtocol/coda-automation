@@ -143,16 +143,10 @@ locals {
   }
 }
 
-data "helm_repository" "buildkite_helm_repo" {
-  name = "buildkite"
-  url  = "https://buildkite.github.io/charts/"
-}
-
 resource "helm_release" "buildkite_agents" {
   for_each   = var.agent_topology
  
   name              = "${var.cluster_name}-buildkite-${each.key}"
-  repository        = data.helm_repository.buildkite_helm_repo.metadata[0].name
   chart             = var.helm_chart
   namespace         = var.cluster_namespace
   create_namespace  = true
