@@ -45,11 +45,12 @@ locals {
     coda = local.coda_vars
 
     userAgent = {
-      image  = var.coda_agent_image
-      minFee = var.agent_min_fee
-      maxFee = var.agent_max_fee
-      minTx  = var.agent_min_tx
-      maxTx  = var.agent_max_tx
+      image         = var.coda_agent_image
+      minFee        = var.agent_min_fee
+      maxFee        = var.agent_max_fee
+      minTx         = var.agent_min_tx
+      maxTx         = var.agent_max_tx
+      sendEveryMins = var.agent_send_every_mins
     }
 
     bots = {
