@@ -50,6 +50,10 @@ locals {
       "name" = "UPLOAD_BIN"
       "value" = var.artifact_upload_bin
     },
+    {
+      "name" = "CODA_HELM_REPO"
+      "value" = var.coda_helm_repo
+    },
     # AWS EnvVars
     {
       "name" = "AWS_ACCESS_KEY_ID"
@@ -138,6 +142,31 @@ locals {
           mkdir -p $(dirname $${SECRETSMANAGER_LIB})
           tar -xzf $(basename $${SECRETSMANAGER_DOWNLOAD_URL}) -C $(dirname $${SECRETSMANAGER_LIB})
         fi
+      EOF
+
+      "02-install-k8s-tools" = <<-EOF
+        #!/bin/bash
+
+        set -eou pipefail
+        set +x
+
+        export CI_SHARED_BIN="/var/buildkite/shared/bin"
+        mkdir -p "$${CI_SHARED_BIN}"
+
+        # Install kubectl
+        apt-get update && apt-get install --yes lsb-core apt-transport-https
+
+        export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+        echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+        apt-get update -y && apt-get install kubectl -y
+        ln -s $(which kubectl) "$${CI_SHARED_BIN}/kubectl"
+
+        # Install helm
+        curl https://baltocdn.com/helm/signing.asc | apt-key add -
+        echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list
+        apt-get update -y && apt-get install helm -y --allow-unauthenticated
+        ln -s $(which helm) "$${CI_SHARED_BIN}/helm"
       EOF
     }
   }
