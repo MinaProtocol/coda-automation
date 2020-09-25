@@ -108,7 +108,7 @@ variable "coda_helm_repo" {
   type = string
 
   description = "Repository URL where to locate Coda developed Helm charts."
-  default     = "https://storage.googleapis.com/coda-charts/"
+  default     = "gs://coda-charts"
 }
 
 variable "agent_version" {
