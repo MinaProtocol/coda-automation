@@ -1,3 +1,7 @@
+variable "project_id" {
+  description = "The project ID to deploy resources into"
+}
+
 variable "network_name" {
   type    = string
   default = "coda-testnet"

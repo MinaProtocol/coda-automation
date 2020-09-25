@@ -6,6 +6,7 @@ resource "google_compute_address" "external_ip" {
   name         = "${var.instance_name}-address"
   address_type = "EXTERNAL"
   region       = var.region
+  project      = var.project_id
 }
 
 resource "google_compute_instance" "vm" {
@@ -60,4 +61,6 @@ resource "google_compute_instance" "vm" {
       "https://www.googleapis.com/auth/cloud-platform",
     ]
   }
+
+  depends_on = [ var.subnetwork ]
 }

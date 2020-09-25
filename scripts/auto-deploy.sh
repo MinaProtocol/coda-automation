@@ -4,7 +4,7 @@ set -e
 
 TESTNET="$1"
 CLUSTER="gke_o1labs-192920_us-east1_coda-infra-east"
-KEYSDIR="${2:=./scripts/online-whale-keys}"
+KEYSDIR=${2:-"./scripts/online_whale_keys"}
 
 docker_tag_exists() {
     IMAGE=$(echo $1 | awk -F: '{ print $1 }')
@@ -37,7 +37,7 @@ echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
 
 cd $terraform_dir
 echo 'RUNNING TERRAFORM'
-# terraform destroy -auto-approve
+terraform destroy -auto-approve
 terraform apply -auto-approve
 cd -
 
@@ -47,13 +47,13 @@ python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --cluster "$CLUSTER" \
   --key-dir "$KEYSDIR"
   
-#python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
-#  --namespace "$TESTNET" \
-#  --cluster "$CLUSTER" \
-#  --count "$(echo scripts/online_fish_keys/*.pub | wc -w)"
-#python3 scripts/testnet-keys.py k8s "upload-service-keys" \
-#  --namespace "$TESTNET" \
-#  --cluster "$CLUSTER"
+python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
+  --namespace "$TESTNET" \
+  --cluster "$CLUSTER" \
+  --count "$(echo scripts/online_fish_keys/*.pub | wc -w)"
+python3 scripts/testnet-keys.py k8s "upload-service-keys" \
+  --namespace "$TESTNET" \
+  --cluster "$CLUSTER"
 if [ -e scripts/o1-discord-api-key ]; then
   kubectl create secret generic o1-discord-api-key \
     "--cluster=$CLUSTER" \
