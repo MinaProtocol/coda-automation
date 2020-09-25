@@ -5,14 +5,15 @@ locals {
     "roles/container.developer",
     "roles/compute.viewer",
     "roles/stackdriver.accounts.viewer",
-    "roles/pubsub.editor"
+    "roles/pubsub.editor",
+    "roles/storage.objectAdmin"
   ]
 }
 
 resource "google_service_account" "gcp_buildkite_account" {
   count = var.enable_gcs_access ? 1 : 0
 
-  account_id   = var.cluster_name
+  account_id   = "buildkite-${var.cluster_name}"
   display_name = "Buildkite Agent Cluster (${var.cluster_name}) service account"
   description  = "GCS service account for Buildkite cluster ${var.cluster_name}"
   project      = local.gke_project
