@@ -41,7 +41,7 @@ module "testnet_east" {
       "daemon": {},
       "genesis": { 
         "genesis_state_timestamp":"${timestamp()}",
-        "k": 5, 
+        "k": 20, 
         "delta": 3
       },
       "proof": {
