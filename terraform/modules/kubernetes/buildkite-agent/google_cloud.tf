@@ -7,6 +7,7 @@ locals {
 
   buildkite_roles = [
     "roles/container.developer",
+    "roles/container.viewer",
     "roles/compute.viewer",
     "roles/stackdriver.accounts.viewer",
     "roles/pubsub.editor",

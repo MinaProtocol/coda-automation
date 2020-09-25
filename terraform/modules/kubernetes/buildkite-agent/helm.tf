@@ -98,6 +98,29 @@ locals {
       "prometheus.io/path" = "/metrics"
     }
 
+    rbac = {
+      create = true
+      role = {
+        rules = [
+          {
+            apiGroups = [
+              "",
+              "apps",
+              "batch"
+            ],
+            resources = [
+              "*"
+            ],
+            verbs = [
+              "get",
+              "list",
+              "watch"
+            ]
+          }
+        ]
+      }
+    }
+
     entrypointd = {
       "01-install-gsutil" = <<-EOF
         #!/bin/bash
