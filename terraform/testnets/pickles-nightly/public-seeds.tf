@@ -5,6 +5,7 @@
 
  module "seed_network" {
    source         = "../../modules/google-cloud/vpc-network"
+   project_id     = "o1labs-192920"
    network_name   = "${local.testnet_name}-testnet-network-${local.seed_region}"
    network_region = local.seed_region
    subnet_name    = "${local.testnet_name}-testnet-subnet-${local.seed_region}"

@@ -4,6 +4,7 @@ locals {
 
 resource "google_compute_network" "default" {
   name = var.network_name
+  project = var.project_id
 }
 
 resource "google_compute_subnetwork" "default" {
@@ -11,11 +12,13 @@ resource "google_compute_subnetwork" "default" {
   ip_cidr_range = var.subnet_cidr
   region        = local.network_region
   network       = google_compute_network.default.self_link
+  project = var.project_id
 }
 
 resource "google_compute_firewall" "coda_daemon_ingress" {
   name    = "${var.network_name}-daemon-ingress"
   network = google_compute_network.default.name
+  project = var.project_id
 
   source_ranges = [ "0.0.0.0/0" ]
 

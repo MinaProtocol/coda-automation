@@ -5,6 +5,8 @@ deploy=${2:-"deploy"}
 
 logproc=${3:-"~/gits/coda/_build/default/src/app/logproc/logproc.exe"}
 
+exit
+
 #===================================
 if [ $genkeys == "generate-keys" ]; then
   echo "preparing keys and ledger"
