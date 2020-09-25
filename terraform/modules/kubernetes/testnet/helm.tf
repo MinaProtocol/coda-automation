@@ -99,6 +99,23 @@ locals {
 
 # Cluster-Local Seed Node
 
+resource "kubernetes_role_binding" "helm_release" {
+  metadata {
+    name      = "admin-role"
+    namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "default"
+    namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  }
+}
+
 resource "helm_release" "seed" {
   name      = "${var.testnet_name}-seed"
   chart     = "../../../helm/seed-node"
@@ -107,6 +124,7 @@ resource "helm_release" "seed" {
     yamlencode(local.seed_vars)
   ]
   wait       = true
+  depends_on = [kubernetes_role_binding.helm_release]
 }
 
 
