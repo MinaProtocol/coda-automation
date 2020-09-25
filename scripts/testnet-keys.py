@@ -698,6 +698,8 @@ def upload_online_whale_keys(key_dir, namespace, cluster):
     # Load all the public keys from seed_key_dir
     key_files = natsort.natsorted(
         glob.glob(str(key_dir.absolute()) + "/*.pub"))
+    print(str(key_dir.absolute()) + "/*.pub")
+    print(glob.glob(str(key_dir.absolute()) + "/*.pub"))
     # iterate over each key and upload it to kubernetes
     for file in key_files:
         keyfile = os.path.basename(file).split(".")[0]
