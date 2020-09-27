@@ -63,7 +63,7 @@ module "testnet_east" {
 
   block_producer_configs = concat(
     [
-      for i in range(10): {
+      for i in range(3): {
         name                   = "whale-block-producer-${i + 1}"
         class                  = "whale"
         id                     = i + 1
@@ -74,7 +74,7 @@ module "testnet_east" {
       }
     ],
     [
-      for i in range(10): {
+      for i in range(3): {
         name                   = "fish-block-producer-${i + 1}"
         class                  = "fish"
         id                     = i + 1
@@ -86,7 +86,7 @@ module "testnet_east" {
     ]
   )
 
-  snark_worker_replicas = 10
+  snark_worker_replicas = 3
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port = 10400
