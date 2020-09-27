@@ -7,5 +7,3 @@ Resources
 Todos:
 - preemptive nodes
   - https://www.terraform.io/docs/providers/google/r/container_cluster.html
-- increase tps
-  - make transactions measurable
