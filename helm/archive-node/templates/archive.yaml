@@ -51,8 +51,8 @@ spec:
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-archive-address", "3086",
-          {{- if (ne $.Values.coda.runtimeConfig "") -}}
-          "-config-file", "/config/daemon.json",
+          {{- if (ne $.Values.coda.runtimeConfig "") }}
+          "-config-file", "/var/lib/coda/daemon.json",
           "-generate-genesis-proof", "true",
           {{- end -}}
         ]
@@ -83,7 +83,7 @@ spec:
       - name: archive
         image: {{ $.Values.archive.image }}
         command: ["bash", "-c"]
-        args: [ "coda-archive -postgres-uri {{ tpl .Values.archive.postgresUri . }} -server-port 3086" ]
+        args: [ "coda-archive run -postgres-uri {{ tpl .Values.archive.postgresUri . }} -server-port 3086" ]
         env:
         imagePullPolicy: Always
       volumes:
