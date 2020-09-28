@@ -133,6 +133,7 @@ locals {
           apt-get -y update && apt install -y wget python && wget $${GSUTIL_DOWNLOAD_URL}
 
           tar -zxf $(basename $${GSUTIL_DOWNLOAD_URL}) -C /usr/local/
+          ln -s /usr/local/google-cloud-sdk/bin/gsutil /usr/local/bin/gsutil
 
           echo "$${BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON}" > /tmp/gcp_creds.json
 
@@ -183,13 +184,13 @@ locals {
         echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
         apt-get update -y && apt-get install kubectl -y
-        ln -s $(which kubectl) "$${CI_SHARED_BIN}/kubectl"
+        ln --symbolic --force $(which kubectl) "$${CI_SHARED_BIN}/kubectl"
 
         # Install helm
         curl https://baltocdn.com/helm/signing.asc | apt-key add -
         echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list
         apt-get update -y && apt-get install helm -y --allow-unauthenticated
-        ln -s $(which helm) "$${CI_SHARED_BIN}/helm"
+        ln --symbolic --force $(which helm) "$${CI_SHARED_BIN}/helm"
       EOF
     }
   }
