@@ -22,7 +22,7 @@ provider "google" {
 
 locals {
   testnet_name = "pickles-nightly"
-  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-debug-adding-ledger-catchup-logs-fe8e085"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-feature-mainnet-parameter-test"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
@@ -53,7 +53,7 @@ module "testnet_east" {
       "genesis": {
         "genesis_state_timestamp": "${timestamp()}",
         "k": 20, 
-        "delta": 3
+        "delta": 1
       },
       "proof": {
         "c": 8
