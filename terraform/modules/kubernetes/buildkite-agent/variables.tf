@@ -71,7 +71,7 @@ variable "artifact_upload_path" {
   type = string
 
   description = "Path to upload agent job artifacts"
-  default     = "gs://buildkite_k8s/coda/shared"
+  default     = "gs://buildkite_k8s/coda/shared/$BUILDKITE_JOB_ID"
 }
 
 # Module Vars: Summon secrets management
