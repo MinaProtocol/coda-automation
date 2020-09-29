@@ -137,7 +137,7 @@ locals {
           apt-get -y update && apt install -y wget python && wget $${GSUTIL_DOWNLOAD_URL}
 
           tar -zxf $(basename $${GSUTIL_DOWNLOAD_URL}) -C /usr/local/
-          ln -s /usr/local/google-cloud-sdk/bin/gsutil /usr/local/bin/gsutil
+          ln --symbolic --force /usr/local/google-cloud-sdk/bin/gsutil /usr/local/bin/gsutil
 
           echo "$${BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON}" > /tmp/gcp_creds.json
 
