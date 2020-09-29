@@ -27,6 +27,10 @@ locals {
       "name" = "BUILDKITE_ARTIFACT_UPLOAD_DESTINATION"
       "value" = var.artifact_upload_path
     },
+    {
+      "name" = "BUILDKITE_API_TOKEN"
+      "value" = data.aws_secretsmanager_secret_version.buildkite_api_token.secret_string
+    },
     # Summon EnvVars
     {
       "name" = "SUMMON_DOWNLOAD_URL"
