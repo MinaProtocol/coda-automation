@@ -56,3 +56,7 @@ variable "discovery_keypair" {
 variable "coda_image" {
   description = "The docker image to deploy."
 }
+
+variable "runtime_config" {
+  type = string
+}
