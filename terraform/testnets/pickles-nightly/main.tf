@@ -47,6 +47,11 @@ module "testnet_east" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
+  additional_seed_peers = [
+    "/dns4/seed-one.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
+    "/dns4/seed-two.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[1])[2]}"
+  ]
+
   runtime_config = <<EOT
     {
       "daemon": {},
