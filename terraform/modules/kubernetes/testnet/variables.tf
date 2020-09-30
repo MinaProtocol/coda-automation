@@ -169,3 +169,9 @@ variable "agent_max_tx" {
   type    = string
   default = ""
 }
+
+variable "gcloud_seeds" {
+  type    = list
+  default = []
+}
+

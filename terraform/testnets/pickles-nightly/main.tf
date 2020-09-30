@@ -35,6 +35,8 @@ module "testnet_east" {
   providers = { google = google.google-us-east1 }
   source    = "../../modules/kubernetes/testnet"
 
+  gcloud_seeds = [ module.seed_one, module.seed_two ]
+
   cluster_name          = "coda-infra-east"
   cluster_region        = "us-east1"
   testnet_name          = local.testnet_name
@@ -46,6 +48,7 @@ module "testnet_east" {
 
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
+
 
   additional_seed_peers = [
     "/dns4/seed-one.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
@@ -112,3 +115,4 @@ module "testnet_east" {
   agent_min_tx = "0.0015"
   agent_max_tx = "0.0015"
 }
+
