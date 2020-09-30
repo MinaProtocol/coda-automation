@@ -1,8 +1,13 @@
 locals {
   gke_project = "o1labs-192920"
-  gcs_artifact_bucket = "buildkite_k8s"
+  gcs_artifact_buckets = [
+    "buildkite_k8s",
+    "coda-charts"
+  ]
+
   buildkite_roles = [
     "roles/container.developer",
+    "roles/container.viewer",
     "roles/compute.viewer",
     "roles/stackdriver.accounts.viewer",
     "roles/pubsub.editor",
@@ -27,15 +32,15 @@ resource "google_project_iam_member" "buildkite_iam_memberships" {
   member       = "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}"
 }
 
-# Specifically bind IAM to designated bucket resource to limit access vulnerability
+# Grant storage object viewer (read) access to artifacts for all users
 resource "google_storage_bucket_iam_binding" "buildkite_gcs_binding" {
-  count = var.enable_gcs_access ? 1 : 0
+  count = var.enable_gcs_access ? length(local.gcs_artifact_buckets) : 0
 
-  bucket =local.gcs_artifact_bucket
-  role = "roles/storage.objectAdmin"
+  bucket =local.gcs_artifact_buckets[count.index]
+  role = "roles/storage.objectViewer"
 
   members = [
-    "serviceAccount:${google_service_account.gcp_buildkite_account[0].email}",
+    "allUsers"
   ]
 }
 

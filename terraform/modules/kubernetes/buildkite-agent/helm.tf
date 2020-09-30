@@ -27,6 +27,10 @@ locals {
       "name" = "BUILDKITE_ARTIFACT_UPLOAD_DESTINATION"
       "value" = var.artifact_upload_path
     },
+    {
+      "name" = "BUILDKITE_API_TOKEN"
+      "value" = data.aws_secretsmanager_secret_version.buildkite_api_token.secret_string
+    },
     # Summon EnvVars
     {
       "name" = "SUMMON_DOWNLOAD_URL"
@@ -49,6 +53,10 @@ locals {
     {
       "name" = "UPLOAD_BIN"
       "value" = var.artifact_upload_bin
+    },
+    {
+      "name" = "CODA_HELM_REPO"
+      "value" = var.coda_helm_repo
     },
     # AWS EnvVars
     {
@@ -94,6 +102,29 @@ locals {
       "prometheus.io/path" = "/metrics"
     }
 
+    rbac = {
+      create = true
+      role = {
+        rules = [
+          {
+            apiGroups = [
+              "",
+              "apps",
+              "batch"
+            ],
+            resources = [
+              "*"
+            ],
+            verbs = [
+              "get",
+              "list",
+              "watch"
+            ]
+          }
+        ]
+      }
+    }
+
     entrypointd = {
       "01-install-gsutil" = <<-EOF
         #!/bin/bash
@@ -106,6 +137,7 @@ locals {
           apt-get -y update && apt install -y wget python && wget $${GSUTIL_DOWNLOAD_URL}
 
           tar -zxf $(basename $${GSUTIL_DOWNLOAD_URL}) -C /usr/local/
+          ln --symbolic --force /usr/local/google-cloud-sdk/bin/gsutil /usr/local/bin/gsutil
 
           echo "$${BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON}" > /tmp/gcp_creds.json
 
@@ -138,6 +170,31 @@ locals {
           mkdir -p $(dirname $${SECRETSMANAGER_LIB})
           tar -xzf $(basename $${SECRETSMANAGER_DOWNLOAD_URL}) -C $(dirname $${SECRETSMANAGER_LIB})
         fi
+      EOF
+
+      "02-install-k8s-tools" = <<-EOF
+        #!/bin/bash
+
+        set -eou pipefail
+        set +x
+
+        export CI_SHARED_BIN="/var/buildkite/shared/bin"
+        mkdir -p "$${CI_SHARED_BIN}"
+
+        # Install kubectl
+        apt-get update --yes && apt-get install --yes lsb-core apt-transport-https curl jq
+
+        export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+        echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+        apt-get update -y && apt-get install kubectl -y
+        ln --symbolic --force $(which kubectl) "$${CI_SHARED_BIN}/kubectl"
+
+        # Install helm
+        curl https://baltocdn.com/helm/signing.asc | apt-key add -
+        echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list
+        apt-get update -y && apt-get install helm -y --allow-unauthenticated
+        ln --symbolic --force $(which helm) "$${CI_SHARED_BIN}/helm"
       EOF
     }
   }

@@ -71,7 +71,7 @@ variable "artifact_upload_path" {
   type = string
 
   description = "Path to upload agent job artifacts"
-  default     = "gs://buildkite_k8s/coda/shared"
+  default     = "gs://buildkite_k8s/coda/shared/$BUILDKITE_JOB_ID"
 }
 
 # Module Vars: Summon secrets management
@@ -102,6 +102,13 @@ variable "helm_repo" {
 
   description = "Repository URL where to locate the requested chart Buildkite chart."
   default     = "https://buildkite.github.io/charts/"
+}
+
+variable "coda_helm_repo" {
+  type = string
+
+  description = "Repository URL where to locate Coda developed Helm charts."
+  default     = "gs://coda-charts"
 }
 
 variable "agent_version" {

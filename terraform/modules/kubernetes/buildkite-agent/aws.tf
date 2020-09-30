@@ -81,3 +81,11 @@ data "aws_secretsmanager_secret" "buildkite_docker_token_metadata" {
 data "aws_secretsmanager_secret_version" "buildkite_docker_token" {
   secret_id = "${data.aws_secretsmanager_secret.buildkite_docker_token_metadata.id}"
 }
+
+data "aws_secretsmanager_secret" "buildkite_api_token_metadata" {
+  name = "buildkite/agent/api-token"
+}
+
+data "aws_secretsmanager_secret_version" "buildkite_api_token" {
+  secret_id = "${data.aws_secretsmanager_secret.buildkite_api_token_metadata.id}"
+}
