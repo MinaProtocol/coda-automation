@@ -28,6 +28,21 @@ locals {
   seed_discovery_keypairs = [
   "CAESQBEHe2zCcQDHcSaeIydGggamzmTapdCS8SP0hb5FWvYhe9XEygmlUGV4zNu2P8zAIba4X84Gm4usQFLamjRywA8=,CAESIHvVxMoJpVBleMzbtj/MwCG2uF/OBpuLrEBS2po0csAP,12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv",
   "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5" ]
+
+  runtime_config = <<EOT
+    {
+      "daemon": {},
+      "genesis": {
+        "genesis_state_timestamp": "${timestamp()}",
+        "k": 20, 
+        "delta": 1
+      },
+      "proof": {
+        "c": 8
+      },
+      "ledger": ${file("../../../scripts/genesis_ledger.json")}
+    }
+  EOT
 }
 
 
@@ -49,26 +64,12 @@ module "testnet_east" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
+  runtime_config = local.runtime_config
 
   additional_seed_peers = [
     "/dns4/seed-one.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
     "/dns4/seed-two.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[1])[2]}"
   ]
-
-  runtime_config = <<EOT
-    {
-      "daemon": {},
-      "genesis": {
-        "genesis_state_timestamp": "${timestamp()}",
-        "k": 20, 
-        "delta": 1
-      },
-      "proof": {
-        "c": 8
-      },
-      "ledger": ${file("../../../scripts/genesis_ledger.json")}
-    }
-  EOT
 
   seed_zone = local.seed_zone
   seed_region = local.seed_region

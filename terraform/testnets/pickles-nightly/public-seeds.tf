@@ -15,6 +15,7 @@
    source             = "../../modules/google-cloud/coda-seed-node"
    coda_image         = local.coda_image
    project_id         = "o1labs-192920"
+   runtime_config     = local.runtime_config
    subnetwork_project = "o1labs-192920"
    subnetwork         = module.seed_network.subnet_link
    network            = module.seed_network.network_link
@@ -29,6 +30,7 @@
  module "seed_two" {
    source             = "../../modules/google-cloud/coda-seed-node"
    coda_image         = local.coda_image
+   runtime_config     = local.runtime_config
    project_id         = "o1labs-192920"
    subnetwork_project = "o1labs-192920"
    subnetwork         = module.seed_network.subnet_link
