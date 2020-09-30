@@ -182,7 +182,7 @@ locals {
         mkdir -p "$${CI_SHARED_BIN}"
 
         # Install kubectl
-        apt-get update && apt-get install --yes lsb-core apt-transport-https
+        apt-get update --yes && apt-get install --yes lsb-core apt-transport-https curl jq
 
         export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
         echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
