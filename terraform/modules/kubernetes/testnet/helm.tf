@@ -130,7 +130,7 @@ resource "helm_release" "seed" {
     yamlencode(local.seed_vars)
   ]
   wait       = true
-  depends_on = [kubernetes_role_binding.helm_release]
+  depends_on = [kubernetes_role_binding.helm_release, var.gcloud_seeds]
 }
 
 
