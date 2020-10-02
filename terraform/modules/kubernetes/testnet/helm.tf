@@ -93,7 +93,8 @@ locals {
     testnetName = var.testnet_name
     coda = {
       image  = var.coda_image
-      seedPeers  = concat(var.additional_seed_peers, local.seed_peers)
+      seedPeers     = concat(var.additional_seed_peers, local.seed_peers)
+      runtimeConfig = local.coda_vars.runtimeConfig
     }
     archive = {
       image = replace(var.coda_image, "/coda-daemon:",
