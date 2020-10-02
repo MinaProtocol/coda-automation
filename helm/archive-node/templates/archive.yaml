@@ -26,10 +26,9 @@ spec:
       - name: coda
         resources:
           limits:
-            memory: 6.0Gi
           requests:
-            memory: 2.0Gi
-            cpu: 1000m
+            memory: 14.0Gi
+            cpu: 2.0
         image: {{ $.Values.coda.image }}
         command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
         args: [ "daemon",
@@ -52,7 +51,7 @@ spec:
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-archive-address", "3086",
           {{- if (ne $.Values.coda.runtimeConfig "") }}
-          "-config-file", "/var/lib/coda/daemon.json",
+          "-config-file", "/config/daemon.json",
           "-generate-genesis-proof", "true",
           {{- end -}}
         ]
