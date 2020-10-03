@@ -15,12 +15,14 @@ if [ $genkeys == "generate-keys" ]; then
   rm -rf scripts/online_fish_keys
   rm -rf scripts/service-keys
 
-  python3 scripts/testnet-keys.py keys  generate-offline-fish-keys --count 3
-  python3 scripts/testnet-keys.py keys  generate-online-fish-keys --count 3
-  python3 scripts/testnet-keys.py keys  generate-offline-whale-keys --count 3
-  python3 scripts/testnet-keys.py keys  generate-online-whale-keys --count 3
+  N=10
 
-  python3 scripts/testnet-keys.py ledger generate-ledger --num-whale-accounts 3 --num-fish-accounts 3
+  python3 scripts/testnet-keys.py keys  generate-offline-fish-keys --count $N
+  python3 scripts/testnet-keys.py keys  generate-online-fish-keys --count $N
+  python3 scripts/testnet-keys.py keys  generate-offline-whale-keys --count $N
+  python3 scripts/testnet-keys.py keys  generate-online-whale-keys --count $N
+
+  python3 scripts/testnet-keys.py ledger generate-ledger --num-whale-accounts $N --num-fish-accounts $N
 fi
 
 # ===================================

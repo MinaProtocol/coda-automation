@@ -15,6 +15,10 @@ variable "coda_image" {
   default = "codaprotocol/coda-daemon:0.0.13-beta-master-99d1e1f"
 }
 
+variable "coda_archive_image" {
+  type    = string
+}
+
 variable "coda_agent_image" {
   type    = string
   default = "codaprotocol/coda-user-agent:0.1.4"

@@ -97,8 +97,7 @@ locals {
       runtimeConfig = local.coda_vars.runtimeConfig
     }
     archive = {
-      image = replace(var.coda_image, "/coda-daemon:",
-                                      "/coda-archive:")
+      image = var.coda_archive_image
    }
   }
   
