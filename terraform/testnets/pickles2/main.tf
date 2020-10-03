@@ -40,8 +40,8 @@ module "testnet_east" {
     {
       "daemon": {},
       "genesis": { 
-        "genesis_state_timestamp":"${timestamp()}",
-        "k": 20, 
+        "genesis_state_timestamp":"${2020-09-25T20:41:27Z}",
+        "k": 225, 
         "delta": 3
       },
       "proof": {
@@ -54,7 +54,7 @@ module "testnet_east" {
   seed_zone = "us-east1-b"
   seed_region = "us-east1"
 
-  log_level              = "Trace"
+  log_level              = "Spam"
   log_txn_pool_gossip    = true
   log_received_blocks    = true
 
