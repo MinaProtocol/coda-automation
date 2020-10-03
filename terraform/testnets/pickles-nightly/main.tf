@@ -23,6 +23,7 @@ provider "google" {
 locals {
   testnet_name = "pickles-nightly"
   coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-feature-mainnet-parameter-test"
+  coda_archive_image = "codaprotocol/coda-archive:0.0.16-beta7-feature-mainnet-parameter-test"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
@@ -34,7 +35,7 @@ locals {
       "daemon": {},
       "genesis": {
         "genesis_state_timestamp": "${timestamp()}",
-        "k": 20, 
+        "k": 225, 
         "delta": 1
       },
       "proof": {
@@ -57,6 +58,7 @@ module "testnet_east" {
   testnet_name          = local.testnet_name
 
   coda_image            = local.coda_image
+  coda_archive_image    = local.coda_archive_image
   coda_agent_image      = "codaprotocol/coda-user-agent:0.1.5"
   coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
   coda_points_image     = "codaprotocol/coda-points-hack:32b.4"
@@ -83,7 +85,7 @@ module "testnet_east" {
 
   block_producer_configs = concat(
     [
-      for i in range(3): {
+      for i in range(10): {
         name                   = "whale-block-producer-${i + 1}"
         class                  = "whale"
         id                     = i + 1
@@ -94,7 +96,7 @@ module "testnet_east" {
       }
     ],
     [
-      for i in range(3): {
+      for i in range(10): {
         name                   = "fish-block-producer-${i + 1}"
         class                  = "fish"
         id                     = i + 1
@@ -106,7 +108,7 @@ module "testnet_east" {
     ]
   )
 
-  snark_worker_replicas = 3
+  snark_worker_replicas = 10
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port = 10400
