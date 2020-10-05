@@ -23,7 +23,7 @@ provider "google" {
 locals {
   testnet_name = "pickles-nightly"
   # 0.0.16-beta7-feature-mainnet-parameter-test 0fdcc28
-  coda_image = "codaprotocol/coda-daemon@sha256:4b9e8634f688f2ffb3f6760c548c5b79ee014ffb482f1496391523c291e7e5e3"
+  coda_image = "codaprotocol/coda-daemon@sha256:9dca9067fcc73e3bc2e3338a6a3893272d0d10610ec54e037130137b1d128c45"
   coda_archive_image = "codaprotocol/coda-archive:0.0.16-beta7-feature-mainnet-parameter-test"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
