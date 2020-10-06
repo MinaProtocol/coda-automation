@@ -53,10 +53,10 @@ variable "agent_config" {
   default     = {}
 }
 
-variable "gsutil_download_url" {
+variable "gcloudsdk_download_url" {
   type = string
 
-  description = "gsutil tool archive download URL"
+  description = "gcloud sdk tool archive download URL"
   default = "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-296.0.1-linux-x86_64.tar.gz"
 }
 
