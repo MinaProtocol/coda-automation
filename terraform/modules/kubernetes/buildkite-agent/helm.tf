@@ -47,8 +47,8 @@ locals {
       "value" = var.enable_gcs_access? google_service_account.gcp_buildkite_account[0].email : ""
     },
     {
-      "name" = "GSUTIL_DOWNLOAD_URL"
-      "value" = var.gsutil_download_url
+      "name" = "GCLOUDSDK_DOWNLOAD_URL"
+      "value" = var.gcloudsdk_download_url
     },
     {
       "name" = "UPLOAD_BIN"
@@ -126,22 +126,30 @@ locals {
     }
 
     entrypointd = {
-      "01-install-gsutil" = <<-EOF
+      "01-install-gcloudsdk" = <<-EOF
         #!/bin/bash
 
         set -eou pipefail
         set +x
 
         if [[ ! -f $${UPLOAD_BIN} ]]; then
-          echo "Downloading gsutil because it doesn't exist"
-          apt-get -y update && apt install -y wget python && wget $${GSUTIL_DOWNLOAD_URL}
+          echo "Downloading gcloud sdk because it doesn't exist"
+          apt-get -y update && apt install -y wget python && wget $${GCLOUDSDK_DOWNLOAD_URL}
 
-          tar -zxf $(basename $${GSUTIL_DOWNLOAD_URL}) -C /usr/local/
+          tar -zxf $(basename $${GCLOUDSDK_DOWNLOAD_URL}) -C /usr/local/
+
+          # create local user bin symlinks for easier PATH access
           ln --symbolic --force /usr/local/google-cloud-sdk/bin/gsutil /usr/local/bin/gsutil
+          ln --symbolic --force /usr/local/google-cloud-sdk/bin/gcloud /usr/local/bin/gcloud
+          ln --symbolic --force /usr/local/google-cloud-sdk/bin/docker-credential-gcloud /usr/local/bin/docker-credential-gcloud
 
           echo "$${BUILDKITE_GS_APPLICATION_CREDENTIALS_JSON}" > /tmp/gcp_creds.json
 
           export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_creds.json && /usr/local/google-cloud-sdk/bin/gcloud auth activate-service-account $${CLUSTER_SERVICE_EMAIL} --key-file /tmp/gcp_creds.json
+
+          # enable GCR write access
+          gcloud components install --quiet docker-credential-gcr
+          gcloud auth configure-docker --quiet gcr.io
         fi
       EOF
 

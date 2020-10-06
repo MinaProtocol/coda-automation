@@ -11,7 +11,8 @@ locals {
     "roles/compute.viewer",
     "roles/stackdriver.accounts.viewer",
     "roles/pubsub.editor",
-    "roles/storage.objectAdmin"
+    "roles/storage.objectAdmin",
+    "roles/storage.admin"
   ]
 }
 
