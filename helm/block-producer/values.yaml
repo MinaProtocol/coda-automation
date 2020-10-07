@@ -2,6 +2,9 @@ testnetName: "coda-testnet"
 
 coda:
   runtimeConfig: ""
+  enableGossipFlooding: false
+  enablePeerExchange: false
+  isolated: false
   logLevel: "Trace"
   logReceivedBlocks: false
   logSnarkWorkGossip: false

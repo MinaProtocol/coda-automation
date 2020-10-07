@@ -69,6 +69,8 @@ locals {
         runWithBots          = config.run_with_bots
         enableGossipFlooding = config.enable_gossip_flooding
         privateKeySecret     = config.private_key_secret
+        enablePeerExchange   = config.enable_peer_exchange
+        isolated             = config.isolated
       }
     ]
   }
