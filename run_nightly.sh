@@ -43,18 +43,5 @@ done
 
 echo "version: $version"
 
-mkdir -p nightly-logs/$version/
-
 # ===================================
-echo "collecting logs"
 
-while true; do 
-  ./scripts/get_fatal_logs_by_machine.sh pickles-nightly $logproc nightly-logs/$version/
-
-  python3 scripts/testnet-validation/compare_best_tip.py --namespace pickles-nightly --hide-graph &>/dev/null
-
-  current_time=$(date "+%Y.%m.%d-%H.%M.%S")
-  mv Digraph.gv.png nightly-logs/$version/graph.$current_time.png
-
-  sleep 600; 
-done
