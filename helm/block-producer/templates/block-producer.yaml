@@ -86,8 +86,14 @@ spec:
           - name: AGENT_MAX_TX
             value: {{ $.Values.userAgent.maxTx | quote }}
           {{ end -}}
+          {{- if ne $.Values.userAgent.txBatchSize "" -}}
+          - name: AGENT_TX_BATCH_SIZE
+            value: {{ $.Values.userAgent.txBatchSize | quote }}
+          {{ end -}}
+          {{- if ne $.Values.userAgent.sendEveryMins "" -}}
           - name: AGENT_SEND_EVERY_MINUTES
             value: "1"
+          {{ end -}}
           - name: CODA_PUBLIC_KEY
             valueFrom:
               secretKeyRef:

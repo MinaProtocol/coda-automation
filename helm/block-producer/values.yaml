@@ -20,6 +20,8 @@ userAgent:
   maxFee: ""
   minTx: ""
   maxTx: ""
+  txBatchSize: ""
+  sendEveryMins: ""
 
 bots:
   image: ""

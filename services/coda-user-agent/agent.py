@@ -13,6 +13,7 @@ AGENT_MIN_FEE = os.getenv("AGENT_MIN_FEE") or Currency.random(Currency("0.06"), 
 AGENT_MAX_FEE = os.getenv("AGENT_MAX_FEE") or Currency.random(AGENT_MIN_FEE, AGENT_MIN_FEE + Currency("0.2"))
 AGENT_MIN_TX = os.getenv("AGENT_MIN_TX") or Currency.random(Currency("0.0015"), Currency("0.005"))
 AGENT_MAX_TX = os.getenv("AGENT_MAX_TX") or Currency.random(AGENT_MIN_TX, AGENT_MIN_TX + Currency("0.01"))
+AGENT_TX_BATCH_SIZE = os.getenv("AGENT_TX_BATCH_SIZE", 1)
 AGENT_SEND_EVERY_MINS = os.getenv("AGENT_SEND_EVERY_MINS", random.randint(1, 5))
 AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
 
@@ -83,9 +84,16 @@ class Agent(object):
             TRANSACTION_ERRORS.inc()
         return response
 
+    def send_transaction_batch(self):
+        responses = []
+        for i in range(AGENT_TX_BATCH_SIZE):
+            responses.append(self.send_transaction())
+        return responses
+
+
 def main():
     agent = Agent(CODA_CLIENT_ARGS, CODA_PUBLIC_KEY, CODA_PRIVKEY_PASS)
-    schedule.every(AGENT_SEND_EVERY_MINS).minutes.do(agent.send_transaction)
+    schedule.every(AGENT_SEND_EVERY_MINS).minutes.do(agent.send_transaction_batch)
     print("Sending a transaction every {} minutes.".format(AGENT_SEND_EVERY_MINS))
     while True:
         schedule.run_pending()

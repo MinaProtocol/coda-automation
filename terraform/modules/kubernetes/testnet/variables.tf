@@ -174,8 +174,17 @@ variable "agent_max_tx" {
   default = ""
 }
 
+variable "agent_tx_batch_size" {
+  type    = string
+  default = ""
+}
+
+variable "agent_send_every_mins" {
+  type    = string
+  default = ""
+}
+
 variable "gcloud_seeds" {
   type    = list
   default = []
 }
-
