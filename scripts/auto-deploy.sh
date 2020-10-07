@@ -26,14 +26,16 @@ fi
 
 
 terraform_dir="terraform/testnets/$TESTNET"
-image=$(sed -n 's|.*"\(0/coda-daemon:[^"]*\)"|\1|p' "$terraform_dir/main.tf")
-image=$(echo "${image}" | head -1)
-echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
-for i in $(seq 60); do
-  docker_tag_exists "$image" && break
-  [ "$i" != 30 ] || (echo "expected image never appeared in docker registry" && exit 1)
-  sleep 10
-done
+
+# TODO: add this check back, with compatibility for docker sha256 digests
+#image=$(sed -n 's|.*"\(0/coda-daemon:[^"]*\)"|\1|p' "$terraform_dir/main.tf")
+#image=$(echo "${image}" | head -1)
+#echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
+#for i in $(seq 60); do
+#  docker_tag_exists "$image" && break
+#  [ "$i" != 30 ] || (echo "expected image never appeared in docker registry" && exit 1)
+#  sleep 10
+#done
 
 cd $terraform_dir
 echo 'RUNNING TERRAFORM'
