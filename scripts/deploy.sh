@@ -2,8 +2,7 @@
 
 genkeys=${1:-"generate-keys"}
 deploy=${2:-"deploy"}
-
-logproc=${3:-"~/gits/coda/_build/default/src/app/logproc/logproc.exe"}
+namespace=${3:-"pickles-nightly"}
 
 #===================================
 if [ $genkeys == "generate-keys" ]; then
@@ -28,20 +27,21 @@ fi
 # ===================================
 if [ $deploy == "deploy" ]; then
   echo "deploying network"
-  ./scripts/auto-deploy.sh pickles-nightly
+  ./scripts/auto-deploy.sh $namespace
 fi
 
 # ===================================
 echo "getting version"
 
-version=$(./scripts/get_version.sh pickles-nightly)
+version=$(./scripts/get_version.sh $namespace)
 while [ -z "$version" ]; do
   echo "retrying..."
-  version=$(./scripts/get_version.sh pickles-nightly);
+  version=$(./scripts/get_version.sh $namespace)
   sleep 5;
 done
 
 echo "version: $version"
 
 # ===================================
+
 
