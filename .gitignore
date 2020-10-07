@@ -22,3 +22,5 @@ Digraph.gv.png
 **/__pycache__/**
 
 nightly-logs
+
+daemon.json
