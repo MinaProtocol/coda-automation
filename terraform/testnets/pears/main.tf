@@ -113,7 +113,7 @@ module "testnet_east" {
       }
     ],
     [
-      for i in range(100): {
+      for i in range(35): {
         name                   = "fish-block-producer-${i + 1}"
         class                  = "fish"
         id                     = i + 1
@@ -127,10 +127,10 @@ module "testnet_east" {
     ]
   )
 
-  snark_worker_replicas = 64
-  snark_worker_fee      = "0.025"
+  snark_worker_replicas   = 64
+  snark_worker_fee        = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
-  snark_worker_host_port = 10400
+  snark_worker_host_port  = 10400
 
   agent_min_fee = "0.06"
   agent_max_fee = "0.1"
