@@ -108,6 +108,7 @@ module "testnet_east" {
         enable_gossip_flooding = false
         run_with_user_agent    = false
         run_with_bots          = false
+        isolated               = false
         enable_peer_exchange   = true
       }
     ],
@@ -118,6 +119,8 @@ module "testnet_east" {
         id                     = i + 1
         private_key_secret     = "online-fish-account-${i + 1}-key"
         enable_gossip_flooding = false
+        isolated               = false
+        enable_peer_exchange   = false
         run_with_user_agent    = true
         run_with_bots          = false
       }
