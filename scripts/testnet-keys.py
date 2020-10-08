@@ -692,7 +692,7 @@ def upload_seed_keys(key_dir, namespace, cluster):
 @click.option('--cluster',
               default="",
               help='The cluster the Kubernetes secret should be uploaded to.')
-def upload_online_whale_keys(key_dir, namespace, cluster, count):
+def upload_online_whale_keys(key_dir, namespace, cluster):
     """Upload Private Keys for Online Whales to Kubernetes -- Ensure kubectl is properly configured!"""
     key_dir = Path(key_dir)
     # Load all the public keys from seed_key_dir
