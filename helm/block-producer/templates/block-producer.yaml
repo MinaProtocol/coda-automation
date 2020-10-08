@@ -162,13 +162,13 @@ spec:
           {{- if $.Values.coda.logSnarkWorkGossip }}
           "-log-snark-work-gossip", "true",
           {{- end -}}
-          {{- if $.Values.coda.isolated }}
-          "-isolated", "true",
+          {{- if $config.isolated }}
+          "-isolate-network", "true",
           {{- end -}}
-          {{- if $.Values.coda.enablePeerExchange }}
+          {{- if $config.enablePeerExchange }}
           "-enable-peer-exchange", "true",
           {{- end -}}
-          {{- if $.Values.coda.enableGossipFlooding }}
+          {{- if $config.enableGossipFlooding }}
           "-enable-flooding", "true",
           {{- end -}}
           {{- range $.Values.coda.seedPeers }}
