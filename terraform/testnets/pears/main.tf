@@ -22,8 +22,7 @@ provider "google" {
 
 locals {
   testnet_name = "pears"
-  # 0.0.16-beta7-feature-mainnet-parameter-test 0fdcc28
-  coda_image = "codaprotocol/coda-daemon@sha256:9dca9067fcc73e3bc2e3338a6a3893272d0d10610ec54e037130137b1d128c45"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-feature-peer-exchange"
   coda_archive_image = "codaprotocol/coda-archive:0.0.16-beta7-feature-mainnet-parameter-test"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
@@ -36,8 +35,8 @@ locals {
       "daemon": {},
       "genesis": {
         "genesis_state_timestamp": "${timestamp()}",
-        "k": 225, 
-        "delta": 1
+        "k": 20, 
+        "delta": 3
       },
       "proof": {
         "c": 8
@@ -100,7 +99,7 @@ module "testnet_east" {
       }
     ],
     [
-      for i in range(9): {
+      for i in range(15): {
         name                   = "whale-block-producer-${i + 2}"
         class                  = "whale"
         id                     = i + 2
@@ -112,7 +111,7 @@ module "testnet_east" {
       }
     ],
     [
-      for i in range(10): {
+      for i in range(100): {
         name                   = "fish-block-producer-${i + 1}"
         class                  = "fish"
         id                     = i + 1
@@ -124,7 +123,7 @@ module "testnet_east" {
     ]
   )
 
-  snark_worker_replicas = 10
+  snark_worker_replicas = 64
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port = 10400
@@ -133,5 +132,7 @@ module "testnet_east" {
   agent_max_fee = "0.1"
   agent_min_tx = "0.0015"
   agent_max_tx = "0.0015"
+  agent_send_every_mins = "3"
+  agent_tx_batch_size = "3"
 }
 
