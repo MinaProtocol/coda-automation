@@ -96,6 +96,7 @@ module "testnet_east" {
         enable_peer_exchange   = true
         # Maybe this isn't going to work because it would mean we'd need flooding on the seed? In that case we can start another node in the middle I guess?
         isolated               = true
+        enable_gossip_flooding = false
       }
     ],
     [
