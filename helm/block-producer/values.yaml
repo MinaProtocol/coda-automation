@@ -4,7 +4,6 @@ coda:
   runtimeConfig: ""
   enableGossipFlooding: false
   enablePeerExchange: false
-  isolated: false
   logLevel: "Trace"
   logReceivedBlocks: false
   logSnarkWorkGossip: false
@@ -37,21 +36,25 @@ blockProducerConfigs:
     runWithBots: false
     enableGossipFlooding: false
     privateKeySecret: "yolo"
+    isolated: false
   - name: "test-2"
     externalPort: 2
     runWithUserAgent: true
     runWithBots: false
     enableGossipFlooding: true
     privateKeySecret: "yolo"
+    isolated: false
   - name: "test-3"
     externalPort: 3
     runWithUserAgent: false
     runWithBots: true
     enableGossipFlooding: true
     privateKeySecret: "yolo"
+    isolated: false
   - name: "test-4"
     externalPort: 4
     runWithUserAgent: true
     runWithBots: true
     enableGossipFlooding: false
     privateKeySecret: "yolo"
+    isolated: false

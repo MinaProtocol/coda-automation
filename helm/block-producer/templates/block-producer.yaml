@@ -162,7 +162,7 @@ spec:
           {{- if $.Values.coda.logSnarkWorkGossip }}
           "-log-snark-work-gossip", "true",
           {{- end -}}
-          {{- if $.Values.coda.isolated }}
+          {{- if $config.isolated }}
           "-isolated", "true",
           {{- end -}}
           {{- if $.Values.coda.enablePeerExchange }}
