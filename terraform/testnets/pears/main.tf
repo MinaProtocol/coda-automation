@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 0.12.0"
+  required_version = "~> 0.13.3"
   backend "s3" {
     key     = "terraform-pears.tfstate"
     encrypt = true
@@ -22,13 +22,14 @@ provider "google" {
 
 locals {
   testnet_name = "pears"
-  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-feature-peer-exchange"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-feature-peer-exchange-3c7d91b"
   coda_archive_image = "codaprotocol/coda-archive:0.0.16-beta7-feature-mainnet-parameter-test"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
-  "CAESQBEHe2zCcQDHcSaeIydGggamzmTapdCS8SP0hb5FWvYhe9XEygmlUGV4zNu2P8zAIba4X84Gm4usQFLamjRywA8=,CAESIHvVxMoJpVBleMzbtj/MwCG2uF/OBpuLrEBS2po0csAP,12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv",
-  "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5" ]
+    "CAESQBEHe2zCcQDHcSaeIydGggamzmTapdCS8SP0hb5FWvYhe9XEygmlUGV4zNu2P8zAIba4X84Gm4usQFLamjRywA8=,CAESIHvVxMoJpVBleMzbtj/MwCG2uF/OBpuLrEBS2po0csAP,12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv",
+    "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5"
+  ]
 
   runtime_config = <<EOT
     {
@@ -96,7 +97,7 @@ module "testnet_east" {
         enable_peer_exchange   = true
         # Maybe this isn't going to work because it would mean we'd need flooding on the seed? In that case we can start another node in the middle I guess?
         isolated               = true
-        enable_gossip_flooding = false
+        enable_gossip_flooding = true
       }
     ],
     [
