@@ -2,8 +2,6 @@ testnetName: "coda-testnet"
 
 coda:
   runtimeConfig: ""
-  enableGossipFlooding: false
-  enablePeerExchange: false
   logLevel: "Trace"
   logReceivedBlocks: false
   logSnarkWorkGossip: false
@@ -34,27 +32,31 @@ blockProducerConfigs:
     externalPort: 1
     runWithUserAgent: false
     runWithBots: false
-    enableGossipFlooding: false
     privateKeySecret: "yolo"
     isolated: false
+    enableGossipFlooding: false
+    enablePeerExchange: false
   - name: "test-2"
     externalPort: 2
     runWithUserAgent: true
     runWithBots: false
-    enableGossipFlooding: true
     privateKeySecret: "yolo"
     isolated: false
+    enableGossipFlooding: false
+    enablePeerExchange: false
   - name: "test-3"
     externalPort: 3
     runWithUserAgent: false
     runWithBots: true
-    enableGossipFlooding: true
     privateKeySecret: "yolo"
     isolated: false
+    enableGossipFlooding: false
+    enablePeerExchange: false
   - name: "test-4"
     externalPort: 4
     runWithUserAgent: true
     runWithBots: true
-    enableGossipFlooding: false
     privateKeySecret: "yolo"
     isolated: false
+    enableGossipFlooding: false
+    enablePeerExchange: false

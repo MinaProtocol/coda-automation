@@ -163,12 +163,12 @@ spec:
           "-log-snark-work-gossip", "true",
           {{- end -}}
           {{- if $config.isolated }}
-          "-isolated", "true",
+          "-isolate-network", "true",
           {{- end -}}
-          {{- if $.Values.coda.enablePeerExchange }}
+          {{- if $config.enablePeerExchange }}
           "-enable-peer-exchange", "true",
           {{- end -}}
-          {{- if $.Values.coda.enableGossipFlooding }}
+          {{- if $config.enableGossipFlooding }}
           "-enable-flooding", "true",
           {{- end -}}
           {{- range $.Values.coda.seedPeers }}
