@@ -37,8 +37,8 @@ echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
 
 cd $terraform_dir
 echo 'RUNNING TERRAFORM'
-terraform destroy -auto-approve
-terraform apply -auto-approve
+~/coda-automation/terraform/testnets/pickles2/terraform destroy -auto-approve
+~/coda-automation/terraform/testnets/pickles2/terraform apply -auto-approve
 cd -
 
 echo 'UPLOADING KEYS'
@@ -46,7 +46,6 @@ echo 'UPLOADING KEYS'
 python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER" \
-  --count "$(echo scripts/online_whale_keys/*.pub | wc -w)"
   
 python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
   --namespace "$TESTNET" \
