@@ -97,7 +97,7 @@ resource "google_container_node_pool" "central1_experimental_nodes" {
   }
   node_config {
     preemptible  = false
-    machine_type = "n2d-standard-16"
+    machine_type = "n2d-standard-32"
     disk_size_gb = 100
 
     metadata = {
