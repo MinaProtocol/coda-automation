@@ -22,13 +22,18 @@ provider "google" {
 
 locals {
   testnet_name = "pears"
-  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-feature-peer-exchange-3c7d91b"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-fix-libp2p-isolation-f070bd7"
   coda_archive_image = "codaprotocol/coda-archive:0.0.16-beta7-feature-mainnet-parameter-test"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
+
   seed_discovery_keypairs = [
     "CAESQBEHe2zCcQDHcSaeIydGggamzmTapdCS8SP0hb5FWvYhe9XEygmlUGV4zNu2P8zAIba4X84Gm4usQFLamjRywA8=,CAESIHvVxMoJpVBleMzbtj/MwCG2uF/OBpuLrEBS2po0csAP,12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv",
     "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5"
+  ]
+
+  seed_peer_ids = [
+    for keypair in local.seed_discovery_keypairs: split(",", keypair)[2]
   ]
 
   runtime_config = <<EOT
@@ -69,13 +74,10 @@ module "testnet_east" {
 
   runtime_config = local.runtime_config
 
-  additional_seed_peers = [
-    "/dns4/seed-one.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
-    "/dns4/seed-two.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[1])[2]}"
-  ]
-
-  seed_zone = local.seed_zone
-  seed_region = local.seed_region
+  seed_zone               = local.seed_zone
+  seed_region             = local.seed_region
+  seed_discovery_keypairs = local.seed_discovery_keypairs
+  # seed_direct_peers       = [local.sentry_peer_id]
 
   log_level              = "Trace"
   log_txn_pool_gossip    = true
@@ -95,13 +97,15 @@ module "testnet_east" {
         run_with_user_agent    = false
         run_with_bots          = false
         enable_peer_exchange   = true
-        # Maybe this isn't going to work because it would mean we'd need flooding on the seed? In that case we can start another node in the middle I guess?
         isolated               = true
         enable_gossip_flooding = true
+        # discovery_keypair      = local.sentry_discovery_keypair
+        whitelist              = local.seed_peer_ids
+        # directPeers            = local.seed_peer_ids
       }
     ],
     [
-      for i in range(15): {
+      for i in range(2): {
         name                   = "whale-block-producer-${i + 2}"
         class                  = "whale"
         id                     = i + 2
@@ -111,10 +115,13 @@ module "testnet_east" {
         run_with_bots          = false
         isolated               = false
         enable_peer_exchange   = true
+        # discover_keypair       = null
+        whitelist              = []
+        # directPeers            = []
       }
     ],
     [
-      for i in range(35): {
+      for i in range(3): {
         name                   = "fish-block-producer-${i + 1}"
         class                  = "fish"
         id                     = i + 1
@@ -124,11 +131,14 @@ module "testnet_east" {
         enable_peer_exchange   = false
         run_with_user_agent    = true
         run_with_bots          = false
+        # discovery_keypair      = null
+        whitelist              = []
+        # directPeers            = []
       }
     ]
   )
 
-  snark_worker_replicas   = 64
+  snark_worker_replicas   = 1
   snark_worker_fee        = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port  = 10400

@@ -34,8 +34,8 @@ locals {
     testnetName = var.testnet_name
     coda        = local.coda_vars
     seed        = {
-      active = true
-      discovery_keypair = var.seed_discovery_keypairs[0]
+      active           = true
+      discoveryKeypair = var.seed_discovery_keypairs[0]
     }
   }
 
@@ -73,6 +73,7 @@ locals {
         privateKeySecret     = config.private_key_secret
         enablePeerExchange   = config.enable_peer_exchange
         isolated             = config.isolated
+        whitelist            = config.whitelist
       }
     ]
   }
