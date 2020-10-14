@@ -66,13 +66,5 @@ if [ -e scripts/o1-discord-api-key ]; then
 else
   echo '*** NOT UPLOADING DISCORD API KEY (required when running with bots sidecar)'
 fi
-if [ -e scripts/o1-google-cloud-storage-api-key.json ]; then
-  kubectl create secret generic o1-google-cloud-storage-api-key \
-    "--cluster=$CLUSTER" \
-    "--namespace=$TESTNET" \
-    "--from-file=o1google=keys/o1-google-cloud-storage-api-key.json"
-else
-  echo '*** NOT UPLOADING GOOGLE CLOUD STORAGE API KEY (required when running with points sidecar)'
-fi
 
 echo 'DEPLOYMENT COMPLETED'
