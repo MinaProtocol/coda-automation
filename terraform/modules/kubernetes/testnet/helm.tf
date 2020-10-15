@@ -93,10 +93,10 @@ locals {
     }
   }
 
-  archive_node_vars = {
+  archive_node_vars = var.coda_archive_image == null ? null : {
     testnetName = var.testnet_name
     coda = {
-      image  = var.coda_image
+      image         = var.coda_image
       seedPeers     = concat(var.additional_seed_peers, local.seed_peers)
       runtimeConfig = local.coda_vars.runtimeConfig
     }
@@ -165,12 +165,13 @@ resource "helm_release" "snark_workers" {
 }
 
 resource "helm_release" "archive_node" {
-  name      = "${var.testnet_name}-archive-node"
-  chart     = "../../../helm/archive-node"
-  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
-  values = [
+  name       = "${var.testnet_name}-archive-node"
+  chart      = "../../../helm/archive-node"
+  namespace  = kubernetes_namespace.testnet_namespace.metadata[0].name
+  values     = [
     yamlencode(local.archive_node_vars)
   ]
   wait       = false
   depends_on = [helm_release.seed]
+  count      = local.archive_node_vars == null ? 1 : 0
 }
