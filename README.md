@@ -3,12 +3,14 @@
 </a>
 <hr/>
 
-# Repository Purpose 
-This repository is designed to show an opinionated example on how to operate a network of Coda Daemons. It implements the entire node lifecycle using a modern Infrastructure as Code toolset. Community contributions are warmly encouraged, please see the [contribution guidelines](#to-do) for more details. The code is designed to be as modular as possible, allowing the end-user to "pick and choose" the parts they would like to incorporate into their own infrastructure stack. 
+# Repository Purpose
+
+This repository is designed to show an opinionated example on how to operate a network of Coda Daemons. It implements the entire node lifecycle using a modern Infrastructure as Code toolset. Community contributions are warmly encouraged, please see the [contribution guidelines](#to-do) for more details. The code is designed to be as modular as possible, allowing the end-user to "pick and choose" the parts they would like to incorporate into their own infrastructure stack.
 
 If you have any issues setting up your testnet or have any other questions about this repository, join the public [Discord Server](https://discord.gg/ShKhA7J) and get help from the Coda community.
 
 # Code Structure
+
 ```
 coda-automation
 ├── helm
@@ -23,32 +25,37 @@ coda-automation
 ```
 
 **Helm:** Contains Helm Charts for various components of a Coda Testnet
-- *block-producer:* One or more block producers consisting of unique `deployments`
-- *snark-worker:*  Deploys a "SNARK Coordinator" consisting of one or more worker process containers
 
-**Terraform:** Contains resource modules and live code to deploy a Coda Testnet. 
+- _block-producer:_ One or more block producers consisting of unique `deployments`
+- _snark-worker:_ Deploys a "SNARK Coordinator" consisting of one or more worker process containers
+
+**Terraform:** Contains resource modules and live code to deploy a Coda Testnet.
+
 - Note: Currently most modules are written against Google Kubernetes Engine, multi-cloud support is on the roadmap.
-- *infrastructure:* The root module for infrastructure like K8s Clusters and Prometheus.
-- *kubernetes/testnet:* A Terraform module that encapsulates a Coda Testnet, including Seed Nodes, Block Producers and SNARK Workers.
-- *google-cloud/coda-seed-node:* A Terraform module that deploys a set of public Seed Nodes on Google Compute Engine in the configured region. 
-*Scripts:* Testnet utilities for key generation & storage, redelegation, etc. 
+- _infrastructure:_ The root module for infrastructure like K8s Clusters and Prometheus.
+- _kubernetes/testnet:_ A Terraform module that encapsulates a Coda Testnet, including Seed Nodes, Block Producers and SNARK Workers.
+- _google-cloud/coda-seed-node:_ A Terraform module that deploys a set of public Seed Nodes on Google Compute Engine in the configured region.
+  _Scripts:_ Testnet utilities for key generation & storage, redelegation, etc.
 
 # Prerequisites
-For the purposes of this README we are assuming the following: 
+
+For the purposes of this README we are assuming the following:
+
 - You have a configured AWS Account with credentials on your machine: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
 - You have a configured Google Cloud Project with credentials on your machine: https://cloud.google.com/sdk/gcloud/reference/auth/login
-- You have Terraform `0.12.28` installed on your machine 
-  
+- You have Terraform `0.12.28` installed on your machine
+
   MacOS:
   `brew install terraform@v0.12.28`
 
   Other Platforms: https://www.terraform.io/downloads.html
+
 - You have Kubectl configured for the GKE cluster of your choice: https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl
-  TL;DR: ` gcloud container clusters get-credentials -region us-east1 coda-infra-east`
+  TL;DR: `gcloud container clusters get-credentials -region us-east1 coda-infra-east`
 
 # What is a Testnet
 
-A Testnet (a.k.a. Test Network) is a tool that is used to "test" Coda's distributed software. Our testnets are designed to simulate a "Mainnet" environment in order to identify bugs and test new functionality. Along with the network itself, there are several bots and services that are additionally deployed to facilitate a baseline of activity and access to the network. 
+A Testnet (a.k.a. Test Network) is a tool that is used to "test" Coda's distributed software. Our testnets are designed to simulate a "Mainnet" environment in order to identify bugs and test new functionality. Along with the network itself, there are several bots and services that are additionally deployed to facilitate a baseline of activity and access to the network.
 
 # Components of a Testnet
 
@@ -58,34 +65,35 @@ In order to simulate a differentiation between O(1) Stake (Whales) and end-user 
 
 ### Bots
 
-Bots are often used to automate transactions being sent around the network. Often, these require special consideration in the genesis ledger, so it's worth keeping them in mind when setting up a new network. For example, the O(1) Discord Faucet is a simple sidecar bot that runs against a Coda Daemon's GraphQL Port and responds to requests for funds in the Coda Protocol Discord server. 
+Bots are often used to automate transactions being sent around the network. Often, these require special consideration in the genesis ledger, so it's worth keeping them in mind when setting up a new network. For example, the O(1) Discord Faucet is a simple sidecar bot that runs against a Coda Daemon's GraphQL Port and responds to requests for funds in the Coda Protocol Discord server.
 
 ### Services
 
-Like bots, there are other blockchain-aware services that are deployed but might not need special consideration or stake. Two good examples of this are the Archive Node and the GraphQL Proxy. 
+Like bots, there are other blockchain-aware services that are deployed but might not need special consideration or stake. Two good examples of this are the Archive Node and the GraphQL Proxy.
 
 ### Ledger
 
-The ledger is arguably the most important thing to get right, because this single point of failure can bork an entire deployment. There are several key points that have to be configured correctly for a network to bootstrap as expected: 
-- Offline keys delegated to online keys 
-- Proper balances and currency encoding 
-- Proper formatting of ledger itself 
+The ledger is arguably the most important thing to get right, because this single point of failure can bork an entire deployment. There are several key points that have to be configured correctly for a network to bootstrap as expected:
+
+- Offline keys delegated to online keys
+- Proper balances and currency encoding
+- Proper formatting of ledger itself
 
 ## QA Testnet
 
-QA Testnets are designed to be run internally to support feature development and bug triage. Seed nodes are launched in Kubernetes with cluster-local DNS. 
+QA Testnets are designed to be run internally to support feature development and bug triage. Seed nodes are launched in Kubernetes with cluster-local DNS.
 
 ## Public Testnet
 
-Public Testnets are functionally similar to QA Testnets but have the addition of "public" seed nodes with static IP addresses. This is required due to the necessarily dynamic nature of Kubernetes, so these public seeds are launched via Google Compute Engine VMs. 
+Public Testnets are functionally similar to QA Testnets but have the addition of "public" seed nodes with static IP addresses. This is required due to the necessarily dynamic nature of Kubernetes, so these public seeds are launched via Google Compute Engine VMs.
 
 # Deploy a QA Testnet
 
-Deployng a testnet is a relatively straightforward process once you have ironed out the configuration. At a high level, there are several pieces of configuration it's important to keep in mind or else your deployment might fail: 
-- Coda Keypairs 
-- Genesis Ledger
-- Runtime Constants 
+Deployng a testnet is a relatively straightforward process once you have ironed out the configuration. At a high level, there are several pieces of configuration it's important to keep in mind or else your deployment might fail:
 
+- Coda Keypairs
+- Genesis Ledger
+- Runtime Constants
 
 ### Clone the Repository
 
@@ -93,15 +101,15 @@ Deployng a testnet is a relatively straightforward process once you have ironed 
 
 ### Apply the Infrastructure Module (If deploying infrastructure completely from scratch)
 
-Most developers shouldn't have to worry about this, however it's worth noting that the entire infrastructure can be deployed from scratch by running `terraform init && terraform apply` in `terraform/infrastructure`. 
+Most developers shouldn't have to worry about this, however it's worth noting that the entire infrastructure can be deployed from scratch by running `terraform init && terraform apply` in `terraform/infrastructure`.
 
-If you don't know if you *should* do this, you probably shouldn't!
+If you don't know if you _should_ do this, you probably shouldn't!
 
-### Generate Keys 
+### Generate Keys
 
-Currently, keys are managed by `scripts/testnet-keys.py`, you need to generate keys for each role and/or service you intend to deploy. 
+Currently, keys are managed by `scripts/testnet-keys.py`, you need to generate keys for each role and/or service you intend to deploy.
 
-The following is a series of example commands you might run to generate keys for a small network: 
+The following is a series of example commands you might run to generate keys for a small network:
 
 ```
 python3 scripts/testnet-keys.py keys  generate-offline-fish-keys --count 25
@@ -111,7 +119,7 @@ python3 scripts/testnet-keys.py keys  generate-online-whale-keys --count 5
 python3 scripts/testnet-keys.py keys  generate-service-keys //(optional)
 ```
 
-These commands will generate folders in the `scripts` directory by default, this output directory is a configurable location. 
+These commands will generate folders in the `scripts` directory by default, this output directory is a configurable location.
 
 ```
 $ python3 scripts/testnet-keys.py keys generate-offline-fish-keys --help
@@ -126,15 +134,15 @@ Options:
   --help               Show this message and exit.
 ```
 
-### Generate Genesis Ledger 
+### Generate Genesis Ledger
 
-Once you have the keys for your deploymenet created, you can use them to generate a genesis ledger with the following command. 
+Once you have the keys for your deploymenet created, you can use them to generate a genesis ledger with the following command.
 
 ```
 python3 scripts/testnet-keys.py ledger generate-ledger
 ```
 
-The script will try to load keys from the default directories here, so if you wrote them to a different spot (or moved them), you can pass the location via the CLI. 
+The script will try to load keys from the default directories here, so if you wrote them to a different spot (or moved them), you can pass the location via the CLI.
 
 ```
 $ python3 scripts/testnet-keys.py ledger generate-ledger --help
@@ -170,26 +178,28 @@ Options:
   --help                          Show this message and exit.
 ```
 
-
 There's several gotchas here that the script will check for:
+
 - For a particular block producer "class", number of offline and online keys must be equal
 - Remember the path to the ledger file here, you will need it as an input to your deployment
 
 ### Create a Testnet
 
-Next, you must create a new testnet in `terraform/testnets/`. For ease of use, you can copy-paste an existing one, however it's important to go through the terraform and change the following things: 
-- location of Terraform state file 
+Next, you must create a new testnet in `terraform/testnets/`. For ease of use, you can copy-paste an existing one, however it's important to go through the terraform and change the following things:
+
+- location of Terraform state file
 - Name of testnet
-- number of nodes to deploy 
+- number of nodes to deploy
 - Location of the Genesis Ledger
 
 ### Autodeploy.sh
 
-Assuming the hard task of configuration has been completed without error, this script will make your deployment experience a *breeze*. 
+Assuming the hard task of configuration has been completed without error, this script will make your deployment experience a _breeze_.
 
-This script will do the following: 
-- Attempt to tear down (aka "destroy") the existing testnet, should it exist 
-- Deploy anew the testnet as defined in the previous section 
+This script will do the following:
+
+- Attempt to tear down (aka "destroy") the existing testnet, should it exist
+- Deploy anew the testnet as defined in the previous section
 - Upload the keys you generated to Kubernetes as Secrets for use at runtime
 
 Note: The deployment of keys relies on kubectl being properly configured for the cluster you are deploying to!
@@ -198,14 +208,16 @@ Note: The deployment of keys relies on kubectl being properly configured for the
 ./scripts/auto-deploy.sh <testnet>
 ```
 
-### Is it Working? 
+### Is it Working?
 
 #### Logs
-Logs will be persisted in StackDriver for any container deployment. 
+
+Logs will be persisted in StackDriver for any container deployment.
 
 **Example Queries:**
-    
+
 Get all logs from `fish-block-producer-1` in the `<testnet>` namespace.
+
 ```
 resource.type="k8s_container"
 resource.labels.project_id="o1labs-192920"
@@ -214,8 +226,9 @@ resource.labels.cluster_name="coda-infra-east"
 resource.labels.namespace_name="<testnet>"
 labels.k8s-pod/app="fish-block-producer-1"
 ```
-  
+
 Get all logs from any Block Producer (note the `:` instead of `=` in `labels.k8s-pod/app:"block-producer"`!):
+
 ```
 resource.type="k8s_container"
 resource.labels.project_id="o1labs-192920"
@@ -226,24 +239,42 @@ labels.k8s-pod/app:"block-producer"
 ```
 
 #### Dashboards
-There are several public Grafana dashboards available here: 
-  - [Network Overview](https://o1testnet.grafana.net/d/qx4y6dfWz/network-overview?orgId=1)
-  - [Block Producer](https://o1testnet.grafana.net/d/Rgo87HhWz/block-producer-dashboard?orgId=1&refresh=1m)
-  - [SNARK Worker](https://o1testnet.grafana.net/d/scQUGOhWk/snark-worker-dashboard?orgId=1&refresh=1m) 
+
+There are several public Grafana dashboards available here:
+
+- [Network Overview](https://o1testnet.grafana.net/d/qx4y6dfWz/network-overview?orgId=1)
+- [Block Producer](https://o1testnet.grafana.net/d/Rgo87HhWz/block-producer-dashboard?orgId=1&refresh=1m)
+- [SNARK Worker](https://o1testnet.grafana.net/d/scQUGOhWk/snark-worker-dashboard?orgId=1&refresh=1m)
 
 # Deploy a Public Testnet
 
+### Bkase's memory of deploys as of 9/16
+
+0. Commit to master
+1. git tag 0.0.16-beta4 (with -m or it won't work) (increment the 4 every time)
+2. push the tag
+3. Push the master
+4. curl -X POST --header "Content-Type: application/json" -H "Circle-Token: 62bcf7b6c8ef60bdee3ecb3618d530e5f77eb78e" -d '{ "branch": "master", "parameters": { "run-ci": true } }' 'https://circleci.com/api/v2/project/github/CodaProtocol/coda/pipeline'
+   (this starts the build)
+5. In coda automation, unzip the 3.3-keys.tar.gz into coda-automation
+6. Download secrets for gogoel cloud storage -- scripts/o1-google-cloud-storage-api-key.json
+7. Download secrets for faucet API token -- scripts/o1-discord-api-key
+8. In coda automation, checkout test-public-testnet-deploy branch
+9. This deployment is located in pickles/ testnet
+10. Run `./scripts/auto-deploy.sh pickles keys/`
+
 ### Collect User Key Submissions
 
-The purpose of a public testnet is to allow end-users to try out the software and learn how to operate it. Thus, we accept sign-ups for stake to be allocated in the genesis, and commit those keys to the compiled genesis ledger. 
+The purpose of a public testnet is to allow end-users to try out the software and learn how to operate it. Thus, we accept sign-ups for stake to be allocated in the genesis, and commit those keys to the compiled genesis ledger.
 
-For context, these keys correspond to the "Fish Keys" in the QA Net deployments, and Online Fish Keys are ommitted in a Public Testnet deployment and "Offline Fish Keys" are instead delegated to the submitted User Keys. 
+For context, these keys correspond to the "Fish Keys" in the QA Net deployments, and Online Fish Keys are ommitted in a Public Testnet deployment and "Offline Fish Keys" are instead delegated to the submitted User Keys.
 
-### Generate Keys 
+### Generate Keys
 
-As in a QA Network, keys are managed by `scripts/testnet-keys.py`, you need to generate keys for each role and/or service you intend to deploy. 
+As in a QA Network, keys are managed by `scripts/testnet-keys.py`, you need to generate keys for each role and/or service you intend to deploy.
 
 In the case of a public testnet, the following commands could be run:
+
 ```
 python3 scripts/testnet-keys.py keys  generate-offline-fish-keys --count <nUserSubmissions>
 python3 scripts/testnet-keys.py keys  generate-offline-whale-keys --count 5
@@ -251,7 +282,7 @@ python3 scripts/testnet-keys.py keys  generate-online-whale-keys --count 5
 python3 scripts/testnet-keys.py keys  generate-service-keys //(faucet, echo, etc...)
 ```
 
-These commands will generate folders in the `scripts` directory by default, this output directory is a configurable location. 
+These commands will generate folders in the `scripts` directory by default, this output directory is a configurable location.
 
 ```
 $ python3 scripts/testnet-keys.py keys generate-offline-fish-keys --help
@@ -266,15 +297,15 @@ Options:
   --help               Show this message and exit.
 ```
 
-### Generate Genesis Ledger 
+### Generate Genesis Ledger
 
-Once you have the keys for your deploymenet created, and the Staker Keys saved to a CSV, you can use them to generate a genesis ledger with the following command. 
+Once you have the keys for your deploymenet created, and the Staker Keys saved to a CSV, you can use them to generate a genesis ledger with the following command.
 
 ```
 python3 scripts/testnet-keys.py ledger generate-ledger
 ```
 
-The script will try to load keys from the default directories here, so if you wrote them to a different spot (or moved them), you can pass the location via the CLI. 
+The script will try to load keys from the default directories here, so if you wrote them to a different spot (or moved them), you can pass the location via the CLI.
 
 ```
 $ python3 scripts/testnet-keys.py ledger generate-ledger --help
@@ -310,20 +341,21 @@ Options:
   --help                          Show this message and exit.
 ```
 
-
 There's several gotchas here that the script will check for:
+
 - For a particular block producer "class", number of offline and online keys must be equal
 - Remember the path to the ledger file here, you will need it as an input to your deployment
 
 ### Create a Testnet
 
-Next, you must create a new testnet in `terraform/testnets/`. For ease of use, you can copy-paste an existing one, however it's important to go through the terraform and change the following things: 
-- location of Terraform state file 
+Next, you must create a new testnet in `terraform/testnets/`. For ease of use, you can copy-paste an existing one, however it's important to go through the terraform and change the following things:
+
+- location of Terraform state file
 - Name of testnet
-- number of nodes to deploy 
+- number of nodes to deploy
 - Location of the Genesis Ledger
 
-In addition, you must include one or more public seed nodes for users to bootstrap with: 
+In addition, you must include one or more public seed nodes for users to bootstrap with:
 
 ```
 module "network" {
@@ -387,11 +419,12 @@ resource "aws_route53_record" "seed_two" {
 
 ### Autodeploy.sh
 
-Assuming the hard task of configuration has been completed without error, this script will make your deployment experience a *breeze*. 
+Assuming the hard task of configuration has been completed without error, this script will make your deployment experience a _breeze_.
 
-This script will do the following: 
-- Attempt to tear down (aka "destroy") the existing testnet, should it exist 
-- Deploy anew the testnet as defined in the previous section 
+This script will do the following:
+
+- Attempt to tear down (aka "destroy") the existing testnet, should it exist
+- Deploy anew the testnet as defined in the previous section
 - Upload the online keys you generated to Kubernetes as Secrets for use at runtime
 
 Note: The deployment of keys relies on kubectl being properly configured for the cluster you are deploying to!
@@ -399,7 +432,6 @@ Note: The deployment of keys relies on kubectl being properly configured for the
 ```
 ./scripts/auto-deploy.sh <testnet>
 ```
-
 
 # Testnet SDK
 

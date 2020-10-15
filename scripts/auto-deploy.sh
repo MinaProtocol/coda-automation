@@ -4,6 +4,7 @@ set -e
 
 TESTNET="$1"
 CLUSTER="gke_o1labs-192920_us-east1_coda-infra-east"
+KEYSDIR=${2:-"./scripts/online_whale_keys"}
 
 docker_tag_exists() {
     IMAGE=$(echo $1 | awk -F: '{ print $1 }')
@@ -25,13 +26,16 @@ fi
 
 
 terraform_dir="terraform/testnets/$TESTNET"
-image=$(sed -n 's|.*"\(codaprotocol/coda-daemon:[^"]*\)"|\1|p' "$terraform_dir/main.tf")
-echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
-for i in $(seq 60); do
-  docker_tag_exists "$image" && break
-  [ "$i" != 30 ] || (echo "expected image never appeared in docker registry" && exit 1)
-  sleep 60
-done
+
+# TODO: add this check back, with compatibility for docker sha256 digests
+#image=$(sed -n 's|.*"\(0/coda-daemon:[^"]*\)"|\1|p' "$terraform_dir/main.tf")
+#image=$(echo "${image}" | head -1)
+#echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
+#for i in $(seq 60); do
+#  docker_tag_exists "$image" && break
+#  [ "$i" != 30 ] || (echo "expected image never appeared in docker registry" && exit 1)
+#  sleep 10
+#done
 
 cd $terraform_dir
 echo 'RUNNING TERRAFORM'
@@ -42,7 +46,9 @@ cd -
 echo 'UPLOADING KEYS'
 python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --namespace "$TESTNET" \
-  --cluster "$CLUSTER"
+  --cluster "$CLUSTER" \
+  --key-dir "$KEYSDIR"
+  
 python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER" \

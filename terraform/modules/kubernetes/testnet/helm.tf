@@ -88,16 +88,39 @@ locals {
       hostPort    = var.snark_worker_host_port
     }
   }
+
   archive_node_vars = {
     testnetName = var.testnet_name
-    seedPeers  = concat(var.additional_seed_peers, local.seed_peers)
-    codaImage  = var.coda_image
-    archiveImage = replace(var.coda_image, "codaprotocol/coda-daemon",
-                                           "codaprotocol/coda-archive")
-  }   
+    coda = {
+      image  = var.coda_image
+      seedPeers     = concat(var.additional_seed_peers, local.seed_peers)
+      runtimeConfig = local.coda_vars.runtimeConfig
+    }
+    archive = {
+      image = var.coda_archive_image
+   }
+  }
+  
 }
 
 # Cluster-Local Seed Node
+
+resource "kubernetes_role_binding" "helm_release" {
+  metadata {
+    name      = "admin-role"
+    namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "default"
+    namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  }
+}
 
 resource "helm_release" "seed" {
   name      = "${var.testnet_name}-seed"
@@ -107,6 +130,7 @@ resource "helm_release" "seed" {
     yamlencode(local.seed_vars)
   ]
   wait       = true
+  depends_on = [kubernetes_role_binding.helm_release, var.gcloud_seeds]
 }
 
 
@@ -136,13 +160,13 @@ resource "helm_release" "snark_workers" {
   depends_on = [helm_release.seed]
 }
 
-# resource "helm_release" "archive_node" {
-#   name      = "${var.testnet_name}-archive-node"
-#   chart     = "../../../helm/archive-node"
-#   namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
-#   values = [
-#     yamlencode(local.archive_node_vars)
-#   ]
-#   wait       = false
-#   depends_on = [helm_release.seed]
-# }
+resource "helm_release" "archive_node" {
+  name      = "${var.testnet_name}-archive-node"
+  chart     = "../../../helm/archive-node"
+  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  values = [
+    yamlencode(local.archive_node_vars)
+  ]
+  wait       = false
+  depends_on = [helm_release.seed]
+}

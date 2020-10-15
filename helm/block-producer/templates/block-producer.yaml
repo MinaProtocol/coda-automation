@@ -17,7 +17,7 @@ spec:
         testnet: {{ $.Values.testnetName }}
         role: block-producer
         class: {{ $config.class }}
-        version: {{ (split ":" $.Values.coda.image)._1 }}
+        version: {{ trunc 6 (split ":" $.Values.coda.image)._1 }}
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/path: '/metrics'
@@ -46,7 +46,7 @@ spec:
         securityContext:
           runAsUser: 0
       - name: install-key
-        image: {{ $.Values.coda.image }}
+        image: {{ $.Values.coda.image | quote }}
         command:
         - bash
         - -c
@@ -87,7 +87,7 @@ spec:
             value: {{ $.Values.userAgent.maxTx | quote }}
           {{ end -}}
           - name: AGENT_SEND_EVERY_MINUTES
-            value: "10"
+            value: "1"
           - name: CODA_PUBLIC_KEY
             valueFrom:
               secretKeyRef:
@@ -142,11 +142,10 @@ spec:
       - name: coda
         resources:
           limits:
-            memory: 6.0Gi
           requests:
-            memory: 2.0Gi
-            cpu: 1
-        image: {{ $.Values.coda.image | quote }}
+            memory: 14.0Gi
+            cpu: 8.0
+        image: {{ $.Values.coda.image }}
         command: ["/usr/bin/dumb-init", "/root/init_coda.sh"]
         args: [ "daemon",
           "-log-level", {{ $.Values.coda.logLevel }},
@@ -167,12 +166,14 @@ spec:
           "-external-port", "$(DAEMON_EXTERNAL_PORT)",
           "-metrics-port", "$(DAEMON_METRICS_PORT)",
           "-block-producer-key", "/root/wallet-keys/key",
-          {{- if (ne $.Values.coda.runtimeConfig "") -}}
+          {{- if (ne $.Values.coda.runtimeConfig "") }}
           "-config-file", "/config/daemon.json",
           "-generate-genesis-proof", "true",
           {{- end -}}
         ]
         env:
+          - name: "RAYON_NUM_THREADS"
+            value: "6"
           - name: DAEMON_REST_PORT
             value: "3085"
           - name: DAEMON_CLIENT_PORT
