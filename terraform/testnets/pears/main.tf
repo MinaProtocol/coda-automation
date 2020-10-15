@@ -111,7 +111,7 @@ module "testnet_east" {
       }
     ],
     [
-      for i in range(2): {
+      for i in range(15): {
         name                   = "whale-block-producer-${i + 2}"
         class                  = "whale"
         id                     = i + 2
@@ -127,7 +127,7 @@ module "testnet_east" {
       }
     ],
     [
-      for i in range(3): {
+      for i in range(35): {
         name                   = "fish-block-producer-${i + 1}"
         class                  = "fish"
         id                     = i + 1
@@ -144,7 +144,7 @@ module "testnet_east" {
     ]
   )
 
-  snark_worker_replicas   = 1
+  snark_worker_replicas   = 16
   snark_worker_fee        = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port  = 10400
