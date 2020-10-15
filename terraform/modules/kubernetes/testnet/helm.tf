@@ -36,6 +36,7 @@ locals {
     seed        = {
       active           = true
       discoveryKeypair = var.seed_discovery_keypairs[0]
+      directPeers      = var.seed_direct_peers
     }
   }
 
@@ -74,6 +75,8 @@ locals {
         enablePeerExchange   = config.enable_peer_exchange
         isolated             = config.isolated
         whitelist            = config.whitelist
+        discoveryKeypair     = config.discovery_keypair
+        directPeers          = config.direct_peers
       }
     ]
   }

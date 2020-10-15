@@ -31,10 +31,12 @@ locals {
     "CAESQBEHe2zCcQDHcSaeIydGggamzmTapdCS8SP0hb5FWvYhe9XEygmlUGV4zNu2P8zAIba4X84Gm4usQFLamjRywA8=,CAESIHvVxMoJpVBleMzbtj/MwCG2uF/OBpuLrEBS2po0csAP,12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv",
     "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5"
   ]
-
   seed_peer_ids = [
     for keypair in local.seed_discovery_keypairs: split(",", keypair)[2]
   ]
+  
+  sentry_discovery_keypair = "CAESQN6p1rac1zJHe8rZQf8ljHM+0T9c0E/Ad+kF9xR27Q7xcqPfcnTwfJhAv5X1e3pEo9jr0GzNZAZXYj9hjaXWxRY=,CAESIHKj33J08HyYQL+V9Xt6RKPY69BszWQGV2I/YY2l1sUW,12D3KooWHXsaP1jCYnwbnnr61f4LpsK2ZfrN4tXGx8iVEYB3XBnm"
+  sentry_peer_id = split(",", local.sentry_discovery_keypair)[2]
 
   runtime_config = <<EOT
     {
@@ -77,7 +79,9 @@ module "testnet_east" {
   seed_zone               = local.seed_zone
   seed_region             = local.seed_region
   seed_discovery_keypairs = local.seed_discovery_keypairs
-  # seed_direct_peers       = [local.sentry_peer_id]
+  seed_direct_peers           = [
+    "/dns4/seed-node.${local.testnet_name}/tcp/10001/p2p/${local.seed_peer_ids[0]}"
+  ]
 
   log_level              = "Trace"
   log_txn_pool_gossip    = true
@@ -99,9 +103,11 @@ module "testnet_east" {
         enable_peer_exchange   = true
         isolated               = true
         enable_gossip_flooding = true
-        # discovery_keypair      = local.sentry_discovery_keypair
+        discovery_keypair      = local.sentry_discovery_keypair
         whitelist              = local.seed_peer_ids
-        # directPeers            = local.seed_peer_ids
+        direct_peers           = [
+          "/dns4/seed-node.${local.testnet_name}/tcp/10001/p2p/${local.seed_peer_ids[0]}"
+        ]
       }
     ],
     [
@@ -115,9 +121,9 @@ module "testnet_east" {
         run_with_bots          = false
         isolated               = false
         enable_peer_exchange   = true
-        # discover_keypair       = null
+        discovery_keypair      = null
         whitelist              = []
-        # directPeers            = []
+        direct_peers           = []
       }
     ],
     [
@@ -131,9 +137,9 @@ module "testnet_east" {
         enable_peer_exchange   = false
         run_with_user_agent    = true
         run_with_bots          = false
-        # discovery_keypair      = null
+        discovery_keypair      = null
         whitelist              = []
-        # directPeers            = []
+        direct_peers           = []
       }
     ]
   )

@@ -63,6 +63,9 @@ spec:
           {{- range $.Values.coda.seedPeers }}
           "-peer", {{ . | quote }},
           {{- end }}
+          {{- range $.Values.seed.directPeers }}
+          "-direct-peer", {{ . | quote }},
+          {{- end }}
         ]
         env:
           - name: "RAYON_NUM_THREADS"

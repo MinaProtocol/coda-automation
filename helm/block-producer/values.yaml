@@ -37,6 +37,8 @@ blockProducerConfigs:
     enableGossipFlooding: false
     enablePeerExchange: false
     whitelist: []
+    discoveryKeypair: null
+    directPeers: []
   - name: "test-2"
     externalPort: 2
     runWithUserAgent: true
@@ -46,6 +48,8 @@ blockProducerConfigs:
     enableGossipFlooding: false
     enablePeerExchange: false
     whitelist: []
+    discoveryKeypair: null
+    directPeers: []
   - name: "test-3"
     externalPort: 3
     runWithUserAgent: false
@@ -55,6 +59,8 @@ blockProducerConfigs:
     enableGossipFlooding: false
     enablePeerExchange: false
     whitelist: []
+    discoveryKeypair: null
+    directPeers: []
   - name: "test-4"
     externalPort: 4
     runWithUserAgent: true
@@ -64,3 +70,5 @@ blockProducerConfigs:
     enableGossipFlooding: false
     enablePeerExchange: false
     whitelist: []
+    discoveryKeypair: null
+    directPeers: []

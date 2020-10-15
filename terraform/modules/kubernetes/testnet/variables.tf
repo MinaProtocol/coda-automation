@@ -57,7 +57,7 @@ variable "testnet_name" {
 }
 
 variable "additional_seed_peers" {
-  type    = list
+  type    = list(string)
   default = []
 }
 
@@ -80,11 +80,16 @@ variable "seed_zone" {
 }
 
 variable "seed_discovery_keypairs" {
-  type = list
+  type = list(string)
   default = [
     "CAESQNf7ldToowe604aFXdZ76GqW/XVlDmnXmBT+otorvIekBmBaDWu/6ZwYkZzqfr+3IrEh6FLbHQ3VSmubV9I9Kpc=,CAESIAZgWg1rv+mcGJGc6n6/tyKxIehS2x0N1Uprm1fSPSqX,12D3KooWAFFq2yEQFFzhU5dt64AWqawRuomG9hL8rSmm5vxhAsgr",
     "CAESQKtOnmYHQacRpNvBZDrGLFw/tVB7V4I14Y2xtGcp1sEsEyfcsNoFi7NnUX0T2lQDGQ31KvJRXJ+u/f9JQhJmLsI=,CAESIBMn3LDaBYuzZ1F9E9pUAxkN9SryUVyfrv3/SUISZi7C,12D3KooWB79AmjiywL1kMGeKHizFNQE9naThM2ooHgwFcUzt6Yt1"
   ]
+}
+
+variable "seed_direct_peers" {
+  type = list(string)
+  default = []
 }
 
 # Block Producer Vars
@@ -129,7 +134,9 @@ variable "block_producer_configs" {
       isolated = bool,
       run_with_user_agent = bool,
       run_with_bots = bool,
-      whitelist = list(string)
+      whitelist = list(string),
+      discovery_keypair = string,
+      direct_peers = list(string)
     })
   )
   default = []
