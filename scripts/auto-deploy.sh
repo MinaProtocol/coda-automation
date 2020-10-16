@@ -45,18 +45,18 @@ echo 'UPLOADING KEYS'
 python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER" \
-  --key-dir "keys/$TESTNET-online-whale-keys"
+  --key-dir "keys/$TESTNET_online-whale-keys"
   
 python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER" \
-  --key-dir "keys/$TESTNET-online-fish-keys" \
-  --count "$(echo keys/$TESTNET-online-fish-keys/*.pub | wc -w)"
+  --key-dir "keys/$TESTNET_online-fish-keys" \
+  --count "$(echo keys/$TESTNET_online-fish-keys/*.pub | wc -w)"
 
 python3 scripts/testnet-keys.py k8s "upload-service-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER" \
-  --key-dir "keys/$TESTNET-online-service-keys"
+  --key-dir "keys/$TESTNET_online-service-keys"
 
 if [ -e scripts/o1-discord-api-key ]; then
   kubectl create secret generic o1-discord-api-key \
