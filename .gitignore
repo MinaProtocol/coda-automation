@@ -10,6 +10,7 @@ scripts/o1-discord-api-key
 scripts/o1-google-cloud-storage-api-key.json
 keys/*
 src/*.js
+node_modules/
 
 scripts/offline_fish_keys
 scripts/offline_whale_keys
