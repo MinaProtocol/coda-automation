@@ -17,6 +17,7 @@ variable "coda_image" {
 
 variable "coda_archive_image" {
   type    = string
+  default = ""
 }
 
 variable "coda_agent_image" {
