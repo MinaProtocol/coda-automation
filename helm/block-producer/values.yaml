@@ -17,8 +17,6 @@ userAgent:
   maxFee: ""
   minTx: ""
   maxTx: ""
-  txBatchSize: ""
-  sendEveryMins: ""
 
 bots:
   image: ""
@@ -32,31 +30,23 @@ blockProducerConfigs:
     externalPort: 1
     runWithUserAgent: false
     runWithBots: false
-    privateKeySecret: "yolo"
-    isolated: false
     enableGossipFlooding: false
-    enablePeerExchange: false
+    privateKeySecret: "yolo"
   - name: "test-2"
     externalPort: 2
     runWithUserAgent: true
     runWithBots: false
+    enableGossipFlooding: true
     privateKeySecret: "yolo"
-    isolated: false
-    enableGossipFlooding: false
-    enablePeerExchange: false
   - name: "test-3"
     externalPort: 3
     runWithUserAgent: false
     runWithBots: true
+    enableGossipFlooding: true
     privateKeySecret: "yolo"
-    isolated: false
-    enableGossipFlooding: false
-    enablePeerExchange: false
   - name: "test-4"
     externalPort: 4
     runWithUserAgent: true
     runWithBots: true
-    privateKeySecret: "yolo"
-    isolated: false
     enableGossipFlooding: false
-    enablePeerExchange: false
+    privateKeySecret: "yolo"

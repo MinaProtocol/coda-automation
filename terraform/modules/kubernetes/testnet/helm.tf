@@ -45,13 +45,11 @@ locals {
     coda = local.coda_vars
 
     userAgent = {
-      image         = var.coda_agent_image
-      minFee        = var.agent_min_fee
-      maxFee        = var.agent_max_fee
-      minTx         = var.agent_min_tx
-      maxTx         = var.agent_max_tx
-      txBatchSize   = var.agent_tx_batch_size
-      sendEveryMins = var.agent_send_every_mins
+      image  = var.coda_agent_image
+      minFee = var.agent_min_fee
+      maxFee = var.agent_max_fee
+      minTx  = var.agent_min_tx
+      maxTx  = var.agent_max_tx
     }
 
     bots = {
@@ -71,8 +69,6 @@ locals {
         runWithBots          = config.run_with_bots
         enableGossipFlooding = config.enable_gossip_flooding
         privateKeySecret     = config.private_key_secret
-        enablePeerExchange   = config.enable_peer_exchange
-        isolated             = config.isolated
       }
     ]
   }
@@ -93,10 +89,10 @@ locals {
     }
   }
 
-  archive_node_vars = var.coda_archive_image == null ? null : {
+  archive_node_vars = {
     testnetName = var.testnet_name
     coda = {
-      image         = var.coda_image
+      image  = var.coda_image
       seedPeers     = concat(var.additional_seed_peers, local.seed_peers)
       runtimeConfig = local.coda_vars.runtimeConfig
     }
@@ -165,13 +161,12 @@ resource "helm_release" "snark_workers" {
 }
 
 resource "helm_release" "archive_node" {
-  name       = "${var.testnet_name}-archive-node"
-  chart      = "../../../helm/archive-node"
-  namespace  = kubernetes_namespace.testnet_namespace.metadata[0].name
-  values     = [
+  name      = "${var.testnet_name}-archive-node"
+  chart     = "../../../helm/archive-node"
+  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  values = [
     yamlencode(local.archive_node_vars)
   ]
   wait       = false
   depends_on = [helm_release.seed]
-  count      = local.archive_node_vars == null ? 1 : 0
 }

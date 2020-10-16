@@ -7,36 +7,19 @@ import random
 from requests.exceptions import ConnectionError
 from prometheus_client import Counter, start_http_server
 
-def getenv_default_map(env_var: str, f, default):
-    value = os.getenv(env_var)
-    if value == None:
-        return default
-    else:
-        return f(value)
-
-def getenv_str(env_var: str, default: str) -> str:
-    return os.getenv(env_var, default).strip()
-
-def getenv_int(env_var: str, default: int) -> int:
-    return getenv_default_map(env_var, int, default)
-
-def getenv_currency(env_var: str, lower_bound: Currency, upper_bound: Currency) -> Currency:
-    return getenv_default_map(env_var, Currency, Currency.random(lower_bound, upper_bound))
-
-CODA_PUBLIC_KEY = getenv_str("CODA_PUBLIC_KEY", "4vsRCVyVkSRs89neWnKPrnz4FRPmXXrWtbsAQ31hUTSi41EkbptYaLkzmxezQEGCgZnjqY2pQ6mdeCytu7LrYMGx9NiUNNJh8XfJYbzprhhJmm1ZjVbW9ZLRvhWBXRqes6znuF7fWbECrCpQ")
-CODA_PRIVKEY_PASS = getenv_str("CODA_PRIVKEY_PASS", "naughty blue worm")
-AGENT_MIN_FEE = getenv_currency("AGENT_MIN_FEE", Currency("0.06"), Currency("0.1"))
-AGENT_MAX_FEE = getenv_currency("AGENT_MAX_FEE", AGENT_MIN_FEE, AGENT_MIN_FEE + Currency("0.2"))
-AGENT_MIN_TX = getenv_currency("AGENT_MIN_TX", Currency("0.0015"), Currency("0.005"))
-AGENT_MAX_TX = getenv_currency("AGENT_MAX_TX", AGENT_MIN_TX, AGENT_MIN_TX + Currency("0.01"))
-AGENT_TX_BATCH_SIZE = getenv_int("AGENT_TX_BATCH_SIZE", 1)
-AGENT_SEND_EVERY_MINS = getenv_int("AGENT_SEND_EVERY_MINS", random.randint(1, 5))
-AGENT_METRICS_PORT = getenv_int("AGENT_METRICS_PORT", 8000)
+CODA_PUBLIC_KEY = os.getenv("CODA_PUBLIC_KEY", "4vsRCVyVkSRs89neWnKPrnz4FRPmXXrWtbsAQ31hUTSi41EkbptYaLkzmxezQEGCgZnjqY2pQ6mdeCytu7LrYMGx9NiUNNJh8XfJYbzprhhJmm1ZjVbW9ZLRvhWBXRqes6znuF7fWbECrCpQ").strip()
+CODA_PRIVKEY_PASS = os.getenv("CODA_PRIVKEY_PASS", "naughty blue worm")
+AGENT_MIN_FEE = os.getenv("AGENT_MIN_FEE") or Currency.random(Currency("0.06"), Currency("0.1"))
+AGENT_MAX_FEE = os.getenv("AGENT_MAX_FEE") or Currency.random(AGENT_MIN_FEE, AGENT_MIN_FEE + Currency("0.2"))
+AGENT_MIN_TX = os.getenv("AGENT_MIN_TX") or Currency.random(Currency("0.0015"), Currency("0.005"))
+AGENT_MAX_TX = os.getenv("AGENT_MAX_TX") or Currency.random(AGENT_MIN_TX, AGENT_MIN_TX + Currency("0.01"))
+AGENT_SEND_EVERY_MINS = os.getenv("AGENT_SEND_EVERY_MINS", random.randint(1, 5))
+AGENT_METRICS_PORT = os.getenv("AGENT_METRICS_PORT", 8000)
 
 
 CODA_CLIENT_ARGS = {
-    "graphql_host": getenv_str("CODA_HOST", "localhost"),
-    "graphql_port": getenv_str("CODA_PORT", "3085")
+    "graphql_host":  os.getenv("CODA_HOST", "localhost"),
+    "graphql_port": os.getenv("CODA_PORT", "3085")
 } 
 
 
@@ -48,14 +31,12 @@ TRANSACTION_ERRORS = Counter('transaction_errors', 'Number of errors that occurr
 class Agent(object):
     """Represents a generic agent that operates on the coda blockchain"""
 
-    def __init__(self, client_args, public_key, privkey_pass, min_tx_amount=AGENT_MIN_TX, max_tx_amount=AGENT_MAX_TX, min_fee_amount=AGENT_MIN_FEE, max_fee_amount=AGENT_MAX_FEE):
+    def __init__(self, client_args, public_key, privkey_pass, max_tx_amount=AGENT_MAX_TX, max_fee_amount=AGENT_MAX_FEE):
         self.coda = Client(**client_args)
         self.public_key = public_key
         self.privkey_pass = privkey_pass
-        self.min_tx_amount = min_tx_amount
-        self.max_tx_amount = max_tx_amount
-        self.min_fee_amount = min_fee_amount
         self.max_fee_amount = max_fee_amount
+        self.max_tx_amount = max_tx_amount
         self.to_account = None
 
     def get_to_account(self):
@@ -102,16 +83,9 @@ class Agent(object):
             TRANSACTION_ERRORS.inc()
         return response
 
-    def send_transaction_batch(self):
-        responses = []
-        for i in range(AGENT_TX_BATCH_SIZE):
-            responses.append(self.send_transaction())
-        return responses
-
-
 def main():
     agent = Agent(CODA_CLIENT_ARGS, CODA_PUBLIC_KEY, CODA_PRIVKEY_PASS)
-    schedule.every(AGENT_SEND_EVERY_MINS).minutes.do(agent.send_transaction_batch)
+    schedule.every(AGENT_SEND_EVERY_MINS).minutes.do(agent.send_transaction)
     print("Sending a transaction every {} minutes.".format(AGENT_SEND_EVERY_MINS))
     while True:
         schedule.run_pending()

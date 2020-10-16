@@ -44,20 +44,18 @@ terraform apply -auto-approve
 cd -
 
 echo 'UPLOADING KEYS'
-
 python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --namespace "$TESTNET" \
-  --cluster "$CLUSTER"
+  --cluster "$CLUSTER" \
+  --key-dir "$KEYSDIR"
   
 python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER" \
   --count "$(echo scripts/online_fish_keys/*.pub | wc -w)"
-
 python3 scripts/testnet-keys.py k8s "upload-service-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER"
-
 if [ -e scripts/o1-discord-api-key ]; then
   kubectl create secret generic o1-discord-api-key \
     "--cluster=$CLUSTER" \
