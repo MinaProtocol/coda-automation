@@ -3,6 +3,7 @@
 set -e
 
 TESTNET="$1"
+GENERATE_KEYS="$2"
 CLUSTER="gke_o1labs-192920_us-east1_coda-infra-east"
 
 docker_tag_exists() {
@@ -40,29 +41,33 @@ terraform destroy -auto-approve
 terraform apply -auto-approve
 cd -
 
+if [[ -n "$2" ]] ; then
+  echo 'GENERATING KEYS'
+  scripts/generate-keys-and-ledger.sh "${TESTNET}" 10 # Generates 10 sets of fish and whale keys, plus 2 generic service keys
+fi
+
 echo 'UPLOADING KEYS'
 
 python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER" \
-  --key-dir "keys/$TESTNET_online-whale-keys"
+  --key-dir "keys/keysets/$TESTNET_online-whale-keys"
   
 python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER" \
-  --key-dir "keys/$TESTNET_online-fish-keys" \
-  --count "$(echo keys/$TESTNET_online-fish-keys/*.pub | wc -w)"
+  --key-dir "keys/keysets/$TESTNET_online-fish-keys" \
 
 python3 scripts/testnet-keys.py k8s "upload-service-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER" \
-  --key-dir "keys/$TESTNET_online-service-keys"
+  --key-dir "keys/keysets/$TESTNET_online-service-keys"
 
 if [ -e scripts/o1-discord-api-key ]; then
   kubectl create secret generic o1-discord-api-key \
     "--cluster=$CLUSTER" \
     "--namespace=$TESTNET" \
-    "--from-file=o1discord=keys/o1-discord-api-key"
+    "--from-file=o1discord=keys/api-keys/o1-discord-api-key"
 else
   echo '*** NOT UPLOADING DISCORD API KEY (required when running with bots sidecar)'
 fi
