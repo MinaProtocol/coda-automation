@@ -34,3 +34,6 @@ ls -R ./keys
 #${TESTNET}_online-service-keys
 #n
 #KEYSETS
+
+
+cat genesis_ledger.json.format | jq '[.[] | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }]' | cat > outfile.json << EOF
