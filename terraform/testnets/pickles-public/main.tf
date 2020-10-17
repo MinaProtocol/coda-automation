@@ -46,6 +46,7 @@ locals {
          "name": "community-testnet",
          "num_accounts": 24 + 24 + 10 + 10 + 2,
          "accounts": ${file("./genesis_ledger.json")}
+      }
     }
   EOT
 }
