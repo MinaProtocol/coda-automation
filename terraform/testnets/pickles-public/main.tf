@@ -44,7 +44,7 @@ locals {
       },
       "ledger": {
          "name": "community-testnet",
-         "num_accounts": 24 + 24 + 10 + 10 + 2,
+         "num_accounts": 70,
          "accounts": ${file("./genesis_ledger.json")}
       }
     }
