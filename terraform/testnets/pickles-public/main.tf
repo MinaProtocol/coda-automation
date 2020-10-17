@@ -82,7 +82,7 @@ module "testnet_east" {
   log_received_blocks    = true
 
   block_producer_key_pass = "naughty blue worm"
-  block_producer_starting_host_port = 10001
+  block_producer_starting_host_port = 10501
 
   block_producer_configs = concat(
     [
@@ -112,7 +112,7 @@ module "testnet_east" {
   snark_worker_replicas = 10
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
-  snark_worker_host_port = 10400
+  snark_worker_host_port = 10401
 
   agent_min_fee = "0.06"
   agent_max_fee = "0.1"
