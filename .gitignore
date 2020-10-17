@@ -10,6 +10,7 @@ keys/genesis/*
 keys/keypairs/*
 keys/keysets/*
 keys/api-keys/*
+keys/testnet-keys/*
 src/*.js
 node_modules/
 

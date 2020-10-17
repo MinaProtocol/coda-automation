@@ -61,11 +61,7 @@ const validateKeys = (entries) =>
       client
         .request(query, { publicKey: entry.publicKey })
         .then(() => entry.publicKey)
-        .catch((e) => {
-          invalidKeys.push(entry);
-          console.log(`Unable to validate user: ${entry.username}\n`);
-          return null;
-        })
+        .catch(() => entry.publickey)
     )
   ).then((results) => results.filter((member) => member !== null));
 
