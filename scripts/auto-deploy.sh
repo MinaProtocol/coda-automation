@@ -43,7 +43,7 @@ cd -
 
 if [[ -n "$2" ]] ; then
   echo 'GENERATING KEYS'
-  scripts/generate-keys-and-ledger.sh "${TESTNET}" 10 # Generates 10 sets of fish and whale keys, plus 2 generic service keys
+  scripts/generate-keys-and-ledger.sh "${TESTNET}" 24 # Generates 24 sets of fish keys, 10 ready-to-upload whale keys, and 2 generic service keys
 fi
 
 echo 'UPLOADING KEYS'
@@ -51,19 +51,19 @@ echo 'UPLOADING KEYS'
 python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER" \
-  --key-dir "keys/keysets/$TESTNET_online-whale-keys"
-  
-python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
-  --namespace "$TESTNET" \
-  --cluster "$CLUSTER" \
-  --key-dir "keys/keysets/$TESTNET_online-fish-keys" \
+  --key-dir "keys/testnet-keys/$TESTNET_online-whale-keyfiles"
 
-python3 scripts/testnet-keys.py k8s "upload-service-keys" \
-  --namespace "$TESTNET" \
-  --cluster "$CLUSTER" \
-  --key-dir "keys/keysets/$TESTNET_online-service-keys"
+# python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
+#  --namespace "$TESTNET" \
+#  --cluster "$CLUSTER" \
+#  --key-dir "keys/keysets/$TESTNET_online-fish-keys" \
 
-if [ -e scripts/o1-discord-api-key ]; then
+#python3 scripts/testnet-keys.py k8s "upload-service-keys" \
+#  --namespace "$TESTNET" \
+#  --cluster "$CLUSTER" \
+#  --key-dir "keys/keysets/$TESTNET_online-service-keys"
+
+if [ -e keys/api-keys/o1-discord-api-key ]; then
   kubectl create secret generic o1-discord-api-key \
     "--cluster=$CLUSTER" \
     "--namespace=$TESTNET" \
