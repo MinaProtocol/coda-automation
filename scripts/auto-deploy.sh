@@ -42,6 +42,7 @@ fi
 
 cd $terraform_dir
 echo 'RUNNING TERRAFORM'
+terraform init
 terraform destroy -auto-approve
 terraform apply -auto-approve
 cd -
