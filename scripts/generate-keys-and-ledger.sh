@@ -9,6 +9,8 @@ mkdir ./keys/keysets
 mkdir ./keys/keypairs
 rm -rf ./keys/genesis && mkdir ./keys/genesis
 
+set -eo pipefail
+
 # WHALES
 for keyset in online-whales offline-whales; do
   [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count 10 --name "${TESTNET}_${keyset}"
@@ -55,6 +57,8 @@ echo
 
 # GENESIS
 if [[ -s "terraform/testnets/${TESTNET}/genesis_ledger.json" ]] ; then
+  echo "-- genesis_ledger.json already exists for this testnet, refusing to overwrite. Delete \'terraform/testnets/${TESTNET}/genesis_ledger.json\' to force re-creation."
+else
   echo "-- Generated the following keypairs and keysets for use in ./bin/coda-network genesis --"
   ls -R ./keys
 
@@ -82,7 +86,8 @@ KEYSETS
   coda-network genesis
 
   # Fix the ledger format for ease of use
+  echo "Rewriting ./keys/genesis/* as terraform/testnets/${TESTNET}/genesis_ledger.json in the proper format for daemon consumption..."
   cat ./keys/genesis/* | jq '[.[] | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }]' | cat > terraform/testnets/${TESTNET}/genesis_ledger.json
-else
-  echo "-- genesis_ledger.json already exists for this testnet, refusing to overwrite. Delete \'terraform/testnets/${TESTNET}/genesis_ledger.json\' to force re-creation."
 fi
+
+echo "Keys and genesis ledger generated successfully, $TESTNET is ready to deploy!"
