@@ -17,6 +17,7 @@ variable "coda_image" {
 
 variable "coda_archive_image" {
   type    = string
+  default = ""
 }
 
 variable "coda_agent_image" {
@@ -125,6 +126,8 @@ variable "block_producer_configs" {
       class = string,
       private_key_secret = string,
       enable_gossip_flooding = bool,
+      enable_peer_exchange = bool,
+      isolated = bool,
       run_with_user_agent = bool,
       run_with_bots = bool
     })
@@ -174,8 +177,17 @@ variable "agent_max_tx" {
   default = ""
 }
 
+variable "agent_tx_batch_size" {
+  type    = string
+  default = ""
+}
+
+variable "agent_send_every_mins" {
+  type    = string
+  default = ""
+}
+
 variable "gcloud_seeds" {
   type    = list
   default = []
 }
-
