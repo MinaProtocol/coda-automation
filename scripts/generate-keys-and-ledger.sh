@@ -74,11 +74,11 @@ ${TESTNET}_online-community
 ${TESTNET}_online-community
 y
 ${TESTNET}_offline-whales
-39000
+66900
 ${TESTNET}_online-whales
 y
 ${TESTNET}_online-service-keys
-39000
+50000
 ${TESTNET}_online-service-keys
 n
 KEYSETS
