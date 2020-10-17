@@ -54,11 +54,11 @@ echo
 [[ -s "keys/keysets/${TESTNET}_online-service-keys" ]] || coda-network keyset create --count 2 --name ${TESTNET}_online-service-keys
 
 # GENESIS
-echo
-echo "-- Generated the following keypairs and keysets for use in ./bin/coda-network genesis --"
-ls -R ./keys
+if [[ -s "terraform/testnets/${TESTNET}/genesis_ledger.json" ]] ; then
+  echo "-- Generated the following keypairs and keysets for use in ./bin/coda-network genesis --"
+  ls -R ./keys
 
-echo "ENTER THE FOLLOWING AT THE PROMPTS IN ORDER:"
+  echo "ENTER THE FOLLOWING AT THE PROMPTS IN ORDER:"
 
 cat <<KEYSETS
 ${TESTNET}_offline-fish
@@ -79,7 +79,10 @@ ${TESTNET}_online-service-keys
 n
 KEYSETS
 
-coda-network genesis
+  coda-network genesis
 
-# Fix the ledger format for ease of use
-cat ./keys/genesis/* | jq '[.[] | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }]' | cat > terraform/testnets/${TESTNET}/genesis_ledger.json
+  # Fix the ledger format for ease of use
+  cat ./keys/genesis/* | jq '[.[] | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }]' | cat > terraform/testnets/${TESTNET}/genesis_ledger.json
+else
+  echo "-- genesis_ledger.json already exists for this testnet, refusing to overwrite. Delete \'terraform/testnets/${TESTNET}/genesis_ledger.json\' to force re-creation."
+fi
