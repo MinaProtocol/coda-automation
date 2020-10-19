@@ -16,6 +16,8 @@ provider helm {
 # }
 
 locals {
+  mina_helm_repo = "https://coda-charts.storage.googleapis.com"
+
   seed_peers = [
     "/dns4/seed-node.${var.testnet_name}/tcp/10001/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
   ]
@@ -127,41 +129,47 @@ resource "kubernetes_role_binding" "helm_release" {
 }
 
 resource "helm_release" "seed" {
-  name      = "${var.testnet_name}-seed"
-  chart     = "../../../helm/seed-node"
-  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  name        = "${var.testnet_name}-seed"
+  repository  = local.mina_helm_repo
+  chart       = "seed-node"
+  version     = "0.1.1"
+  namespace   = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
     yamlencode(local.seed_vars)
   ]
-  wait       = true
-  depends_on = [kubernetes_role_binding.helm_release, var.gcloud_seeds]
+  wait        = true
+  depends_on  = [kubernetes_role_binding.helm_release, var.gcloud_seeds]
 }
 
 
 # Block Producers
 
 resource "helm_release" "block_producers" {
-  name      = "${var.testnet_name}-block-producers"
-  chart     = "../../../helm/block-producer"
-  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  name        = "${var.testnet_name}-block-producers"
+  repository  = local.mina_helm_repo
+  chart       = "block-producer"
+  version     = "0.1.8"
+  namespace   = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
     yamlencode(local.block_producer_vars)
   ]
-  wait       = false
-  depends_on = [helm_release.seed]
+  wait        = false
+  depends_on  = [helm_release.seed]
 }
 
 # Snark Workers 
 
 resource "helm_release" "snark_workers" {
-  name      = "${var.testnet_name}-snark-worker"
-  chart     = "../../../helm/snark-worker"
-  namespace = kubernetes_namespace.testnet_namespace.metadata[0].name
+  name        = "${var.testnet_name}-snark-worker"
+  repository  = local.mina_helm_repo
+  chart       = "snark-worker"
+  version     = "0.1.4"
+  namespace   = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
     yamlencode(local.snark_worker_vars)
   ]
-  wait       = false
-  depends_on = [helm_release.seed]
+  wait        = false
+  depends_on  = [helm_release.seed]
 }
 
 resource "helm_release" "archive_node" {
