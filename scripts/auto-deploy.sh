@@ -37,7 +37,7 @@ done
 
 if [[ -n "$2" ]] ; then
   echo 'GENERATING KEYS'
-  scripts/generate-keys-and-ledger.sh "${TESTNET}" 24 # Generates 24 sets of fish keys, 10 ready-to-upload whale keys, and 2 generic service keys
+  scripts/generate-keys-and-ledger.sh "${TESTNET}" # Generates fish keys, 10 ready-to-upload whale keys, and 2 generic service keys
 fi
 
 cd $terraform_dir

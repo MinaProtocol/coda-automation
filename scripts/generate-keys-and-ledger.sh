@@ -2,7 +2,7 @@
 
 # ARGS
 TESTNET="${1:-pickles-public}"
-COMMUNITY_SIZE="${2:-24}"
+COMMUNITY_KEYFILE="${2:-community-keys.txt}"
 
 # DIRS
 mkdir ./keys/keysets
@@ -33,6 +33,10 @@ cat keys/keysets/${TESTNET}_online-whales
 echo
 
 # FISH / COMMUNITY
+declare -a PUBKEYS
+PUBKEYS=$(cat $COMMUNITY_KEYFILE)
+COMMUNITY_SIZE=${pubkeys[@]}
+
 for keyset in online-fish offline-fish; do
   [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count ${COMMUNITY_SIZE} --name "${TESTNET}_${keyset}"
 done
@@ -45,7 +49,7 @@ else
 fi
 
 # Replace the community keys with the ones from community-keys.txt
-for key in $(cat community-keys.txt); do
+for key in $PUBKEYS; do
   sed -i "s/PLACEHOLDER/$key/" keys/keysets/${TESTNET}_online-community
 done
 echo "Online Community Keyset:"
