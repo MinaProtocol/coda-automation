@@ -22,7 +22,7 @@ provider "google" {
 
 locals {
   testnet_name = "pears"
-  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-feature-peer-exchange-3c7d91b"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-develop-144e329"
   coda_archive_image = "codaprotocol/coda-archive:0.0.16-beta7-feature-mainnet-parameter-test"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
@@ -86,26 +86,11 @@ module "testnet_east" {
 
   block_producer_configs = concat(
     [
-      # "sentry" block producer
-      {
-        name                   = "whale-block-producer-1-isolated"
-        class                  = "whale"
-        id                     = 1
-        private_key_secret     = "online-whale-account-1-key"
-        run_with_user_agent    = false
-        run_with_bots          = false
-        enable_peer_exchange   = true
-        # Maybe this isn't going to work because it would mean we'd need flooding on the seed? In that case we can start another node in the middle I guess?
-        isolated               = false
-        enable_gossip_flooding = true
-      }
-    ],
-    [
       for i in range(15): {
-        name                   = "whale-block-producer-${i + 2}"
+        name                   = "whale-block-producer-${i + 1}"
         class                  = "whale"
         id                     = i + 2
-        private_key_secret     = "online-whale-account-${i + 2}-key"
+        private_key_secret     = "online-whale-account-${i + 1}-key"
         enable_gossip_flooding = false
         run_with_user_agent    = false
         run_with_bots          = false
