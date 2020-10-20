@@ -165,6 +165,8 @@ resource "helm_release" "snark_workers" {
 }
 
 resource "helm_release" "archive_node" {
+  count      = local.archive_node_vars != null ? 1 : 0
+  
   name       = "${var.testnet_name}-archive-node"
   chart      = "../../../helm/archive-node"
   namespace  = kubernetes_namespace.testnet_namespace.metadata[0].name
@@ -173,5 +175,4 @@ resource "helm_release" "archive_node" {
   ]
   wait       = false
   depends_on = [helm_release.seed]
-  count      = local.archive_node_vars == null ? 1 : 0
 }
