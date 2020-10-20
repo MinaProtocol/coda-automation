@@ -62,6 +62,11 @@ variable "additional_seed_peers" {
   default = []
 }
 
+variable "deploy_archive" {
+  type    = bool
+  default = true
+}
+
 # empty string means that the deployment will use compile time constants
 variable "runtime_config" {
   type    = string

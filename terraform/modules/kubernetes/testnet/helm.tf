@@ -93,7 +93,7 @@ locals {
     }
   }
 
-  archive_node_vars = var.coda_archive_image == null ? null : {
+  archive_node_vars = {
     testnetName = var.testnet_name
     coda = {
       image         = var.coda_image
@@ -165,7 +165,7 @@ resource "helm_release" "snark_workers" {
 }
 
 resource "helm_release" "archive_node" {
-  count      = local.archive_node_vars != null ? 1 : 0
+  count      = var.deploy_archive ? 1 : 0
   
   name       = "${var.testnet_name}-archive-node"
   chart      = "../../../helm/archive-node"
