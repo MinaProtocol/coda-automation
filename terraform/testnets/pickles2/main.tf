@@ -40,7 +40,7 @@ module "testnet_east" {
     {
       "daemon": {},
       "genesis": { 
-        "genesis_state_timestamp":"2020-09-25T20:41:27Z",
+        "genesis_state_timestamp":"${timestamp()}",
         "k": 225, 
         "delta": 3
       },
