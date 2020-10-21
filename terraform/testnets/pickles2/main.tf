@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 0.12.0"
+  required_version = "~> 0.13.0"
   backend "s3" {
     key     = "terraform-pickles2.tfstate"
     encrypt = true
@@ -24,11 +24,11 @@ module "testnet_east" {
   providers = { google = google.google-us-east1 }
   source    = "../../modules/kubernetes/testnet"
 
-  cluster_name          = "coda-infra-east"
-  cluster_region        = "us-east1"
+  cluster_name          = "coda-infra-east4"
+  cluster_region        = "us-east4"
   testnet_name          = "pickles2"
 
-  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-debug-adding-ledger-catchup-logs-d932c59"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-feature-libp2p-specify-listening-port"
   coda_agent_image      = "codaprotocol/coda-user-agent:0.1.5"
   coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
   coda_points_image     = "codaprotocol/coda-points-hack:32b.4"
