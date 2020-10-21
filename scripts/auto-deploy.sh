@@ -3,7 +3,7 @@
 set -e
 
 TESTNET="$1"
-CLUSTER="gke_o1labs-192920_us-east1_coda-infra-east"
+CLUSTER="${CLUSTER:-gke_o1labs-192920_us-east1_coda-infra-east}"
 KEYSDIR=${2:-"./scripts/online_whale_keys"}
 
 docker_tag_exists() {
