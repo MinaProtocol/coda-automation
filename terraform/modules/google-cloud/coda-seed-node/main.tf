@@ -1,5 +1,5 @@
 locals {
-  container_command = format("echo '%s' > /root/daemon.json; coda daemon -log-level Spam -config-directory /root/.coda-config -client-port 8301 -rest-port 8304 -external-port 10001 -metrics-port 10000 -discovery-keypair %s -seed %s -config-file /root/daemon.json -generate-genesis-proof true | tee log.txt", replace(var.runtime_config, "\n", ""), var.discovery_keypair, var.seed_peers)
+  container_command = format("echo '%s' > /root/daemon.json; coda daemon -log-level Spam -config-directory /root/.coda-config -client-port 8301 -rest-port 8304 -external-port 10001 -metrics-port 10000 -discovery-keypair %s -seed %s -config-file /root/daemon.json -generate-genesis-proof true -log-received-blocks true -enable-peer-exchange true | tee log.txt", replace(var.runtime_config, "\n", ""), var.discovery_keypair, var.seed_peers)
 }
 
 resource "google_compute_address" "external_ip" {
