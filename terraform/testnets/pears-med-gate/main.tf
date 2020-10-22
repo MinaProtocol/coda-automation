@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 0.13.3"
   backend "s3" {
-    key     = "terraform-pears.tfstate"
+    key     = "terraform-pears-med-gate.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -21,8 +21,8 @@ provider "google" {
 }
 
 locals {
-  testnet_name = "pears"
-  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-develop-144e329"
+  testnet_name = "pears-med-gate"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-feature-libp2p-gating-med-85c4d72"
   coda_archive_image = "codaprotocol/coda-archive:0.0.16-beta7-feature-mainnet-parameter-test"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
@@ -42,7 +42,7 @@ locals {
       "proof": {
         "c": 8
       },
-      "ledger": ${file("./genesis_ledger.json")}
+      "ledger": ${file("../pears/genesis_ledger.json")}
     }
   EOT
 }
