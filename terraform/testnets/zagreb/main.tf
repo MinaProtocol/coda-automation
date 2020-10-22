@@ -42,7 +42,7 @@ locals {
       "proof": {
         "c": 8
       },
-      "ledger": ${file("../pears/genesis_ledger.json")}
+      "ledger": ${file("./genesis_ledger.json")}
     }
   EOT
 }
