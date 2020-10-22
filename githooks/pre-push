@@ -36,13 +36,13 @@ do
     echo >&2 "No deleting master"
     exit 1
   else
-    # if we touch something other than testnets/.*/main.tf, abort
-    if git diff --name-only $local_sha..$remote_sha | grep -v 'terraform.testnets.*main.tf' -q; then
+    # if we touch something other than terraform/testnets/**/*, abort
+    if git diff --name-only $local_sha..$remote_sha | grep -v 'terraform.testnets' -q; then
       echo >&2 "Don't push to master directly, you've touched too many files. Please open a branch and do a pull-request first!"
       exit 1
     fi
   fi
 done
 
-echo "Only testnets/.*/main.tf was touched, allowing push to master"
+echo "Only terraform/testnets/**/* was touched, allowing push to master"
 exit 0
