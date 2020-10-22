@@ -23,7 +23,7 @@ provider "google" {
 locals {
   testnet_name = "pickles-public"
   # 0.0.16-beta7-feature-mainnet-parameter-test 0fdcc28
-  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-qa-branch-block-production-fixes-723cd47"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-develop"
   coda_archive_image = "codaprotocol/coda-archive:0.0.16-beta7-develop"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
@@ -34,19 +34,7 @@ locals {
   runtime_config = <<EOT
     {
       "daemon": {},
-      "genesis": {
-        "genesis_state_timestamp": "${timestamp()}",
-        "k": 225, 
-        "delta": 1
-      },
-      "proof": {
-        "c": 8
-      },
-      "ledger": {
-         "name": "community-testnet",
-         "num_accounts": 70,
-         "accounts": ${file("./genesis_ledger.json")}
-      }
+      "genesis": ${file("./genesis_ledger.json")}
     }
   EOT
 }
@@ -81,7 +69,7 @@ module "testnet_east" {
   seed_zone = local.seed_zone
   seed_region = local.seed_region
 
-  log_level              = "Trace"
+  log_level              = "Info"
   log_txn_pool_gossip    = true
   log_received_blocks    = true
 
