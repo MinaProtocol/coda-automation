@@ -16,7 +16,7 @@ spec:
         app: {{ $config.name }}
         testnet: {{ $.Values.testnetName }}
         role: block-producer
-        class: {{ $config.class }}
+        class: {{ default "undefined" $config.class }}
         version: {{ trunc 6 (split ":" $.Values.coda.image)._1 }}
       annotations:
         prometheus.io/scrape: 'true'

@@ -4,7 +4,7 @@ set -e
 
 TESTNET="$1"
 GENERATE_KEYS="$2"
-CLUSTER="gke_o1labs-192920_us-east1_coda-infra-east"
+CLUSTER="${CLUSTER:-gke_o1labs-192920_us-east1_coda-infra-east}"
 
 docker_tag_exists() {
     IMAGE=$(echo $1 | awk -F: '{ print $1 }')
