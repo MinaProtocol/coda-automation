@@ -1,6 +1,6 @@
 {
   "genesis": {
-    "genesis_state_timestamp": "2020-10-22T03:08:28+00:00",
+    "genesis_state_timestamp": "2020-10-22T03:54:01+00:00",
     "ledger": {
       "name": "pickles-public",
       "num_accounts": 100,
