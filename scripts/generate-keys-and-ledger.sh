@@ -34,8 +34,9 @@ echo
 
 # FISH / COMMUNITY
 declare -a PUBKEYS
-PUBKEYS=$(cat $COMMUNITY_KEYFILE)
-COMMUNITY_SIZE=${pubkeys[@]}
+read -ra PUBKEYS <<< $(tr '\n' ' ' < $COMMUNITY_KEYFILE)
+COMMUNITY_SIZE=${#PUBKEYS[@]}
+echo "Generating $COMMUNITY_SIZE community keys..."
 
 for keyset in online-fish offline-fish; do
   [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count ${COMMUNITY_SIZE} --name "${TESTNET}_${keyset}"
@@ -49,7 +50,7 @@ else
 fi
 
 # Replace the community keys with the ones from community-keys.txt
-for key in $PUBKEYS; do
+for key in ${PUBKEYS[@]}; do
   sed -i "s/PLACEHOLDER/$key/" keys/keysets/${TESTNET}_online-community
 done
 echo "Online Community Keyset:"
@@ -69,20 +70,16 @@ else
   echo "ENTER THE FOLLOWING AT THE PROMPTS IN ORDER:"
 
 cat <<KEYSETS
-${TESTNET}_offline-fish
-60000
 ${TESTNET}_online-community
-y
-${TESTNET}_online-community
-5000
+65000
 ${TESTNET}_online-community
 y
 ${TESTNET}_offline-whales
-66900
+80000
 ${TESTNET}_online-whales
 y
 ${TESTNET}_online-service-keys
-50000
+80000
 ${TESTNET}_online-service-keys
 n
 KEYSETS
@@ -91,7 +88,9 @@ KEYSETS
 
   # Fix the ledger format for ease of use
   echo "Rewriting ./keys/genesis/* as terraform/testnets/${TESTNET}/genesis_ledger.json in the proper format for daemon consumption..."
-  cat ./keys/genesis/* | jq '[.[] | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }]' | cat > terraform/testnets/${TESTNET}/genesis_ledger.json
+  cat ./keys/genesis/* | jq '.[] | select(.balance!="65000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > terraform/testnets/${TESTNET}/whales.json
+  cat ./keys/genesis/* | jq '.[] | select(.balance=="65000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "50000", cliff_time:"150", vesting_period:"3", vesting_increment:"1000"}}' | cat > terraform/testnets/${TESTNET}/community_locked_keys.json
+  jq -s '{ genesis_state_timestamp: '$(date --utc --rfc-3339=seconds | sed "s/ /T/")', ledger: { name: '${TESTNET}', num_accounts: 100, accounts: [ .[] ] } }' terraform/testnets/${TESTNET}/*.json > "terraform/testnets/${TESTNET}/genesis_ledger.json"
 fi
 
 echo "Keys and genesis ledger generated successfully, $TESTNET is ready to deploy!"
