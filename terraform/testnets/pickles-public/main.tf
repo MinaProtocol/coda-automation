@@ -32,10 +32,7 @@ locals {
   "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5" ]
 
   runtime_config = <<EOT
-    {
-      "daemon": {},
-      "genesis": ${file("./genesis_ledger.json")}
-    }
+    ${file("./genesis_ledger.json")}
   EOT
 }
 
