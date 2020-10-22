@@ -12,8 +12,9 @@ resource "google_compute_address" "external_ip" {
 resource "google_compute_instance" "vm" {
   project      = var.project_id
   name         = var.instance_name
-  machine_type = "n1-standard-2"
+  machine_type = "n1-standard-4"
   zone         = var.zone
+  allow_stopping_for_update = true
 
   boot_disk {
     initialize_params {
