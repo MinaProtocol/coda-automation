@@ -79,21 +79,21 @@ locals {
     ]
   }
   
-  snark_worker_vars = {
-    testnetName = var.testnet_name
-    coda = local.coda_vars 
-    worker = {
-      active = true
-      numReplicas = var.snark_worker_replicas
-    }
-    coordinator = {
-      active = true
-      deployService = true
-      publicKey   = var.snark_worker_public_key
-      snarkFee    = var.snark_worker_fee
-      hostPort    = var.snark_worker_host_port
-    }
-  }
+  // snark_worker_vars = {
+  //   testnetName = var.testnet_name
+  //   coda = local.coda_vars 
+  //   worker = {
+  //     active = true
+  //     numReplicas = var.snark_worker_replicas
+  //   }
+  //   coordinator = {
+  //     active = true
+  //     deployService = true
+  //     publicKey   = var.snark_worker_public_key
+  //     snarkFee    = var.snark_worker_fee
+  //     hostPort    = var.snark_worker_host_port
+  //   }
+  // }
 
   archive_node_vars = {
     testnetName = var.testnet_name
@@ -141,7 +141,6 @@ resource "helm_release" "seed" {
   depends_on  = [kubernetes_role_binding.helm_release, var.gcloud_seeds]
 }
 
-
 # Block Producers
 
 resource "helm_release" "block_producers" {
@@ -159,29 +158,29 @@ resource "helm_release" "block_producers" {
 
 # Snark Workers 
 
-resource "helm_release" "snark_workers" {
-  name        = "${var.testnet_name}-snark-worker"
-  repository  = local.mina_helm_repo
-  chart       = "snark-worker"
-  version     = "0.1.5"
-  namespace   = kubernetes_namespace.testnet_namespace.metadata[0].name
-  values = [
-    yamlencode(local.snark_worker_vars)
-  ]
-  wait        = false
-  depends_on  = [helm_release.seed]
-}
+// resource "helm_release" "snark_workers" {
+//   name        = "${var.testnet_name}-snark-worker"
+//   repository  = local.mina_helm_repo
+//   chart       = "snark-worker"
+//   version     = "0.1.5"
+//   namespace   = kubernetes_namespace.testnet_namespace.metadata[0].name
+//   values = [
+//     yamlencode(local.snark_worker_vars)
+//   ]
+//   wait        = false
+//   depends_on  = [helm_release.seed]
+// }
 
-resource "helm_release" "archive_node" {
-  count      = var.deploy_archive ? 1 : 0
-  
-  name       = "${var.testnet_name}-archive-node"
-  chart      = "archive-node"
-  version    = "0.1.1"
-  namespace  = kubernetes_namespace.testnet_namespace.metadata[0].name
-  values     = [
-    yamlencode(local.archive_node_vars)
-  ]
-  wait       = false
-  depends_on = [helm_release.seed]
-}
+// resource "helm_release" "archive_node" {
+//   count      = var.deploy_archive ? 1 : 0
+//   
+//   name       = "${var.testnet_name}-archive-node"
+//   chart      = "archive-node"
+//   version    = "0.1.1"
+//   namespace  = kubernetes_namespace.testnet_namespace.metadata[0].name
+//   values     = [
+//     yamlencode(local.archive_node_vars)
+//   ]
+//   wait       = false
+//   depends_on = [helm_release.seed]
+// }
