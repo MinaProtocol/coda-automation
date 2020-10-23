@@ -176,6 +176,7 @@ resource "helm_release" "archive_node" {
   count      = var.deploy_archive ? 1 : 0
   
   name       = "${var.testnet_name}-archive-node"
+  repository = local.mina_helm_repo
   chart      = "archive-node"
   version    = "0.1.1"
   namespace  = kubernetes_namespace.testnet_namespace.metadata[0].name
