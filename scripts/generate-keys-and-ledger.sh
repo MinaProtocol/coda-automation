@@ -91,7 +91,7 @@ KEYSETS
   # Fix the ledger format for ease of use
   echo "Rewriting ./keys/genesis/* as terraform/testnets/${TESTNET}/genesis_ledger.json in the proper format for daemon consumption..."
   cat ./keys/genesis/* | jq '.[] | select(.balance!="65000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > terraform/testnets/${TESTNET}/whales.json
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="65000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "50000", cliff_time:"150", vesting_period:"3", vesting_increment:"1000"}}' | cat > terraform/testnets/${TESTNET}/community_locked_keys.json
+  cat ./keys/genesis/* | jq '.[] | select(.balance=="65000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "50000", cliff_time:"150", vesting_period:"3", vesting_increment:"300"}}' | cat > terraform/testnets/${TESTNET}/community_locked_keys.json
   jq -s '{ genesis: { genesis_state_timestamp: "'${TIMESTAMP}'" }, ledger: { name: "'${TESTNET}'", num_accounts: 100, accounts: [ .[] ] } }' terraform/testnets/${TESTNET}/*.json > terraform/testnets/${TESTNET}/genesis_ledger.json
 fi
 
