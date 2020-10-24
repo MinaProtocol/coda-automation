@@ -37,7 +37,7 @@ echo "WAITING FOR IMAGE ${image} TO APPEAR IN DOCKER REGISTRY"
 
 if [[ -n "$2" ]] ; then
   echo 'GENERATING KEYS'
-  scripts/generate-keys-and-ledger.sh "${TESTNET}" # Generates fish keys, 10 ready-to-upload whale keys, and 2 generic service keys
+  scripts/generate-keys-and-ledger.sh "${TESTNET}" # Generates whale (10), fish (1), community (variable), and service keys (2)
 fi
 
 cd $terraform_dir
@@ -54,10 +54,10 @@ python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --cluster "$CLUSTER" \
   --key-dir "keys/testnet-keys/${TESTNET}_online-whale-keyfiles"
 
-# python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
-#  --namespace "$TESTNET" \
-#  --cluster "$CLUSTER" \
-#  --key-dir "keys/keysets/$TESTNET_online-fish-keys" \
+ python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
+  --namespace "$TESTNET" \
+  --cluster "$CLUSTER" \
+  --key-dir "keys/testnet-keys/${TESTNET}_online-fish-keyfiles" \
 
 #python3 scripts/testnet-keys.py k8s "upload-service-keys" \
 #  --namespace "$TESTNET" \
