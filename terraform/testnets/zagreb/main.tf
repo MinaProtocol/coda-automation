@@ -22,7 +22,7 @@ provider "google" {
 
 locals {
   testnet_name = "zagreb"
-  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-zagreb-net-7f773b2"
+  coda_image = "codaprotocol/coda-daemon:0.0.16-beta7-zagreb-net-166b592"
   coda_archive_image = "codaprotocol/coda-archive:0.0.16-beta7-feature-mainnet-parameter-test"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
