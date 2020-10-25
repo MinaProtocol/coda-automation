@@ -1,6 +1,6 @@
 {
   "genesis": {
-    "genesis_state_timestamp": "2020-10-22T04:08:56+00:00"
+    "genesis_state_timestamp": "2020-10-25T19:36:43Z"
   },
   "ledger": {
     "name": "pickles-public",
@@ -15,7 +15,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -27,7 +27,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -39,7 +39,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -51,7 +51,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -63,7 +63,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -75,7 +75,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -87,7 +87,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -99,7 +99,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -111,7 +111,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -123,7 +123,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -135,7 +135,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -147,7 +147,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -159,7 +159,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -171,7 +171,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -183,7 +183,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -195,7 +195,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -207,7 +207,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -219,7 +219,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -231,7 +231,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -243,7 +243,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -255,7 +255,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -267,7 +267,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -279,7 +279,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -291,7 +291,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -303,7 +303,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -315,7 +315,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -327,7 +327,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -339,7 +339,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -351,7 +351,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -363,7 +363,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -375,7 +375,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -387,7 +387,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -399,7 +399,7 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
@@ -411,79 +411,97 @@
           "initial_minimum_balance": "50000",
           "cliff_time": "150",
           "vesting_period": "3",
-          "vesting_increment": "1000"
+          "vesting_increment": "300"
         }
       },
       {
-        "pk": "B62qjCyXMUymNjNjaY5q4ScqR6Xjm8U4Pi4ey3HX8B5xR4urCJk7CdN",
-        "balance": "80000.000000000",
-        "delegate": "B62qjCyXMUymNjNjaY5q4ScqR6Xjm8U4Pi4ey3HX8B5xR4urCJk7CdN",
+        "pk": "B62qpKxfMiuJNNi1KC54uvZnUuD9itMVojnFQP2tZ8XcfzsRiHDsKmd",
+        "balance": "65000.000000000",
+        "delegate": "B62qpKxfMiuJNNi1KC54uvZnUuD9itMVojnFQP2tZ8XcfzsRiHDsKmd",
+        "sk": null,
+        "timing": {
+          "initial_minimum_balance": "50000",
+          "cliff_time": "150",
+          "vesting_period": "3",
+          "vesting_increment": "300"
+        }
+      },
+      {
+        "pk": "B62qkyDpjGPvbw1A5taed9PMRKxGjkc8pJNa6FwmED3bcAe895qDMwv",
+        "balance": "1000.000000000",
+        "delegate": "B62qqDBL3K2Wak6Ko4kQd5e1qEBAv1YV65n34PjFeLWr5aUTyuD9W1o",
         "sk": null
       },
       {
-        "pk": "B62qkcabfmz1PiaeEGGYQ1TtAhdbCBBMAxUcucimL3JX5eSVr1HrtZ6",
-        "balance": "80000.000000000",
-        "delegate": "B62qkcabfmz1PiaeEGGYQ1TtAhdbCBBMAxUcucimL3JX5eSVr1HrtZ6",
+        "pk": "B62qoa8ajomBhDxEJRpQgjar7itp29sRrgpwX6sgg5mEQJqbhEKbSox",
+        "balance": "1000.000000000",
+        "delegate": "B62qkpzWQXa1SG6vjfWV7ZPYFz7duc1SVFTLTD9MKw3nC9GjYa1GzCi",
         "sk": null
       },
       {
-        "pk": "B62qiWxtutx8awmTNobsnYH7F2J8EV1wdLH95hph79Yz2C3Z1sRGZVc",
-        "balance": "80000.000000000",
-        "delegate": "B62qnVYCqiBYsmcnp23WQjRPg2qeFF3PYfxhPDyciyEzFxmt8bCGH2B",
+        "pk": "B62qkpzWQXa1SG6vjfWV7ZPYFz7duc1SVFTLTD9MKw3nC9GjYa1GzCi",
+        "balance": "9000.000000000",
+        "delegate": "B62qkpzWQXa1SG6vjfWV7ZPYFz7duc1SVFTLTD9MKw3nC9GjYa1GzCi",
         "sk": null
       },
       {
-        "pk": "B62qpedmgWLLudAr981sH126TepMqAVnRREuAYVuTBQeyta3Qzx3Qwu",
+        "pk": "B62qjNL3R2WeBJDxfRznBB1wJbx9HzqbgrxqH91gu8rrAa5u5wJhBZp",
         "balance": "80000.000000000",
-        "delegate": "B62qkRP4PoxVqSHq1aS4ndEpV64KcKuweqRdfZ5KCrqA5ESsAzD4bCj",
+        "delegate": "B62qpjctLSqLRKp7w6oahxW6zqQkQaLUQri8wiuHo3qWuiFkikThVW2",
         "sk": null
       },
       {
-        "pk": "B62qkre4v7XdkJZCa2Wd84kE5ZW4rsVZEVn1eXn5hH4AL3fSxdgdtCi",
+        "pk": "B62qrWywqzkZbvE48XvfjC1buSD8N7Mwkqeur7gf4u7bARXgQ9TXbYc",
         "balance": "80000.000000000",
-        "delegate": "B62qo3GhqPUtNqU9unzU8EuiKM1tQGpY74WQhKn23A3mqxX3syWEnLU",
+        "delegate": "B62qmLuSobQdZVLzraJfMK4M4JAPeF4g3dsqwZtAGLEo1SE8UCmzWKf",
         "sk": null
       },
       {
-        "pk": "B62qrFBpLDojC1hAE4PMHQBGZuy1ZK5GN1NbNbCmy2C7J1TQh1LFy23",
+        "pk": "B62qmEg1vZpzPq27C4XDcAaqVXb7ZYSrFMVA8DtzTkuntEhgYLaieaV",
         "balance": "80000.000000000",
-        "delegate": "B62qoirxZP2X7zJoZ3Pyn6NvNnSHWAh9PE25VBrbX7UnfduLoVy7ebR",
+        "delegate": "B62qmkwKC6W7JKpwsSXwS6zG6idNf9r1KRb1jFJDwfz45PafxKAj5ys",
         "sk": null
       },
       {
-        "pk": "B62qrAiHPNv8afeyXdPz3hYBK3eDPMs2zF21d7Wzc73ciCpd31iUTjw",
+        "pk": "B62qmXQf77jADT2oibSyZNkn8p9bWBNu2kmdEDWh1tcvT6LFZaognoP",
         "balance": "80000.000000000",
-        "delegate": "B62qkCc3KYnR9VpbHgcE4f69HwyVC3A9TvRpR2fwrfJ5mGf2FzzqZyq",
+        "delegate": "B62qn1bCnhnijLE1pWMJiMTVfMNYy47gwrsip4oXr1uBKdrWwPS4z7e",
         "sk": null
       },
       {
-        "pk": "B62qk1sgCGNY3SK9XcwyMsB1DWFnKMWgQSmLermMTiFaaGz399sw911",
+        "pk": "B62qqCMhX2aqmG2VFDKKpzyt4CAy3AW9jni6dmBBW8sALNvwdh7Fo7V",
         "balance": "80000.000000000",
-        "delegate": "B62qp1mu1yNfSnv1yKzburwKLX9yHxGZcTeMUyk2QhZsogsv9ti6e22",
+        "delegate": "B62qjWxTFbpRpqzVoYwEEnBGkRzQfYsnw9Vodnm42UB5jBGhqaHBZY7",
         "sk": null
       },
       {
-        "pk": "B62qmPUqBiW8LTw1EyVJNW7ysXDC65LeQGK17QCiDs9ti9xE2mHVA7Z",
+        "pk": "B62qiUxu6W3ut8s1vMjYDENDF33kKn6XodYZbf3UKApCCaa43VYKwph",
         "balance": "80000.000000000",
-        "delegate": "B62qimMAwBE5kGDEMoV6U3MDACgRRn3WBCJqmGDRTve4jP5s2XnC91d",
+        "delegate": "B62qmHqsA2Y59qzAZVGQS9EGu936m4jtuXvgLsxPMeyp7jitXkBTivS",
         "sk": null
       },
       {
-        "pk": "B62qrAAxsED3zDhgBZfei9womJbSw26w2VMm9ghfffnUhD1c9UniHhF",
+        "pk": "B62qiXWHtGHQfFV1qwLvwY2SdKFrskifqf5tvp96jBcUS9svVMMgnmp",
         "balance": "80000.000000000",
-        "delegate": "B62qpmGM9Kpf1czRcxNjbX47C8pQjxyoj1zHULXtxeAPRdctLe2ae2r",
+        "delegate": "B62qjp9Nz6nLSyYuE3V8ZjKL5byUhoQEjRCHdtPHmpmxtMZWbutwLFG",
         "sk": null
       },
       {
-        "pk": "B62qp3UvTuZo6K4TNBNb2MebdJf4U4LAumwD62Dc3dAp5Nig9G3DcUj",
+        "pk": "B62qnQfpVBDyyjdNpaAxZwfpqHBQjWwvX8w5REpWJkd6RCF8yemwDNw",
         "balance": "80000.000000000",
-        "delegate": "B62qo1HmLu3iF54reEDPAfLTY7tN8QtdRm5UC6eX43RJFcpx69L75Uf",
+        "delegate": "B62qiknqew5CWaXJiXcr1MmFso3chkth557QqscYpXThHW5QUb82yQg",
         "sk": null
       },
       {
-        "pk": "B62qpMv9FBtdrL8JMghHydQUae7jXKi833Prj1bSnZkBZW1u8iqEweB",
+        "pk": "B62qo4wSpnVhdoD3EyX4snkZMxsB45HUw2huKcYHbRBcKLn6KFKft72",
         "balance": "80000.000000000",
-        "delegate": "B62qq7HNyT7eq8hoNHHprStCUQKdJhGoPLQth9vHv19B5z3Ug6izze4",
+        "delegate": "B62qieGxRTj1nekbFLmLV8pp6DyCM83wgavwdaF6ygxvZWL6Dt9y6Vy",
+        "sk": null
+      },
+      {
+        "pk": "B62qm2bFx16s2B7VTF5e1Qm7q1SipsNNCjnQhNiK7C43niQn8kpj741",
+        "balance": "80000.000000000",
+        "delegate": "B62qmDiXi9tk8ViaRfuqdvRaR64SBk3WcK1CseCGGnZTWGBdwKC53hj",
         "sk": null
       }
     ]

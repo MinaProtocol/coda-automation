@@ -22,8 +22,7 @@ provider "google" {
 
 locals {
   testnet_name = "pickles-public"
-  # 0.0.16-beta7-feature-mainnet-parameter-test 0fdcc28
-  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-develop-2847b2c"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-qa-net-10-24-2020-6dc573d"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-2847b2c"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
@@ -86,6 +85,19 @@ module "testnet_east" {
         enable_peer_exchange   = true
         isolated               = false
       }
+    ],
+    [
+      for i in range(1): {
+        name                   = "fish-block-producer-${i + 1}"
+        class                  = "fish"
+        id                     = i + 1
+        private_key_secret     = "online-fish-account-${i + 1}-key"
+        enable_gossip_flooding = false
+        run_with_user_agent    = true
+        run_with_bots          = false
+        enable_peer_exchange   = true
+        isolated               = false
+      }
     ]
   )
 
@@ -98,5 +110,6 @@ module "testnet_east" {
   agent_max_fee = "0.1"
   agent_min_tx = "0.0015"
   agent_max_tx = "0.0015"
+  agent_send_every_mins = "1"
 }
 
