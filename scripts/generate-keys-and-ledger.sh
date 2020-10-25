@@ -132,6 +132,10 @@ ${TESTNET}_offline-fish
 1000
 ${TESTNET}_online-fish
 y
+${TESTNET}_online-fish
+9000
+${TESTNET}_online-fish
+y
 ${TESTNET}_online-service-keys
 50000
 ${TESTNET}_online-service-keys
@@ -152,7 +156,8 @@ n
   # Fix the ledger format for ease of use
   echo "Rewriting ./keys/genesis/* as terraform/testnets/${TESTNET}/genesis_ledger.json in the proper format for daemon consumption..."
   cat ./keys/genesis/* | jq '.[] | select(.balance=="80000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > terraform/testnets/${TESTNET}/whales.json
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="1000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > terraform/testnets/${TESTNET}/fish.json
+  cat ./keys/genesis/* | jq '.[] | select(.balance=="9000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > terraform/testnets/${TESTNET}/online-fish.json
+  cat ./keys/genesis/* | jq '.[] | select(.balance=="1000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > terraform/testnets/${TESTNET}/offline-fish.json
   cat ./keys/genesis/* | jq '.[] | select(.balance=="65000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "50000", cliff_time:"150", vesting_period:"3", vesting_increment:"300"}}' | cat > terraform/testnets/${TESTNET}/community_locked_keys.json
   jq -s '{ genesis: { genesis_state_timestamp: "'${TIMESTAMP}'" }, ledger: { name: "'${TESTNET}'", num_accounts: 100, accounts: [ .[] ] } }' terraform/testnets/${TESTNET}/*.json > terraform/testnets/${TESTNET}/genesis_ledger.json
 fi
