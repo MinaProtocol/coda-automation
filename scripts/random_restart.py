@@ -18,6 +18,9 @@ def main():
 
     if args.incluster:
         config.load_incluster_config()
+        assert(args.namespace == '')
+        with open('/var/run/secrets/kubernetes.io/serviceaccount/namespace', 'r') as f:
+            args.namespace = f.read()
     else:
         config.load_kube_config()
     v1 = client.CoreV1Api()
@@ -37,4 +40,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
