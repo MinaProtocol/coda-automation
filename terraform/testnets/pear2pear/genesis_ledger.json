@@ -1,9 +1,9 @@
 {
   "genesis": {
-    "genesis_state_timestamp": "2020-10-27T02:30:14Z"
+    "genesis_state_timestamp": "2020-10-27T16:23:41Z"
   },
   "ledger": {
-    "name": "pear2pear",
+    "name": "",
     "num_accounts": 100,
     "accounts": [
       {
@@ -214,12 +214,6 @@
         "pk": "B62qkBm7PD5WKFe9hEijLoG5eVL8qRuuBgi4fQphsKApbTjcgS4RxXi",
         "balance": "1000.000000000",
         "delegate": "B62qqcUDHyKvCUaRfSfuEwnSUM6PAEhX1z8GDvGh43K8rfqMWoaVB2w",
-        "sk": null
-      },
-      {
-        "pk": "B62qqWqaqCPbwonQd56FgWVN88qPPPS6j6i3gjb22DjfBx1Le38Fb1Y",
-        "balance": "9000.000000000",
-        "delegate": "B62qqWqaqCPbwonQd56FgWVN88qPPPS6j6i3gjb22DjfBx1Le38Fb1Y",
         "sk": null
       },
       {
