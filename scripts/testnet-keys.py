@@ -624,23 +624,23 @@ def generate_ledger(generate_remainder, service_accounts_directory,
     print()
     # TODO: dynamic num_accounts
     # Write ledger and annotated ledger to disk
-    with open(SCRIPT_DIR / 'genesis_ledger.json', 'w') as outfile:
+    with open(str(SCRIPT_DIR / 'genesis_ledger.json'), 'w') as outfile:
         ledger_wrapper = {
             "name": "release",
             "num_accounts": 250,
             "accounts": ledger
         }
         json.dump(ledger_wrapper, outfile, indent=1)
-        print(f"Ledger Path: {SCRIPT_DIR / 'genesis_ledger.json'}")
+        print("Ledger Path: " + str(SCRIPT_DIR / 'genesis_ledger.json'))
 
-    with open(SCRIPT_DIR / 'annotated_ledger.json', 'w') as outfile:
+    with open(str(SCRIPT_DIR / 'annotated_ledger.json'), 'w') as outfile:
         annotated_ledger_wrapper = {
             "name": "annotated_release",
             "num_accounts": 250,
             "accounts": ledger
         }
         json.dump(annotated_ledger_wrapper, outfile, indent=1)
-        print(f"Annotated Ledger Path: {SCRIPT_DIR / 'genesis_ledger.json'}")
+        print("Annotated Ledger Path: " + str(SCRIPT_DIR / 'annotated_ledger.json'))
 
 
 #####
