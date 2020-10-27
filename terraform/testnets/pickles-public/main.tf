@@ -65,7 +65,7 @@ module "testnet_east" {
   seed_zone = local.seed_zone
   seed_region = local.seed_region
 
-  log_level              = "Info"
+  log_level              = "Debug"
   log_txn_pool_gossip    = true
   log_received_blocks    = true
 
@@ -95,7 +95,7 @@ module "testnet_east" {
         enable_gossip_flooding = false
         run_with_user_agent    = true
         run_with_bots          = false
-        enable_peer_exchange   = true
+        enable_peer_exchange   = false
         isolated               = false
       }
     ]
@@ -106,10 +106,10 @@ module "testnet_east" {
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port = 10401
 
-  agent_min_fee = "0.06"
-  agent_max_fee = "0.1"
-  agent_min_tx = "0.0015"
-  agent_max_tx = "0.0015"
+  agent_min_fee = "0.05"
+  agent_max_fee = "1"
+  agent_min_tx = "15"
+  agent_max_tx = "15"
   agent_send_every_mins = "1"
 }
 
