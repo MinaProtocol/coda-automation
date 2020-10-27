@@ -5,8 +5,8 @@ TESTNET="${1:-pickles-public}"
 COMMUNITY_KEYFILE="${2:-community-keys.txt}"
 RESET="${3:-false}"
 
-WHALE_COUNT=10
-FISH_COUNT=1
+WHALE_COUNT=15
+FISH_COUNT=35
 
 PATH=$PATH:./bin/
 
@@ -106,6 +106,7 @@ echo
 # ================================================================================
 
 # SERVICES
+echo "Generating 2 service keys..."
 [[ -s "keys/keysets/${TESTNET}_online-service-keys" ]] || coda-network keyset create --count 2 --name ${TESTNET}_online-service-keys
 
 # ================================================================================
@@ -114,7 +115,7 @@ echo
 if [[ -s "terraform/testnets/${TESTNET}/genesis_ledger.json" ]] ; then
   echo "-- genesis_ledger.json already exists for this testnet, refusing to overwrite. Delete \'terraform/testnets/${TESTNET}/genesis_ledger.json\' to force re-creation."
 else
-  echo "-- Creating genesis ledger with `coda-network genesis` --"
+  echo "-- Creating genesis ledger with 'coda-network genesis' --"
 
   PROMPT_KEYSETS="${TESTNET}_online-community
 65000
@@ -138,7 +139,7 @@ ${TESTNET}_online-service-keys
 n
 "
 
-  # Handle passing the above keyset info into interactive `coda-network genesis` prompts
+  # Handle passing the above keyset info into interactive 'coda-network genesis' prompts
   while read input
   do echo "$input"
     sleep 1
