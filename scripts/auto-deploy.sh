@@ -42,12 +42,19 @@ fi
 
 cd $terraform_dir
 echo 'RUNNING TERRAFORM in '"$terraform_dir"
+# Always terraform init to make sure modules are loaded
 terraform init
+
+# Ask about destroy
+read -p "Terraform destroy? [y/N] " -n 1 -r
+[[ $REPLY =~ ^[Yy]$ ]] && terraform destroy -auto-approve || echo "not destroying, continue to terraform plan + apply..."
+
+# Show the plan
 terraform plan
-read -p "Is the above terraform plan sufficient? [Y/n] " -n 1 -r
-echo
-[[ ! $REPLY =~ ^[Yy]$ ]] && echo "insufficient terraform plan, exiting before doing anything destructive" && exit 1 
-terraform destroy -auto-approve
+read -p "Is the above terraform plan correct? [y/N] " -n 1 -r
+[[ ! $REPLY =~ ^[Yy]$ ]] && echo "incorrect terraform plan, exiting before doing anything destructive" && exit 1
+
+# Apply and move forward only when plan is approved by the user, from here we auto-approve
 terraform apply -auto-approve
 cd -
 
