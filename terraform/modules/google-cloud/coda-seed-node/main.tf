@@ -14,7 +14,6 @@ resource "google_compute_instance" "vm" {
   name         = var.instance_name
   machine_type = "n1-standard-4"
   zone         = var.zone
-  allow_stopping_for_update = true
 
   boot_disk {
     initialize_params {
