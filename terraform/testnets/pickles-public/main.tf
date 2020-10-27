@@ -107,9 +107,9 @@ module "testnet_east" {
   snark_worker_host_port = 10401
 
   agent_min_fee = "0.05"
-  agent_max_fee = "1"
-  agent_min_tx = "15"
-  agent_max_tx = "15"
+  agent_max_fee = "0.1"
+  agent_min_tx = "0.0015"
+  agent_max_tx = "0.0015"
   agent_send_every_mins = "1"
 }
 
