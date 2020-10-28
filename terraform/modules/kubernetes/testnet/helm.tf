@@ -104,6 +104,7 @@ locals {
     }
     archive = {
       image = var.coda_archive_image
+      remoteSchemaFile = var.mina_archive_schema
    }
   }
   
