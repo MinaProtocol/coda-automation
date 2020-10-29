@@ -5,8 +5,8 @@ TESTNET="${1:-pickles-public}"
 COMMUNITY_KEYFILE="${2:-community-keys.txt}"
 RESET="${3:-false}"
 
-WHALE_COUNT=15
-FISH_COUNT=35
+WHALE_COUNT=10
+FISH_COUNT=1
 
 PATH=$PATH:./bin/
 
@@ -79,13 +79,13 @@ echo
 
 # ================================================================================
 
-# COMMUNITY
+# COMMUNITY 1
 declare -a PUBKEYS
-read -ra PUBKEYS <<< $(tr '\n' ' ' < $COMMUNITY_KEYFILE)
+read -ra PUBKEYS <<< $(tr '\n' ' ' < community-keys-1.txt)
 COMMUNITY_SIZE=${#PUBKEYS[@]}
 echo "Generating $COMMUNITY_SIZE community keys..."
 
-for keyset in online-community offline-community; do
+for keyset in online-community; do
   [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count ${COMMUNITY_SIZE} --name "${TESTNET}_${keyset}"
 done
 
@@ -101,6 +101,30 @@ for key in ${PUBKEYS[@]}; do
 done
 echo "Online Community Keyset:"
 cat keys/keysets/${TESTNET}_online-community
+echo
+
+# COMMUNITY 2
+declare -a PUBKEYS
+read -ra PUBKEYS <<< $(tr '\n' ' ' < community-keys-2.txt)
+COMMUNITY_SIZE=${#PUBKEYS[@]}
+echo "Generating $COMMUNITY_SIZE community2 keys..."
+
+for keyset in online-community2; do
+  [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count ${COMMUNITY_SIZE} --name "${TESTNET}_${keyset}"
+done
+
+if [[ -s "keys/testnet-keys/${TESTNET}_online-community2" ]]; then
+echo "using existing community keys"
+else
+  sed -ie 's/"publicKey":"[^"]*"/"publicKey":"PLACEHOLDER"/g' keys/keysets/${TESTNET}_online-community2
+fi
+
+# Replace the community keys with the ones from community-keys.txt
+for key in ${PUBKEYS[@]}; do
+  sed -ie "s/PLACEHOLDER/$key/" keys/keysets/${TESTNET}_online-community2
+done
+echo "Online Community 2 Keyset:"
+cat keys/keysets/${TESTNET}_online-community2
 echo
 
 # ================================================================================
@@ -120,6 +144,10 @@ else
   PROMPT_KEYSETS="${TESTNET}_online-community
 65000
 ${TESTNET}_online-community
+y
+${TESTNET}_online-community2
+65001
+${TESTNET}_online-community2
 y
 ${TESTNET}_offline-whales
 80000
@@ -152,7 +180,8 @@ n
   cat ./keys/genesis/* | jq '.[] | select(.balance=="80000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/whales.json"
   cat ./keys/genesis/* | jq '.[] | select(.balance=="9000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/online-fish.json"
   cat ./keys/genesis/* | jq '.[] | select(.balance=="1000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/offline-fish.json"
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="65000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "50000", cliff_time:"150", vesting_period:"3", vesting_increment:"300"}}' | cat > "terraform/testnets/${TESTNET}/community_locked_keys.json"
+  cat ./keys/genesis/* | jq '.[] | select(.balance=="65000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "60000", cliff_time:"150", vesting_period:"3", vesting_increment:"300"}}' | cat > "terraform/testnets/${TESTNET}/community_fast_locked_keys.json"
+  cat ./keys/genesis/* | jq '.[] | select(.balance=="65001") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "30000", cliff_time:"250", vesting_period:"4", vesting_increment:"200"}}' | cat > "terraform/testnets/${TESTNET}/community_slow_locked_keys.json"
   jq -s '{ genesis: { genesis_state_timestamp: "'${GENESIS_TIMESTAMP}'" }, ledger: { name: "'${TESTNET}'", num_accounts: 100, accounts: [ .[] ] } }' terraform/testnets/${TESTNET}/*.json > "terraform/testnets/${TESTNET}/genesis_ledger.json"
 fi
 
