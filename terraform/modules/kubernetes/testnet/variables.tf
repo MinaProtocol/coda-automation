@@ -20,6 +20,11 @@ variable "coda_archive_image" {
   default = ""
 }
 
+variable "mina_archive_schema" {
+  type = string
+  default = ""
+}
+
 variable "coda_agent_image" {
   type    = string
   default = "codaprotocol/coda-user-agent:0.1.4"
