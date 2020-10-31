@@ -26,9 +26,9 @@ spec:
       - name: worker
         resources:
           limits:
-            memory: 16.0Gi
+            memory: 12.0Gi
           requests:
-            memory: 13.0Gi # ember is confused why this is soooo much ram
+            memory: 4.0Gi # ember is confused why this is soooo much ram
             cpu: 4
         image: {{ $.Values.coda.image }}
         command: ["bash", "-c"]

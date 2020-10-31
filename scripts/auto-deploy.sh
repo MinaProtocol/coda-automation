@@ -4,7 +4,7 @@ set -e
 
 TESTNET="$1"
 GENERATE_KEYS="$2"
-CLUSTER="${CLUSTER:-gke_o1labs-192920_us-central1_coda-infra-central1}"
+CLUSTER="${CLUSTER:-gke_o1labs-192920_us-east1_coda-infra-east}"
 
 docker_tag_exists() {
     IMAGE=$(echo $1 | awk -F: '{ print $1 }')
@@ -55,6 +55,7 @@ read -p "Is the above terraform plan correct? [y/N] " -n 1 -r
 [[ ! $REPLY =~ ^[Yy]$ ]] && echo "incorrect terraform plan, exiting before doing anything destructive" && exit 1
 
 # Apply and move forward only when plan is approved by the user, from here we auto-approve
+echo "Applying Terraform..."
 terraform apply -auto-approve
 cd -
 
