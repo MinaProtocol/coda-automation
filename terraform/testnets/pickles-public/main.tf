@@ -36,8 +36,8 @@ provider "google" {
 
 locals {
   testnet_name = "pickles-public"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-fix-extra-peers-f35cc6a"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-71f865b"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-pre-release-blocktime-increase-db1ee8b"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-95a2025"
   seed_region = "us-central1"
   seed_zone = "us-central1-c"
   seed_discovery_keypairs = [
@@ -88,7 +88,7 @@ module "testnet_east" {
 
   block_producer_configs = concat(
     [
-      for i in range(10): {
+      for i in range(15): {
         name                   = "whale-block-producer-${i + 1}"
         class                  = "whale"
         id                     = i + 1
@@ -115,7 +115,7 @@ module "testnet_east" {
     ]
   )
 
-  snark_worker_replicas = 10
+  snark_worker_replicas = 15
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port = 10401
