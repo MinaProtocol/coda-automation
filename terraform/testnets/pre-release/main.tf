@@ -36,7 +36,7 @@ provider "google" {
 
 locals {
   testnet_name = "pre-release"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-feature-rust-ocaml-heap-970b340"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-feature-rust-ocaml-heap-fb07bc4"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-95a2025"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
