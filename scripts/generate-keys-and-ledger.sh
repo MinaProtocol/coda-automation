@@ -5,7 +5,7 @@ TESTNET="${1:-pickles-public}"
 COMMUNITY_KEYFILE="${2:-community-keys.txt}"
 RESET="${3:-false}"
 
-WHALE_COUNT=10
+WHALE_COUNT=15
 FISH_COUNT=1
 
 PATH=$PATH:./bin/
@@ -15,8 +15,8 @@ cd "${SCRIPTPATH}/../"
 
 if $RESET; then
   echo "resetting keys and genesis_ledger"
-  rm -rf keys
-  rm -rf terraform/testnets/${TESTNET}/genesis_ledger.json
+  rm -rf keys/genesis keys/keysets keys/keypairs
+  rm -rf terraform/testnets/${TESTNET}/*.json
 fi
 
 # DIRS
@@ -130,8 +130,8 @@ echo
 # ================================================================================
 
 # SERVICES
-echo "Generating 2 service keys..."
-[[ -s "keys/keysets/${TESTNET}_online-service-keys" ]] || coda-network keyset create --count 2 --name ${TESTNET}_online-service-keys
+# echo "Generating 2 service keys..."
+# [[ -s "keys/keysets/${TESTNET}_online-service-keys" ]] || coda-network keyset create --count 2 --name ${TESTNET}_online-service-keys
 
 # ================================================================================
 
@@ -142,15 +142,15 @@ else
   echo "-- Creating genesis ledger with 'coda-network genesis' --"
 
   PROMPT_KEYSETS="${TESTNET}_online-community
-65000
+62000
 ${TESTNET}_online-community
 y
 ${TESTNET}_online-community2
-65001
+62001
 ${TESTNET}_online-community2
 y
 ${TESTNET}_offline-whales
-80000
+100000
 ${TESTNET}_online-whales
 y
 ${TESTNET}_offline-fish
@@ -160,12 +160,14 @@ y
 ${TESTNET}_online-fish
 9000
 ${TESTNET}_online-fish
-y
-${TESTNET}_online-service-keys
-50000
-${TESTNET}_online-service-keys
 n
 "
+
+#y
+#${TESTNET}_online-service-keys
+#50000
+#${TESTNET}_online-service-keys
+
 
   # Handle passing the above keyset info into interactive 'coda-network genesis' prompts
   while read input
@@ -177,12 +179,13 @@ n
 
   # Fix the ledger format for ease of use
   echo "Rewriting ./keys/genesis/* as terraform/testnets/${TESTNET}/genesis_ledger.json in the proper format for daemon consumption..."
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="80000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/whales.json"
+  cat ./keys/genesis/* | jq '.[] | select(.balance=="100000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/whales.json"
   cat ./keys/genesis/* | jq '.[] | select(.balance=="9000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/online-fish.json"
   cat ./keys/genesis/* | jq '.[] | select(.balance=="1000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/offline-fish.json"
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="65000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "60000", cliff_time:"150", vesting_period:"3", vesting_increment:"300"}}' | cat > "terraform/testnets/${TESTNET}/community_fast_locked_keys.json"
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="65001") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "30000", cliff_time:"250", vesting_period:"4", vesting_increment:"200"}}' | cat > "terraform/testnets/${TESTNET}/community_slow_locked_keys.json"
-  jq -s '{ genesis: { genesis_state_timestamp: "'${GENESIS_TIMESTAMP}'" }, ledger: { name: "'${TESTNET}'", num_accounts: 100, accounts: [ .[] ] } }' terraform/testnets/${TESTNET}/*.json > "terraform/testnets/${TESTNET}/genesis_ledger.json"
+  cat ./keys/genesis/* | jq '.[] | select(.balance=="62000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "60000", cliff_time:"150", vesting_period:"3", vesting_increment:"300"}}' | cat > "terraform/testnets/${TESTNET}/community_fast_locked_keys.json"
+  cat ./keys/genesis/* | jq '.[] | select(.balance=="62001") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "30000", cliff_time:"250", vesting_period:"4", vesting_increment:"200"}}' | cat > "terraform/testnets/${TESTNET}/community_slow_locked_keys.json"
+  jq -s '{ genesis: { genesis_state_timestamp: "'${GENESIS_TIMESTAMP}'" }, ledger: { name: "'${TESTNET}'", num_accounts: 89, accounts: [ .[] ] } }' terraform/testnets/${TESTNET}/*.json > "terraform/testnets/${TESTNET}/genesis_ledger.json"
 fi
+
 
 echo "Keys and genesis ledger generated successfully, $TESTNET is ready to deploy!"
