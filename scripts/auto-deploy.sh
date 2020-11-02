@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
 TESTNET="$1"
-CLUSTER="${CLUSTER:-gke_o1labs-192920_us-east1_coda-infra-east}"
-KEYSDIR=${2:-"./scripts/online_whale_keys"}
+GENERATE_KEYS="$2"
+CLUSTER="${CLUSTER:-gke_o1labs-192920_us-central1_coda-infra-central1}"
 
 docker_tag_exists() {
     IMAGE=$(echo $1 | awk -F: '{ print $1 }')
@@ -26,20 +26,36 @@ fi
 
 
 terraform_dir="terraform/testnets/$TESTNET"
-
-# TODO: add this check back, with compatibility for docker sha256 digests
-#image=$(sed -n 's|.*"\(0/coda-daemon:[^"]*\)"|\1|p' "$terraform_dir/main.tf")
-#image=$(echo "${image}" | head -1)
-#echo "WAITING FOR IMAGE TO APPEAR IN DOCKER REGISTRY"
+image=$(sed -n 's|.*"\(.*/coda-daemon:[^"]*\)"|\1|p' "$terraform_dir/main.tf")
+image=$(echo "${image}" | head -1)
+echo "WAITING FOR IMAGE ${image} TO APPEAR IN DOCKER REGISTRY"
 #for i in $(seq 60); do
 #  docker_tag_exists "$image" && break
 #  [ "$i" != 30 ] || (echo "expected image never appeared in docker registry" && exit 1)
 #  sleep 10
 #done
 
+if [[ -n "$2" ]] ; then
+  echo 'GENERATING KEYS'
+  scripts/generate-keys-and-ledger.sh "${TESTNET}" "$2" "$3" # Generates whale (10), fish (1), community (variable), and service keys (2)
+fi
+
 cd $terraform_dir
-echo 'RUNNING TERRAFORM'
-terraform destroy -auto-approve
+echo 'RUNNING TERRAFORM in '"$terraform_dir"
+# Always terraform init to make sure modules are loaded
+terraform init
+
+# Ask about destroy
+read -p "Terraform destroy? [y/N] " -n 1 -r
+[[ $REPLY =~ ^[Yy]$ ]] && terraform destroy -auto-approve || echo "not destroying, continue to terraform plan + apply..."
+
+# Show the plan
+terraform plan
+read -p "Is the above terraform plan correct? [y/N] " -n 1 -r
+[[ ! $REPLY =~ ^[Yy]$ ]] && echo "incorrect terraform plan, exiting before doing anything destructive" && exit 1
+
+# Apply and move forward only when plan is approved by the user, from here we auto-approve
+echo "Applying Terraform..."
 terraform apply -auto-approve
 cd -
 
@@ -47,32 +63,27 @@ echo 'UPLOADING KEYS'
 
 python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --namespace "$TESTNET" \
-  --cluster "$CLUSTER"
-  
-python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
+  --cluster "$CLUSTER" \
+  --key-dir "keys/testnet-keys/${TESTNET}_online-whale-keyfiles"
+
+ python3 scripts/testnet-keys.py k8s "upload-online-fish-keys" \
   --namespace "$TESTNET" \
   --cluster "$CLUSTER" \
-  --count "$(echo scripts/online_fish_keys/*.pub | wc -w)"
+  --key-dir "keys/testnet-keys/${TESTNET}_online-fish-keyfiles" \
+  --count "$(echo keys/testnet-keys/${TESTNET}_online-fish-keyfiles/*.pub | wc -w)"
 
-python3 scripts/testnet-keys.py k8s "upload-service-keys" \
-  --namespace "$TESTNET" \
-  --cluster "$CLUSTER"
+#python3 scripts/testnet-keys.py k8s "upload-service-keys" \
+#  --namespace "$TESTNET" \
+#  --cluster "$CLUSTER" \
+#  --key-dir "keys/keysets/$TESTNET_online-service-keys"
 
-if [ -e scripts/o1-discord-api-key ]; then
+if [ -e keys/api-keys/o1-discord-api-key ]; then
   kubectl create secret generic o1-discord-api-key \
     "--cluster=$CLUSTER" \
     "--namespace=$TESTNET" \
-    "--from-file=o1discord=scripts/o1-discord-api-key"
+    "--from-file=o1discord=keys/api-keys/o1-discord-api-key"
 else
   echo '*** NOT UPLOADING DISCORD API KEY (required when running with bots sidecar)'
-fi
-if [ -e scripts/o1-google-cloud-storage-api-key.json ]; then
-  kubectl create secret generic o1-google-cloud-storage-api-key \
-    "--cluster=$CLUSTER" \
-    "--namespace=$TESTNET" \
-    "--from-file=o1google=scripts/o1-google-cloud-storage-api-key.json"
-else
-  echo '*** NOT UPLOADING GOOGLE CLOUD STORAGE API KEY (required when running with points sidecar)'
 fi
 
 echo 'DEPLOYMENT COMPLETED'

@@ -184,6 +184,6 @@ resource "helm_release" "archive_node" {
   values     = [
     yamlencode(local.archive_node_vars)
   ]
-  wait       = false
+  wait = false
   depends_on = [helm_release.seed]
 }
