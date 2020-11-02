@@ -6,8 +6,13 @@ ec2.json
 token.pickle
 .merlin
 lib
-scripts/o1-discord-api-key
-scripts/o1-google-cloud-storage-api-key.json
+keys/genesis/*
+keys/keypairs/*
+keys/keysets/*
+keys/api-keys/*
+keys/testnet-keys/*
+src/*.js
+node_modules/
 
 scripts/offline_fish_keys
 scripts/offline_whale_keys

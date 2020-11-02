@@ -1,13 +1,11 @@
-FROM debian:buster
+FROM debian:buster-slim
 
-RUN apt update && \
-      apt install -y curl python3-pip python3 && \
-      curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
-      chmod +x ./kubectl && \
-      mv ./kubectl /usr/local/bin/kubectl
+RUN apt update \
+  && apt install -y apt-transport-https gnupg2 curl git python3-pip python3
 
-RUN apt update && \
-      apt install -y git
+RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+RUN echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
+RUN apt update && apt install -y kubectl
 
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 

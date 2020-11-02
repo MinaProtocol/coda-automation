@@ -21,6 +21,7 @@
   "bugs": "https://github.com/CodaProtocol/coda-automation/issues",
   "devDependencies": {
     "bs-platform": "^7.2",
+    "bsb": "^0.0.1",
     "gentype": "^3.22.0"
   },
   "peerDependencies": {
@@ -29,7 +30,11 @@
   "dependencies": {
     "@elliottcable/bs-cmdliner": "^10.2.2",
     "@google-cloud/storage": "^5.0.0",
-    "@o1labs/client-sdk": "^0.1.2",
-    "mkdirp": "^1.0.4"
+    "@o1labs/client-sdk": "^0.2.0",
+    "csv-parser": "^2.3.2",
+    "graphql": "^15.3.0",
+    "graphql-request": "^3.1.0",
+    "mkdirp": "^1.0.4",
+    "node-fetch": "^2.6.0"
   }
 }
