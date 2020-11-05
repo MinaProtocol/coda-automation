@@ -36,8 +36,8 @@ provider "google" {
 
 locals {
   testnet_name = "pickles-public"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-pre-release-blocktime-increase-db1ee8b"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-95a2025"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-develop-704070a"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-704070a"
   seed_region = "us-central1"
   seed_zone = "us-central1-c"
   seed_discovery_keypairs = [
