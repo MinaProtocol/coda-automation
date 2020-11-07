@@ -36,8 +36,8 @@ provider "google" {
 
 locals {
   testnet_name = "pre-release"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-pre-release-blocktime-increase-db1ee8b"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-95a2025"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-develop-fdab9b5"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-fdab9b5"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
@@ -59,6 +59,8 @@ module "testnet_east" {
   cluster_name          = "coda-infra-east"
   cluster_region        = "us-east1"
   testnet_name          = local.testnet_name
+
+  mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/fdab9b58b8e556a39736ce7c8bd8e2ef6fcf4d60/src/app/archive/create_schema.sql"
 
   coda_image            = local.coda_image
   coda_archive_image    = local.coda_archive_image
