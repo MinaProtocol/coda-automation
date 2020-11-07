@@ -69,6 +69,8 @@ module "testnet_east" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
+  mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/fdab9b58b8e556a39736ce7c8bd8e2ef6fcf4d60/src/app/archive/create_schema.sql"
+
   runtime_config = local.runtime_config
 
   additional_seed_peers = [
