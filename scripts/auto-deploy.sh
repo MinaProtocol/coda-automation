@@ -4,7 +4,10 @@ set -e
 
 TESTNET="$1"
 GENERATE_KEYS="$2"
-CLUSTER="${CLUSTER:-gke_o1labs-192920_us-central1_coda-infra-central1}"
+
+if [ -z "$CLUSTER" ]; then
+  CLUSTER="$(kubectl config current-context)"
+fi
 
 docker_tag_exists() {
     IMAGE=$(echo $1 | awk -F: '{ print $1 }')
@@ -12,6 +15,7 @@ docker_tag_exists() {
     curl --silent -f -lSL https://index.docker.io/v1/repositories/$IMAGE/tags/$TAG > /dev/null
 }
 k() { kubectl --cluster="$CLUSTER" --namespace="$TESTNET" "$@" ; }
+#-gke_o1labs-192920_us-central1_coda-infra-central1
 
 if [ -z "$TESTNET" ]; then
   echo 'MISSING ARGUMENT'
@@ -35,7 +39,7 @@ echo "WAITING FOR IMAGE ${image} TO APPEAR IN DOCKER REGISTRY"
 #  sleep 10
 #done
 
-if [[ -n "$2" ]] ; then
+if [[ -n "$GENERATE_KEYS" ]] ; then
   echo 'GENERATING KEYS'
   scripts/generate-keys-and-ledger.sh "${TESTNET}" "$2" "$3" # Generates whale (10), fish (1), community (variable), and service keys (2)
 fi
@@ -46,13 +50,14 @@ echo 'RUNNING TERRAFORM in '"$terraform_dir"
 terraform init
 
 # Ask about destroy
-read -p "Terraform destroy? [y/N] " -n 1 -r
+#read -p "Terraform destroy? [y/N] " -n 1 -r
+REPLY="Y"
 [[ $REPLY =~ ^[Yy]$ ]] && terraform destroy -auto-approve || echo "not destroying, continue to terraform plan + apply..."
 
 # Show the plan
 terraform plan
-read -p "Is the above terraform plan correct? [y/N] " -n 1 -r
-[[ ! $REPLY =~ ^[Yy]$ ]] && echo "incorrect terraform plan, exiting before doing anything destructive" && exit 1
+#read -p "Is the above terraform plan correct? [y/N] " -n 1 -r
+#[[ ! $REPLY =~ ^[Yy]$ ]] && echo "incorrect terraform plan, exiting before doing anything destructive" && exit 1
 
 # Apply and move forward only when plan is approved by the user, from here we auto-approve
 echo "Applying Terraform..."

@@ -5,7 +5,7 @@ TESTNET="${1:-pickles-public}"
 COMMUNITY_KEYFILE="${2:-community-keys.txt}"
 RESET="${3:-false}"
 
-WHALE_COUNT=15
+WHALE_COUNT=5
 FISH_COUNT=1
 
 PATH=$PATH:./bin/
