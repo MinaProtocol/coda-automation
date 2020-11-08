@@ -13,7 +13,6 @@ COPY ./services/coda-network-services/ /code
 
 COPY ./scripts /scripts
 
-# Allows docker to cache installed dependencies between builds
 COPY services/coda-network-services/requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 

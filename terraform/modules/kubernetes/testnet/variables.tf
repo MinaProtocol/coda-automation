@@ -201,3 +201,30 @@ variable "gcloud_seeds" {
   type    = list
   default = []
 }
+
+# Coda network services vars
+
+variable "restart_nodes_every_mins" {
+  type = string
+  default = "60"
+}
+
+variable "restart_nodes" {
+  type    = bool
+  default = true
+}
+
+variable "make_report_every_mins" {
+  type = string
+  default = "30"
+}
+
+variable "make_reports" {
+  type    = bool
+  default = true
+}
+
+variable "make_report_discord_webhook_url" {
+  type    = string
+  default = ""
+}

@@ -17,6 +17,7 @@ provider helm {
 
 locals {
   mina_helm_repo = "https://coda-charts.storage.googleapis.com"
+  use_local_charts = true
 
   seed_peers = [
     "/dns4/seed-node.${var.testnet_name}/tcp/10001/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
@@ -31,6 +32,14 @@ locals {
     logReceivedBlocks  = var.log_received_blocks
     logSnarkWorkGossip = var.log_snark_work_gossip
   }
+  
+  coda_network_services_vars = {
+    restartEveryMins = var.restart_nodes_every_mins
+    restartNodes = var.restart_nodes
+    makeReports = var.make_reports
+    makeReportEveryMins = var.make_report_every_mins
+    makeReportDiscordWebhookUrl = var.make_report_discord_webhook_url
+  }
 
   seed_vars = {
     testnetName = var.testnet_name
@@ -39,6 +48,7 @@ locals {
       active = true
       discovery_keypair = var.seed_discovery_keypairs[0]
     }
+    codaNetworkServicesConfig = local.coda_network_services_vars
   }
 
   block_producer_vars = {
@@ -131,8 +141,8 @@ resource "kubernetes_role_binding" "helm_release" {
 
 resource "helm_release" "seed" {
   name        = "${var.testnet_name}-seed"
-  repository  = local.mina_helm_repo
-  chart       = "seed-node"
+  repository  = local.use_local_charts ? "" : local.mina_helm_repo
+  chart       = local.use_local_charts ? "../../../helm/seed-node" : "seed-node"
   version     = "0.1.2"
   namespace   = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
@@ -147,8 +157,8 @@ resource "helm_release" "seed" {
 
 resource "helm_release" "block_producers" {
   name        = "${var.testnet_name}-block-producers"
-  repository  = local.mina_helm_repo
-  chart       = "block-producer"
+  repository  = local.use_local_charts ? "" : local.mina_helm_repo
+  chart       = local.use_local_charts ? "../../../helm/block-producer" : "block-producer"
   version     = "0.1.9"
   namespace   = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
@@ -162,8 +172,8 @@ resource "helm_release" "block_producers" {
 
 resource "helm_release" "snark_workers" {
   name        = "${var.testnet_name}-snark-worker"
-  repository  = local.mina_helm_repo
-  chart       = "snark-worker"
+  repository  = local.use_local_charts ? "" : local.mina_helm_repo
+  chart       = local.use_local_charts ? "../../../helm/snark-worker" : "snark-worker"
   version     = "0.1.5"
   namespace   = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
@@ -177,8 +187,8 @@ resource "helm_release" "archive_node" {
   count      = var.deploy_archive ? 1 : 0
   
   name       = "${var.testnet_name}-archive-node"
-  repository = local.mina_helm_repo
-  chart      = "archive-node"
+  repository  = local.use_local_charts ? "" : local.mina_helm_repo
+  chart       = local.use_local_charts ? "../../../helm/archive-node" : "archive-node"
   version    = "0.1.1"
   namespace  = kubernetes_namespace.testnet_namespace.metadata[0].name
   values     = [

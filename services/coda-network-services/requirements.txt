@@ -2,3 +2,5 @@
 schedule
 kubernetes
 prometheus_client
+discord-webhook
+numpy
