@@ -17,7 +17,7 @@ provider helm {
 
 locals {
   mina_helm_repo = "https://coda-charts.storage.googleapis.com"
-  use_local_charts = true
+  use_local_charts = false
 
   seed_peers = [
     "/dns4/seed-node.${var.testnet_name}/tcp/10001/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
