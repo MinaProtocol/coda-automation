@@ -1,21 +1,33 @@
 #!/usr/bin/env python3
 
+# example of running locally
+# MAKE_REPORT_DISCORD_WEBHOOK_URL=""
+# python3 services/coda-network-services/make_report.py -n $namespace --discord_webhook_url $MAKE_REPORT_DISCORD_WEBHOOK_URL -a "$(cat accounts.csv)"
+
 import sys
+import traceback
 import argparse
 import time
 import random
-import json
 import itertools
 import numpy as np
+import ast
+import json
+import csv
+from graphviz import Digraph
 
 from kubernetes import client, config, stream
 from discord_webhook import DiscordWebhook
 
+discord_webhook_url = None
+
 def main():
+    global discord_webhook_url
     parser = argparse.ArgumentParser(description="Make a report for the active network and optionally send to discord")
     parser.add_argument("-n", "--namespace", help="testnet namespace", required=True, type=str, dest="namespace")
     parser.add_argument("-ic", "--incluster", help="if we're running from inside the cluster", required=False, default=False, type=bool, dest="incluster")
     parser.add_argument("-d", "--discord_webhook_url", help="discord webhook url", required=False, type=str, dest="discord_webhook_url")
+    parser.add_argument("-a", "--accounts", help="community accounts csv", required=False, type=str, dest="accounts_csv")
 
     # ==========================================
 
@@ -29,6 +41,10 @@ def main():
     else:
         config.load_kube_config()
     v1 = client.CoreV1Api()
+
+    discord_webhook_url = args.discord_webhook_url
+    if discord_webhook_url is not None:
+      discord_webhook_url = discord_webhook_url.strip()
 
     # ==========================================
     # Crawl network
@@ -55,7 +71,8 @@ def main():
     unqueried_peers = set()
 
     def add_resp(resp, direct_queried_peers):
-      peers = [ json.loads(s) for s in resp.split('\n') if s != '' ]
+      # we use ast instead of json to handle properties with single quotes instead of double quotes (which the response seems to often contain)
+      peers = [ ast.literal_eval(s) for s in resp.split('\n') if s != '' ]
 
       key_value_peers = [ ((p['node_ip_addr'], p['node_peer_id']), p) for p in peers ]
 
@@ -92,8 +109,72 @@ def main():
     peer_percentiles = [ 0, 5, 25, 50, 95, 100 ]
     peer_percentile_numbers = list(zip(peer_percentiles, np.percentile(peer_numbers, [ 0, 5, 25, 50, 95, 100 ])))
 
-    #import IPython; IPython.embed()
-    
+    block_producers = list(itertools.chain(*[ pv['block_producers'] for pv in peer_table.values() ]))
+
+    peer_to_k_block_hashes = { p: pv['k_block_hashes'] for p,pv in  peer_table.items() }
+
+    fork_tree = {}
+
+    for block_hashes in peer_to_k_block_hashes.values():
+      parents = block_hashes
+      children_or_none = [ [ c ] for c in block_hashes[1:] ] + [ [] ]
+      for parent, child_or_none in zip(parents, children_or_none):
+        fork_tree.setdefault(parent, { 'children': set(), 'peers': 0 })
+        fork_tree[parent]['children'].update(child_or_none)
+        fork_tree[parent]['peers'] += 1
+
+    children = list(itertools.chain(*[ v['children'] for v in fork_tree.values() ]))
+    roots = set(fork_tree.keys()).difference(children)
+
+    summarized_fork_tree = {}
+
+    def add_to_summarized_tree(parent):
+      peers = fork_tree[parent]['peers']
+      children = fork_tree[parent]['children']
+      intermediate_nodes = 0
+      while len(children) == 1 and fork_tree[list(children)[0]]['peers'] == peers:
+        children_or_none = fork_tree[list(children)[0]]['children']
+        if len(children_or_none) > 0:
+          children = fork_tree[list(children)[0]]['children']
+          intermediate_nodes += 1
+        else:
+          break
+      summarized_fork_tree[parent] = { 'children': children, 'peers': peers, 'intermediate_nodes': intermediate_nodes }
+      for child in children:
+        add_to_summarized_tree(child)
+
+    for root in roots:
+      add_to_summarized_tree(root)
+
+    def has_forks():
+      roots_with_children = [ root for root in roots if len(fork_tree[root]['children']) > 0 ]
+      # can be multiple roots because of nodes syncing from genesis; however there shouldn't be multiple roots with children, that would indicate a fork longer than k
+      if len(roots_with_children) > 1: 
+        return True
+      root = roots_with_children[0]
+      tips = [ node for node,values in summarized_fork_tree.items() if len(values['children']) == 0 ]
+      tip_parents = [ node for node,values in summarized_fork_tree.items() if len(set(tips).intersection(values['children'])) > 0 ]
+      # there can be different tips (since nodes can be 1 slot out of sync). A fork longer than one slot indicates there is a fork going on though, either from malicious behavior or a bug in the protocol. Note as long as the fork is less than k blocks the protocol consensus is safe and the protocol will recover when the attack ends
+      if len(tip_parents) > 1:
+        return True
+      return False
+
+    has_participants = len(args.accounts_csv.strip()) > 0
+
+    participants_online = []
+    participants_offline = []
+
+    if has_participants:
+      rows = []
+      reader = csv.reader(args.accounts_csv.strip().split('\n'), delimiter=",")
+      for row in reader:
+        rows.append(row)
+
+      key_to_discord = { row[2]: row[1] for row in rows[1:] }
+
+      participants_online = [ discord for (key,discord) in key_to_discord.items() if key in block_producers ]
+      participants_offline = [ discord for (key,discord) in key_to_discord.items() if key not in block_producers ]
+
     # ==========================================
     # Make report
 
@@ -104,26 +185,92 @@ def main():
       "epoch_slot": slot,
       "global_slot": global_slot,
       "blocks": blocks,
-      "block_fill_rate": blocks / global_slot, # TODO add health indicator
+      "block_fill_rate": blocks / global_slot,
       "number_of_peer_percentiles": peer_percentile_numbers, # TODO add health indicator
+      "summarized_block_tree": summarized_fork_tree,
+      "has_forks": has_forks(),
+      "has_participants": has_participants,
+      "participants_online": participants_online,
+      "participants_offline": participants_offline,
     }
 
-    # TODO do now
-    # * add nodes sync status
-    # * add whether nodes are synced to the same block or there's a fork
-    # * add who is / is not staking if a csv is passed in
+    #import IPython; IPython.embed()
 
-    # TODO do later
-    # * link to image of network connectivity, health indicator
-    # * transaction count, health indicator
-    # * all blocks have a coinbase
+    # TODO
+    # * timing of block receipt with a health indicator
+    # * nodes sync statuses
+    # * transaction counts with a health indicator
+    # * check that all blocks have a coinbase
 
     # ==========================================
 
-    # TODO format nicely
-    webhook = DiscordWebhook(url=args.discord_webhook_url, content=str(report))
-    response = webhook.execute()
+    # TODO
+    # display of network connectivity
+
+    def make_block_tree_graph():
+      g = Digraph("block_tree", format='png')
+      g.attr('node', shape='circle')
+      for block in summarized_fork_tree:
+        g.node(block, label='block ' + block[-6:] + '\n' + str(summarized_fork_tree[block]['peers']) + ' nodes')
+      g.attr('node', shape='rectangle', style='filled', color='lightgrey')
+      for block in summarized_fork_tree:
+        children = summarized_fork_tree[block]['children']
+        intermediate_nodes = summarized_fork_tree[block]['intermediate_nodes']
+        if len(children) > 0:
+          if intermediate_nodes > 0:
+            g.node(block + '_intermediate', label=str(intermediate_nodes) + ' in common blocks')
+            g.edge(block, block + '_intermediate')
+            for child in children:
+              g.edge(block + '_intermediate', child)
+          else:
+            for child in children:
+              g.edge(block, child)
+      g.render(view=False)
+
+    make_block_tree_graph()
+
+    copy = [ 'namespace', 'nodes', 'epoch', 'epoch_slot', 'global_slot', 'blocks', 'block_fill_rate', 'has_forks', 'has_participants' ]
+    json_report = {}
+    for c in copy:
+      json_report[c] = report[c]
+
+    json_report['participants_online'] = len(report['participants_online'])
+    json_report['participants_offline'] = len(report['participants_offline'])
+
+    json_report['number_of_peer_percentiles'] = ' | '.join([ str(p) + '%: ' + str(v) for (p,v) in report['number_of_peer_percentiles'] ])
+
+    if json_report['has_forks']:
+      json_report['has_forks'] = str(json_report['has_forks']) + ' :warning:'
+
+    if json_report['block_fill_rate'] < .75 - .10:
+      json_report['block_fill_rate'] = str(json_report['block_fill_rate']) + ' :warning:'
+
+
+    formatted_report = json.dumps(json_report, indent=2)
+
+    if discord_webhook_url is not None and len(discord_webhook_url) > 0:
+      discord_char_limit = 2000
+      if len(formatted_report) > discord_char_limit - 5:
+        formatted_report[:discord_char_limit - 5] + '...'
+
+      webhook = DiscordWebhook(url=discord_webhook_url, content=formatted_report)
+
+      with open("block_tree.gv.png", "rb") as f:
+        webhook.add_file(file=f.read(), filename='block_tree.gv.png')
+
+      webhook.add_file(file=str(report['participants_online']), filename='particpants_online.txt')
+      webhook.add_file(file=str(report['participants_offline']), filename='participants_offline.txt')
+
+      response = webhook.execute()
 
 if __name__ == "__main__":
+  try:
     main()
+  except Exception as e:
+    exc_type, exc_obj, exc_tb = sys.exc_info()
+    trace = traceback.format_exc()
+    print("Exited with error", trace)
+    if discord_webhook_url is not None and len(discord_webhook_url) > 0:
+      webhook = DiscordWebhook(url=discord_webhook_url, content="Exited with error: " + str(trace))
+      response = webhook.execute()
 
