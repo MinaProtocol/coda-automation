@@ -15,14 +15,12 @@ sleep $((60*20))
 if [ ! -z "$RESTART_NODES" ] && [ "$RESTART_NODES" != "false" ]; then
   echo "starting restart script"
   python3 /scripts/random_restart.py -n '' -i $RESTART_EVERY_MINS -ic true &
-  #python3 scripts/random_restart.py -n test-nhreports -i $RESTART_EVERY_MINS &
 fi
 
 if [ ! -z "$MAKE_REPORTS" ] && [ "$MAKE_REPORTS" != "false" ]; then
   while true; do
     echo "making a report"
     python3 make_report.py -n '' -ic true --discord_webhook_url "$MAKE_REPORT_DISCORD_WEBHOOK_URL" -a "$MAKE_REPORT_ACCOUNTS"
-    #python3 services/coda-network-services/make_report.py -n test-nhreports --discord_webhook_url "$MAKE_REPORT_DISCORD_WEBHOOK_URL" -a "$MAKE_REPORT_ACCOUNTS"
     sleep $((60*$MAKE_REPORT_EVERY_MINS))
   done &
 fi
