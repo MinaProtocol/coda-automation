@@ -228,3 +228,8 @@ variable "make_report_discord_webhook_url" {
   type    = string
   default = ""
 }
+
+variable "make_report_accounts" {
+  type    = string
+  default = ""
+}
