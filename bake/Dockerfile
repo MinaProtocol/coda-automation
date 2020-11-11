@@ -1,17 +1,16 @@
 ARG BAKE_VERSION
-ARG COMMIT_HASH
-ARG TESTNET_NAME
 
 FROM codaprotocol/coda-daemon:${BAKE_VERSION}
 
-ARG COMMIT_HASH
-ARG TESTNET_NAME
+ARG COMMIT_HASH=master
+ARG TESTNET_NAME=pickles-public
+ARG CONFIG_FILE="/root/daemon.json"
 
-RUN curl https://raw.githubusercontent.com/MinaProtocol/coda-automation/${COMMIT_HASH}/terraform/testnets/${TESTNET_NAME}/genesis_ledger.json -o ~/daemon.json
+RUN curl https://raw.githubusercontent.com/MinaProtocol/coda-automation/${COMMIT_HASH}/terraform/testnets/${TESTNET_NAME}/genesis_ledger.json -o "${CONFIG_FILE}"
 
-RUN sha256sum ~/daemon.json
+RUN head ${CONFIG_FILE}
 
-RUN coda daemon -config-file ~/daemon.json -generate-genesis-proof true; \
+RUN coda daemon -config-file ${CONFIG_FILE} -generate-genesis-proof true; \
   mv ~/.coda-config/genesis/genesis_* /var/lib/coda/
 
-RUN curl https://raw.githubusercontent.com/MinaProtocol/coda-automation/${COMMIT_HASH}/terraform/testnets/${TESTNET_NAME}/peers.txt -o ~/peers.txt
+RUN curl https://raw.githubusercontent.com/MinaProtocol/coda-automation/${COMMIT_HASH}/terraform/testnets/${TESTNET_NAME}/peers.txt -o /root/peers.txt

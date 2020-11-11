@@ -3,7 +3,7 @@
 # Set defaults before parsing args
 TESTNET=pickles-public
 DOCKER_TAG=0.0.16-beta7-develop
-AUTOMATION_COMMIT=$(git log master -1 --pretty=format:%H)
+AUTOMATION_PATHSPEC=$(git log master -1 --pretty=format:%H)
 CONFIG_FILE=/root/daemon.json
 
 # arguments are
@@ -26,7 +26,7 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-echo Testnet is ${TESTNET_NAME}
+echo Testnet is ${TESTNET}
 echo Initial Docker Image is codaprotocol/coda-daemon:${DOCKER_TAG}
 echo Coda Automation Pathspec is ${AUTOMATION_PATHSPEC}
 echo Config File Path is ${CONFIG_FILE}
