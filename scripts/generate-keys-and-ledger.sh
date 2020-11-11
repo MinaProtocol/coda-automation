@@ -2,7 +2,8 @@
 
 # ARGS
 TESTNET="${1:-pickles-public}"
-COMMUNITY_KEYFILE="${2:-community-keys.txt}"
+#COMMUNITY_KEYFILE="${2:-community-keys.txt}"
+COMMUNITY_ENABLED="${2:-false}"
 RESET="${3:-false}"
 
 WHALE_COUNT=15
@@ -15,7 +16,7 @@ cd "${SCRIPTPATH}/../"
 
 if $RESET; then
   echo "resetting keys and genesis_ledger"
-  rm -rf keys/genesis keys/keysets keys/keypairs
+  rm -rf keys/genesis keys/keysets keys/keypairs keys/testnet-keys
   rm -rf terraform/testnets/${TESTNET}/*.json
 fi
 
@@ -79,54 +80,59 @@ echo
 
 # ================================================================================
 
-# COMMUNITY 1
-declare -a PUBKEYS
-read -ra PUBKEYS <<< $(tr '\n' ' ' < community-keys-1.txt)
-COMMUNITY_SIZE=${#PUBKEYS[@]}
-echo "Generating $COMMUNITY_SIZE community keys..."
+if $COMMUNITY_ENABLED; then
 
-for keyset in online-community; do
-  [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count ${COMMUNITY_SIZE} --name "${TESTNET}_${keyset}"
-done
+  # COMMUNITY 1
+  declare -a PUBKEYS
+  read -ra PUBKEYS <<< $(tr '\n' ' ' < community-keys-1.txt)
+  COMMUNITY_SIZE=${#PUBKEYS[@]}
+  echo "Generating $COMMUNITY_SIZE community keys..."
 
-if [[ -s "keys/testnet-keys/${TESTNET}_online-community" ]]; then
-echo "using existing community keys"
+  for keyset in online-community; do
+    [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count ${COMMUNITY_SIZE} --name "${TESTNET}_${keyset}"
+  done
+
+  if [[ -s "keys/testnet-keys/${TESTNET}_online-community" ]]; then
+    echo "using existing community1 keys"
+  else
+    sed -ie 's/"publicKey":"[^"]*"/"publicKey":"PLACEHOLDER"/g' keys/keysets/${TESTNET}_online-community
+  fi
+
+  # Replace the community keys with the ones from community-keys.txt
+  for key in ${PUBKEYS[@]}; do
+    sed -ie "s/PLACEHOLDER/$key/" keys/keysets/${TESTNET}_online-community
+  done
+  echo "Online Community Keyset:"
+  cat keys/keysets/${TESTNET}_online-community
+  echo
+
+  # COMMUNITY 2
+  declare -a PUBKEYS
+  read -ra PUBKEYS <<< $(tr '\n' ' ' < community-keys-2.txt)
+  COMMUNITY_SIZE=${#PUBKEYS[@]}
+  echo "Generating $COMMUNITY_SIZE community2 keys..."
+
+  for keyset in online-community2; do
+    [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count ${COMMUNITY_SIZE} --name "${TESTNET}_${keyset}"
+  done
+
+  if [[ -s "keys/testnet-keys/${TESTNET}_online-community2" ]]; then
+    echo "using existing community2 keys"
+  else
+    sed -ie 's/"publicKey":"[^"]*"/"publicKey":"PLACEHOLDER"/g' keys/keysets/${TESTNET}_online-community2
+  fi
+
+  # Replace the community keys with the ones from community-keys.txt
+  for key in ${PUBKEYS[@]}; do
+    sed -ie "s/PLACEHOLDER/$key/" keys/keysets/${TESTNET}_online-community2
+  done
+  echo "Online Community 2 Keyset:"
+  cat keys/keysets/${TESTNET}_online-community2
+  echo
+
 else
-  sed -ie 's/"publicKey":"[^"]*"/"publicKey":"PLACEHOLDER"/g' keys/keysets/${TESTNET}_online-community
+  echo "community keys disabled"
 fi
-
-# Replace the community keys with the ones from community-keys.txt
-for key in ${PUBKEYS[@]}; do
-  sed -ie "s/PLACEHOLDER/$key/" keys/keysets/${TESTNET}_online-community
-done
-echo "Online Community Keyset:"
-cat keys/keysets/${TESTNET}_online-community
-echo
-
-# COMMUNITY 2
-declare -a PUBKEYS
-read -ra PUBKEYS <<< $(tr '\n' ' ' < community-keys-2.txt)
-COMMUNITY_SIZE=${#PUBKEYS[@]}
-echo "Generating $COMMUNITY_SIZE community2 keys..."
-
-for keyset in online-community2; do
-  [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count ${COMMUNITY_SIZE} --name "${TESTNET}_${keyset}"
-done
-
-if [[ -s "keys/testnet-keys/${TESTNET}_online-community2" ]]; then
-echo "using existing community keys"
-else
-  sed -ie 's/"publicKey":"[^"]*"/"publicKey":"PLACEHOLDER"/g' keys/keysets/${TESTNET}_online-community2
-fi
-
-# Replace the community keys with the ones from community-keys.txt
-for key in ${PUBKEYS[@]}; do
-  sed -ie "s/PLACEHOLDER/$key/" keys/keysets/${TESTNET}_online-community2
-done
-echo "Online Community 2 Keyset:"
-cat keys/keysets/${TESTNET}_online-community2
-echo
-
 # ================================================================================
 
 # SERVICES
@@ -136,12 +142,16 @@ echo
 # ================================================================================
 
 # GENESIS
+
 if [[ -s "terraform/testnets/${TESTNET}/genesis_ledger.json" ]] ; then
   echo "-- genesis_ledger.json already exists for this testnet, refusing to overwrite. Delete \'terraform/testnets/${TESTNET}/genesis_ledger.json\' to force re-creation."
-else
-  echo "-- Creating genesis ledger with 'coda-network genesis' --"
+  exit
+fi
 
-  PROMPT_KEYSETS="${TESTNET}_online-community
+if $COMMUNITY_ENABLED ; then 
+    echo "-- Creating genesis ledger with 'coda-network genesis' --"
+
+    PROMPT_KEYSETS="${TESTNET}_online-community
 66000
 ${TESTNET}_online-community
 y
@@ -163,30 +173,47 @@ ${TESTNET}_online-fish
 n
 "
 
+else
+  echo "-- Creating genesis ledger with 'coda-network genesis' without community keys --"
+
+  PROMPT_KEYSETS="${TESTNET}_offline-whales
+88000
+${TESTNET}_online-whales
+y
+${TESTNET}_offline-fish
+1000
+${TESTNET}_online-fish
+y
+${TESTNET}_online-fish
+9000
+${TESTNET}_online-fish
+n
+"
+
 #y
 #${TESTNET}_online-service-keys
 #50000
 #${TESTNET}_online-service-keys
-
-
-  # Handle passing the above keyset info into interactive 'coda-network genesis' prompts
-  while read input
-  do echo "$input"
-    sleep 1
-  done < <(echo -n "$PROMPT_KEYSETS") | coda-network genesis
-
-  GENESIS_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-  # Fix the ledger format for ease of use
-  echo "Rewriting ./keys/genesis/* as terraform/testnets/${TESTNET}/genesis_ledger.json in the proper format for daemon consumption..."
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="88000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/whales.json"
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="9000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/online-fish.json"
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="1000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/offline-fish.json"
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="66000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "60000", cliff_time:"150", vesting_period:"6", vesting_increment:"150"}}' | cat > "terraform/testnets/${TESTNET}/community_fast_locked_keys.json"
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="66001") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "30000", cliff_time:"250", vesting_period:"4", vesting_increment:"200"}}' | cat > "terraform/testnets/${TESTNET}/community_slow_locked_keys.json"
-  NUM_ACCOUNTS=$(jq -s 'length'  terraform/testnets/${TESTNET}/*.json)
-  jq -s '{ genesis: { genesis_state_timestamp: "'${GENESIS_TIMESTAMP}'" }, ledger: { name: "'${TESTNET}'", num_accounts: '${NUM_ACCOUNTS}', accounts: [ .[] ] } }' terraform/testnets/${TESTNET}/*.json > "terraform/testnets/${TESTNET}/genesis_ledger.json"
 fi
 
+# Handle passing the above keyset info into interactive 'coda-network genesis' prompts
+while read input
+do echo "$input"
+  sleep 1
+done < <(echo -n "$PROMPT_KEYSETS") | coda-network genesis
+
+GENESIS_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# Fix the ledger format for ease of use
+echo "Rewriting ./keys/genesis/* as terraform/testnets/${TESTNET}/genesis_ledger.json in the proper format for daemon consumption..."
+cat ./keys/genesis/* | jq '.[] | select(.balance=="88000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/whales.json"
+cat ./keys/genesis/* | jq '.[] | select(.balance=="9000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/online-fish.json"
+cat ./keys/genesis/* | jq '.[] | select(.balance=="1000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/offline-fish.json"
+if $COMMUNITY_ENABLED ; then 
+  cat ./keys/genesis/* | jq '.[] | select(.balance=="66000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "60000", cliff_time:"150", vesting_period:"6", vesting_increment:"150"}}' | cat > "terraform/testnets/${TESTNET}/community_fast_locked_keys.json"
+  cat ./keys/genesis/* | jq '.[] | select(.balance=="66001") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "30000", cliff_time:"250", vesting_period:"4", vesting_increment:"200"}}' | cat > "terraform/testnets/${TESTNET}/community_slow_locked_keys.json"
+fi
+NUM_ACCOUNTS=$(jq -s 'length'  terraform/testnets/${TESTNET}/*.json)
+jq -s '{ genesis: { genesis_state_timestamp: "'${GENESIS_TIMESTAMP}'" }, ledger: { name: "'${TESTNET}'", num_accounts: '${NUM_ACCOUNTS}', accounts: [ .[] ] } }' terraform/testnets/${TESTNET}/*.json > "terraform/testnets/${TESTNET}/genesis_ledger.json"
 
 echo "Keys and genesis ledger generated successfully, $TESTNET is ready to deploy!"
