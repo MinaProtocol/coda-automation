@@ -1,33 +1,60 @@
 #!/bin/bash
 
-testnet_name=$1
+# Set defaults before parsing args
+TESTNET=pickles-public
+DOCKER_TAG=0.0.16-beta7-develop
+AUTOMATION_COMMIT=$(git log master -1 --pretty=format:%H)
+CONFIG_FILE=/root/daemon.json
 
 # arguments are
-# --docker-image= and --commit-hash=
+# --docker-tag=, --testnet=, --config-file=, and --automation-commit=
 while [ $# -gt 0 ]; do
   case "$1" in
-    --docker-image=*)
-      dimage="${1#*=}"
+    --testnet=*)
+      TESTNET="${1#*=}"
       ;;
-    --commit-hash=*)
-      commit_hash="${1#*=}"
+    --docker-tag=*)
+      DOCKER_TAG="${1#*=}"
+      ;;
+    --automation-commit=*)
+      AUTOMATION_PATHSPEC="${1#*=}"
+      ;;
+    --config-file=*)
+      CONFIG_FILE="${1#*=}"
       ;;
   esac
   shift
 done
 
-echo testnet is $testnet_name
-echo docker image is codaprotocol/coda-daemon:$dimage
-echo commit hash is $commit_hash
-first7Commit=$(echo $commit_hash | cut -c1-7)
-final_name=codaprotocol/coda-daemon-baked:$dimage-$first7Commit
+echo Testnet is ${TESTNET_NAME}
+echo Initial Docker Image is codaprotocol/coda-daemon:${DOCKER_TAG}
+echo Coda Automation Pathspec is ${AUTOMATION_PATHSPEC}
+echo Config File Path is ${CONFIG_FILE}
 
-output=$(cat bake/Dockerfile | docker build \
-  --build-arg "BAKE_VERSION=$dimage" \
-  --build-arg "COMMIT_HASH=$commit_hash" \
-  --build-arg "TESTNET_NAME=$testnet_name" - | tee /dev/tty | tail -1)
-baked_image=${output##* }
+first7=$(echo ${AUTOMATION_PATHSPEC} | cut -c1-7)
 
-docker tag $baked_image $final_name
-echo $final_name
+hub_baked_tag="codaprotocol/coda-daemon-baked:${DOCKER_TAG}-${TESTNET}-${first7}"
+gcr_baked_tag="gcr.io/o1labs-192920/coda-daemon-baked:${DOCKER_TAG}-${TESTNET}-${first7}"
+
+docker_tag_exists() {
+  curl --silent -f -lSL "https://index.docker.io/v1/repositories/codaprotocol/coda-daemon/tags/${DOCKER_TAG}" > /dev/null
+}
+
+for i in $(seq 60); do
+  docker_tag_exists && break
+  [ "$i" != 30 ] || (echo "expected image never appeared in docker registry" && exit 1)
+  sleep 30
+done
+
+cat bake/Dockerfile | docker build --no-cache \
+  -t "${hub_baked_tag}" \
+  --build-arg "BAKE_VERSION=${DOCKER_TAG}" \
+  --build-arg "COMMIT_HASH=${AUTOMATION_PATHSPEC}" \
+  --build-arg "TESTNET_NAME=${TESTNET}" \
+  --build-arg "CONFIG_FILE=${CONFIG_FILE}" -
+
+docker push "$hub_baked_tag"
+docker tag "$hub_baked_tag" "$gcr_baked_tag"
+docker push "$gcr_baked_tag"
+echo "Built + Pushed Image: ${hub_baked_tag}"
 
