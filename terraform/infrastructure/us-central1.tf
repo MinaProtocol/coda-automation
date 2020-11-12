@@ -39,7 +39,7 @@ locals {
 
 resource "kubernetes_storage_class" "central1_ssd" {
   metadata {
-    name = "central1-ssd"
+    name = "us-central1-ssd"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
@@ -50,7 +50,7 @@ resource "kubernetes_storage_class" "central1_ssd" {
 
 resource "kubernetes_storage_class" "central1_standard" {
   metadata {
-    name = "central1-standard"
+    name = "us-central1-standard"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
