@@ -35,6 +35,28 @@ provider "google" {
   region  = "us-east1"
 }
 
+resource "kubernetes_storage_class" "east1_ssd" {
+  metadata {
+    name = "east1-ssd"
+  }
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = "Delete"
+  parameters = {
+    type = "pd-ssd"
+  }
+}
+
+resource "kubernetes_storage_class" "east1_standard" {
+  metadata {
+    name = "east1-standard"
+  }
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = "Delete"
+  parameters = {
+    type = "pd-standard"
+  }
+}
+
 resource "google_container_cluster" "coda_cluster_east" {
   provider = google.google_east
   name     = "coda-infra-east"
