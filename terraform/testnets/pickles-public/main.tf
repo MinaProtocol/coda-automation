@@ -36,8 +36,8 @@ provider "google" {
 
 locals {
   testnet_name = "pickles-public"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-hard-fork-test-11-12-2020-339a84b"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-fdab9b5"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-hard-fork-test-11-12-2020-3bacbd4"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-4108f65"
   seed_region = "us-central1"
   seed_zone = "us-central1-c"
   seed_discovery_keypairs = [
@@ -69,7 +69,7 @@ module "testnet_east" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
-  mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/fdab9b58b8e556a39736ce7c8bd8e2ef6fcf4d60/src/app/archive/create_schema.sql"
+  mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/4108f65508d97427d9572e50e0e382afbb7b3eb6/src/app/archive/create_schema.sql"
 
   runtime_config = local.runtime_config
 
