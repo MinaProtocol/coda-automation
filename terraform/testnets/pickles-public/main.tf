@@ -36,8 +36,8 @@ provider "google" {
 
 locals {
   testnet_name = "pickles-public"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.16-beta7-develop-ccbd0c8-master"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-fdab9b5"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-hard-fork-test-11-12-2020-3bacbd4"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-4108f65"
   seed_region = "us-central1"
   seed_zone = "us-central1-c"
   seed_discovery_keypairs = [
@@ -45,7 +45,7 @@ locals {
   "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5" ]
 
   runtime_config = <<EOT
-    ${file("./genesis_ledger.json")}
+    ${file("./genesis_ledger_fork_11-12-2020.json")}
   EOT
 }
 
@@ -69,7 +69,7 @@ module "testnet_east" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
-  mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/fdab9b58b8e556a39736ce7c8bd8e2ef6fcf4d60/src/app/archive/create_schema.sql"
+  mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/4108f65508d97427d9572e50e0e382afbb7b3eb6/src/app/archive/create_schema.sql"
 
   runtime_config = local.runtime_config
 
