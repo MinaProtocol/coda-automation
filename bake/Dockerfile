@@ -21,7 +21,7 @@ touch .coda-config/coda-prover.log\n\
 touch .coda-config/coda-verifier.log\n\
 touch .coda-config/mina-best-tip.log\n\
 while true; do\n\
-  coda -config-file "${CONFIG_FILE}" "$@" 2>&1 >coda.log &\n\
+  coda "$@" -config-file "${CONFIG_FILE}" 2>&1 >coda.log &\n\
   coda_pid=$!\n\
   tail -q -f coda.log -f .coda-config/coda-prover.log -f .coda-config/coda-verifier.log -f .coda-config/mina-best-tip.log &\n\
   tail_pid=$!\n\
