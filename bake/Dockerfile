@@ -6,7 +6,7 @@ ARG COMMIT_HASH=master
 ARG TESTNET_NAME=pickles-public
 ARG CONFIG_FILE="/root/daemon.json"
 
-RUN curl https://raw.githubusercontent.com/MinaProtocol/coda-automation/${COMMIT_HASH}/terraform/testnets/${TESTNET_NAME}/genesis_ledger.json -o "${CONFIG_FILE}"
+RUN curl https://raw.githubusercontent.com/MinaProtocol/coda-automation/${COMMIT_HASH}/terraform/testnets/${TESTNET_NAME}/genesis_ledger_fork_11-12-2020.json -o "${CONFIG_FILE}"
 
 RUN head ${CONFIG_FILE}
 
@@ -20,8 +20,10 @@ mkdir -p .coda-config\n\
 touch .coda-config/coda-prover.log\n\
 touch .coda-config/coda-verifier.log\n\
 touch .coda-config/mina-best-tip.log\n\
+command=$1
+shift
 while true; do\n\
-  coda "$@" -config-file "'${CONFIG_FILE}'" 2>&1 >coda.log &\n\
+  coda "$command" -config-file "'${CONFIG_FILE}'" "$@" 2>&1 >coda.log &\n\
   coda_pid=$!\n\
   tail -q -f coda.log -f .coda-config/coda-prover.log -f .coda-config/coda-verifier.log -f .coda-config/mina-best-tip.log &\n\
   tail_pid=$!\n\
