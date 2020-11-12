@@ -39,7 +39,7 @@ locals {
 
 resource "kubernetes_storage_class" "east4_ssd" {
   metadata {
-    name = "east4-ssd"
+    name = "us-east4-ssd"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
@@ -50,7 +50,7 @@ resource "kubernetes_storage_class" "east4_ssd" {
 
 resource "kubernetes_storage_class" "east4_standard" {
   metadata {
-    name = "east4-standard"
+    name = "us-east4-standard"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"

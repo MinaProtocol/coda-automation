@@ -37,7 +37,7 @@ provider "google" {
 
 resource "kubernetes_storage_class" "east1_ssd" {
   metadata {
-    name = "east1-ssd"
+    name = "us-east1-ssd"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
@@ -48,7 +48,7 @@ resource "kubernetes_storage_class" "east1_ssd" {
 
 resource "kubernetes_storage_class" "east1_standard" {
   metadata {
-    name = "east1-standard"
+    name = "us-east1-standard"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
