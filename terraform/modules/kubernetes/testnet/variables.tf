@@ -209,11 +209,6 @@ variable "restart_nodes_every_mins" {
   default = "60"
 }
 
-variable "restart_nodes" {
-  type    = bool
-  default = true
-}
-
 variable "make_report_every_mins" {
   type = string
   default = "30"
@@ -232,4 +227,26 @@ variable "make_report_discord_webhook_url" {
 variable "make_report_accounts" {
   type    = string
   default = ""
+}
+
+# Archive-Postgres data persistence Vars
+
+variable "archive_persistence_enabled" {
+  type    = bool
+  default = true
+}
+
+variable "archive_persistence_class" {
+  type    = string
+  default = "ssd"
+}
+
+variable "archive_access_mode" {
+  type    = string
+  default = "ReadWriteOnce"
+}
+
+variable "archive_persistence_size" {
+  type    = string
+  default = "8Gi"
 }
