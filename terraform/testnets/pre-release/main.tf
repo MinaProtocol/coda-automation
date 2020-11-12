@@ -36,7 +36,7 @@ provider "google" {
 
 locals {
   testnet_name = "pre-release"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.16-beta7-4.1-turbo-pickles-f2bcaf1-pre-release-67643d4"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.16-beta7-4.1-turbo-pickles-f2bcaf1-pre-release-db0bbe7"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-7f59ad7"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
@@ -71,7 +71,7 @@ module "testnet_east" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
-  runtime_config = local.runtime_config
+  # runtime_config = local.runtime_config
 
   # additional_seed_peers = [
   #  "/dns4/seed-one.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
