@@ -36,7 +36,7 @@ provider "google" {
 
 locals {
   testnet_name = "pickles-public"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.16-beta7-develop-ccbd0c8-master"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-hard-fork-test-11-12-2020-339a84b"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-fdab9b5"
   seed_region = "us-central1"
   seed_zone = "us-central1-c"
@@ -45,7 +45,7 @@ locals {
   "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5" ]
 
   runtime_config = <<EOT
-    ${file("./genesis_ledger.json")}
+    ${file("./genesis_ledger_fork_11-12-2020.json")}
   EOT
 }
 
