@@ -202,6 +202,7 @@ variable "gcloud_seeds" {
   default = []
 }
 
+<<<<<<< HEAD
 # Coda network services vars
 
 variable "restart_nodes_every_mins" {
@@ -229,7 +230,7 @@ variable "make_report_accounts" {
   default = ""
 }
 
-# Archive-Postgres data persistence Vars
+# Archive-Postgres Vars
 
 variable "archive_persistence_enabled" {
   type    = bool
@@ -241,7 +242,7 @@ variable "archive_persistence_class" {
   default = "ssd"
 }
 
-variable "archive_access_mode" {
+variable "archive_persistence_access_mode" {
   type    = string
   default = "ReadWriteOnce"
 }
