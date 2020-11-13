@@ -20,8 +20,8 @@ mkdir -p .coda-config\n\
 touch .coda-config/coda-prover.log\n\
 touch .coda-config/coda-verifier.log\n\
 touch .coda-config/mina-best-tip.log\n\
-command=$1
-shift
+command=$1 \n\
+shift \n\
 while true; do\n\
   coda "$command" -config-file "'${CONFIG_FILE}'" "$@" 2>&1 >coda.log &\n\
   coda_pid=$!\n\
