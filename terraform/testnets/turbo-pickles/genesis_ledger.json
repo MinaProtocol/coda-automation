@@ -1447,18 +1447,6 @@
         }
       },
       {
-        "pk": "B62qiz7xhBFjMJxwXwX6YzbbPtf7gpRagkMnDifgiJQ32AQVEQgPRXy",
-        "balance": "66001.000000000",
-        "delegate": "B62qiz7xhBFjMJxwXwX6YzbbPtf7gpRagkMnDifgiJQ32AQVEQgPRXy",
-        "sk": null,
-        "timing": {
-          "initial_minimum_balance": "30000",
-          "cliff_time": "250",
-          "vesting_period": "4",
-          "vesting_increment": "200"
-        }
-      },
-      {
         "pk": "B62qm7jU1mdWApoezQY4UCsX9pNPPeRzFHG3BTng4md6rnwqsvqyovt",
         "balance": "66001.000000000",
         "delegate": "B62qm7jU1mdWApoezQY4UCsX9pNPPeRzFHG3BTng4md6rnwqsvqyovt",
