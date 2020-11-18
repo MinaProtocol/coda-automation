@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set defaults before parsing args
-TESTNET=pickles-public
+TESTNET=turbo-pickles
 DOCKER_TAG=0.0.16-beta7-develop
 AUTOMATION_PATHSPEC=$(git log master -1 --pretty=format:%H)
 CONFIG_FILE=/root/daemon.json
