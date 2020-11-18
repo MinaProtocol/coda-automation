@@ -3,10 +3,10 @@ ARG BAKE_VERSION
 FROM codaprotocol/coda-daemon:${BAKE_VERSION}
 
 ARG COMMIT_HASH=master
-ARG TESTNET_NAME=pickles-public
+ARG TESTNET_NAME=turbo-pickles
 ARG CONFIG_FILE="/root/daemon.json"
 
-RUN curl https://raw.githubusercontent.com/MinaProtocol/coda-automation/${COMMIT_HASH}/terraform/testnets/${TESTNET_NAME}/genesis_ledger_fork_11-12-2020.json -o "${CONFIG_FILE}"
+RUN curl https://raw.githubusercontent.com/MinaProtocol/coda-automation/${COMMIT_HASH}/terraform/testnets/${TESTNET_NAME}/genesis_ledger.json -o "${CONFIG_FILE}"
 
 RUN head ${CONFIG_FILE}
 
