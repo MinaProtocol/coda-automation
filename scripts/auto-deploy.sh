@@ -72,7 +72,7 @@ python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --key-dir "keys/testnet-keys/${TESTNET}_online-fish-keyfiles" \
   --count "$(echo keys/testnet-keys/${TESTNET}_online-fish-keyfiles/*.pub | wc -w)"
 
-if [ -e keys/testnet-keys/echo_service.pub ]; then
+if [ -e keys/testnet-keys/bots/echo_service.pub ]; then
   python3 scripts/testnet-keys.py k8s "upload-service-keys" \
     --namespace "$TESTNET" \
     --cluster "$CLUSTER" \
