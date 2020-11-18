@@ -403,18 +403,6 @@
         }
       },
       {
-        "pk": "undefined",
-        "balance": "66000.000000000",
-        "delegate": "undefined",
-        "sk": null,
-        "timing": {
-          "initial_minimum_balance": "60000",
-          "cliff_time": "150",
-          "vesting_period": "6",
-          "vesting_increment": "150"
-        }
-      },
-      {
         "pk": "B62qoMcMZ2MJ25zLg4tYv1WE745SFrkAddZsL5qaAjgPe3gKQZTRHTb",
         "balance": "66000.000000000",
         "delegate": "B62qoMcMZ2MJ25zLg4tYv1WE745SFrkAddZsL5qaAjgPe3gKQZTRHTb",
@@ -2266,18 +2254,6 @@
         "pk": "B62qjR8y1cNcikKxM2x8NAnhkZD9PAjFhJ54yGHdTehGaVsUdq1FJhU",
         "balance": "66001.000000000",
         "delegate": "B62qjR8y1cNcikKxM2x8NAnhkZD9PAjFhJ54yGHdTehGaVsUdq1FJhU",
-        "sk": null,
-        "timing": {
-          "initial_minimum_balance": "30000",
-          "cliff_time": "250",
-          "vesting_period": "4",
-          "vesting_increment": "200"
-        }
-      },
-      {
-        "pk": "undefined",
-        "balance": "66001.000000000",
-        "delegate": "undefined",
         "sk": null,
         "timing": {
           "initial_minimum_balance": "30000",
@@ -4783,18 +4759,6 @@
         }
       },
       {
-        "pk": "undefined",
-        "balance": "66001.000000000",
-        "delegate": "undefined",
-        "sk": null,
-        "timing": {
-          "initial_minimum_balance": "30000",
-          "cliff_time": "250",
-          "vesting_period": "4",
-          "vesting_increment": "200"
-        }
-      },
-      {
         "pk": "B62qqmimA2CNXUKr7q1UnNUmcPpLE2hRjxJtMxjZzxvzBuBzoFaS3J2",
         "balance": "66001.000000000",
         "delegate": "B62qqmimA2CNXUKr7q1UnNUmcPpLE2hRjxJtMxjZzxvzBuBzoFaS3J2",
@@ -6199,18 +6163,6 @@
         }
       },
       {
-        "pk": "undefined",
-        "balance": "66002.000000000",
-        "delegate": "undefined",
-        "sk": null,
-        "timing": {
-          "initial_minimum_balance": "30000",
-          "cliff_time": "250",
-          "vesting_period": "4",
-          "vesting_increment": "200"
-        }
-      },
-      {
         "pk": "B62qr1YdFHByxxAHQBtYVTzMf3XX3WKh7uPpA8CP2CrCuZuHJbCMrPt",
         "balance": "66002.000000000",
         "delegate": "B62qr1YdFHByxxAHQBtYVTzMf3XX3WKh7uPpA8CP2CrCuZuHJbCMrPt",
@@ -6634,18 +6586,6 @@
         "pk": "B62qqvsMCW6KRzHh9u48uGoXmTzA7pGUPoNEWimuHCvi3Kk4NrRyYE9",
         "balance": "66002.000000000",
         "delegate": "B62qqvsMCW6KRzHh9u48uGoXmTzA7pGUPoNEWimuHCvi3Kk4NrRyYE9",
-        "sk": null,
-        "timing": {
-          "initial_minimum_balance": "30000",
-          "cliff_time": "250",
-          "vesting_period": "4",
-          "vesting_increment": "200"
-        }
-      },
-      {
-        "pk": "undefined",
-        "balance": "66002.000000000",
-        "delegate": "undefined",
         "sk": null,
         "timing": {
           "initial_minimum_balance": "30000",
