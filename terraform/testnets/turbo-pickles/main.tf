@@ -36,7 +36,7 @@ provider "google" {
 
 locals {
   testnet_name = "turbo-pickles"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-4.1-turbo-pickles-2f36b15"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.16-beta7-4.1-turbo-pickles-2f36b15-turbo-pickles-5214afc"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-4.1-turbo-pickles-2f36b15"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
@@ -71,7 +71,7 @@ module "testnet_east" {
 
   mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/2f36b15d48e956e5242c0abc134f1fa7711398dd/src/app/archive/create_schema.sql"
 
-  runtime_config = local.runtime_config
+  # runtime_config = local.runtime_config
 
   additional_seed_peers = [
     "/dns4/seed-one.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
