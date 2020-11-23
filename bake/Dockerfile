@@ -39,6 +39,8 @@ done'\
 
 RUN chmod +x init_coda_baked.sh
 
+RUN rm -f /root/.coda-config/.mina-lock
+
 ENV CODA_TIME_OFFSET 0
 
 ENTRYPOINT ["/usr/bin/dumb-init", "/root/init_coda_baked.sh"]
