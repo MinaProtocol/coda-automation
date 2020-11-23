@@ -23,6 +23,7 @@ touch .coda-config/mina-best-tip.log\n\
 command=$1 \n\
 shift \n\
 while true; do\n\
+  rm -f /root/.coda-config/.mina-lock
   coda "$command" -config-file "'${CONFIG_FILE}'" "$@" 2>&1 >coda.log &\n\
   coda_pid=$!\n\
   tail -q -f coda.log -f .coda-config/coda-prover.log -f .coda-config/coda-verifier.log -f .coda-config/mina-best-tip.log &\n\
@@ -38,8 +39,6 @@ done'\
 > init_coda_baked.sh
 
 RUN chmod +x init_coda_baked.sh
-
-RUN rm -f /root/.coda-config/.mina-lock
 
 ENV CODA_TIME_OFFSET 0
 
