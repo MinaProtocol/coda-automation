@@ -37,6 +37,28 @@ locals {
   }
 }
 
+resource "kubernetes_storage_class" "east4_ssd" {
+  metadata {
+    name = "us-east4-ssd"
+  }
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = "Delete"
+  parameters = {
+    type = "pd-ssd"
+  }
+}
+
+resource "kubernetes_storage_class" "east4_standard" {
+  metadata {
+    name = "us-east4-standard"
+  }
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = "Delete"
+  parameters = {
+    type = "pd-standard"
+  }
+}
+
 resource "google_container_cluster" "coda_cluster_east4" {
   provider = google.google_east4
   name     = "coda-infra-east4"
