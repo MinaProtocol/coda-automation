@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "terraform-pickles-pickles.tfstate"
+    key     = "terraform-turbo-pickles.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -35,29 +35,29 @@ provider "google" {
 }
 
 locals {
-  testnet_name = "pickles-public"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-hard-fork-test-11-12-2020-3bacbd4"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-develop-4108f65"
-  seed_region = "us-central1"
-  seed_zone = "us-central1-c"
+  testnet_name = "turbo-pickles"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.16-beta7-4.1-turbo-pickles-79f7316-turbo-pickles-a2ec945"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-4.1-turbo-pickles-2f36b15"
+  seed_region = "us-east1"
+  seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
   "CAESQBEHe2zCcQDHcSaeIydGggamzmTapdCS8SP0hb5FWvYhe9XEygmlUGV4zNu2P8zAIba4X84Gm4usQFLamjRywA8=,CAESIHvVxMoJpVBleMzbtj/MwCG2uF/OBpuLrEBS2po0csAP,12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv",
   "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5" ]
 
   runtime_config = <<EOT
-    ${file("./genesis_ledger_fork_11-12-2020.json")}
+    ${file("./genesis_ledger.json")}
   EOT
 }
 
 
 module "testnet_east" {
-  providers = { google = google.google-us-central1 }
+  providers = { google = google.google-us-east1 }
   source    = "../../modules/kubernetes/testnet"
 
   gcloud_seeds = [ module.seed_one, module.seed_two ]
 
-  cluster_name          = "coda-infra-central1"
-  cluster_region        = "us-central1"
+  cluster_name          = "coda-infra-east"
+  cluster_region        = "us-east1"
   testnet_name          = local.testnet_name
 
   coda_image            = local.coda_image
@@ -69,9 +69,9 @@ module "testnet_east" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
-  mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/4108f65508d97427d9572e50e0e382afbb7b3eb6/src/app/archive/create_schema.sql"
+  mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/2f36b15d48e956e5242c0abc134f1fa7711398dd/src/app/archive/create_schema.sql"
 
-  runtime_config = local.runtime_config
+  # runtime_config = local.runtime_config
 
   additional_seed_peers = [
     "/dns4/seed-one.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
@@ -81,8 +81,8 @@ module "testnet_east" {
   seed_zone = local.seed_zone
   seed_region = local.seed_region
 
-  log_level              = "Debug"
-  log_txn_pool_gossip    = true
+  log_level              = "Info"
+  log_txn_pool_gossip    = false
   log_received_blocks    = true
 
   block_producer_key_pass = "naughty blue worm"
@@ -109,15 +109,15 @@ module "testnet_east" {
         id                     = i + 1
         private_key_secret     = "online-fish-account-${i + 1}-key"
         enable_gossip_flooding = false
-        run_with_user_agent    = true
-        run_with_bots          = false
+        run_with_user_agent    = false
+        run_with_bots          = true
         enable_peer_exchange   = false
         isolated               = false
       }
     ]
   )
 
-  snark_worker_replicas = 15
+  snark_worker_replicas = 30
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port = 10401
