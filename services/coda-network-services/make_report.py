@@ -22,6 +22,7 @@ from discord_webhook import DiscordWebhook
 discord_webhook_url = None
 
 def main():
+
     global discord_webhook_url
     parser = argparse.ArgumentParser(description="Make a report for the active network and optionally send to discord")
     parser.add_argument("-n", "--namespace", help="testnet namespace", required=True, type=str, dest="namespace")
@@ -70,9 +71,32 @@ def main():
     queried_peers = set()
     unqueried_peers = set()
 
+    telemetry_heartbeat_errors = set()
+    telemetry_transport_stopped_errors = set()
+    telemetry_handshake_errors = set()
+    telemetry_other_errors = set()
+
+    def contains_error(resp):
+      try:
+        resp['error']
+        return True
+      except KeyError :
+        return False
+
+    def no_error(resp):
+      return (not (contains_error(resp)))
+
     def add_resp(resp, direct_queried_peers):
       # we use ast instead of json to handle properties with single quotes instead of double quotes (which the response seems to often contain)
-      peers = [ ast.literal_eval(s) for s in resp.split('\n') if s != '' ]
+      resps = [ ast.literal_eval(s) for s in resp.split('\n') if s != '' ]
+
+      print ('Received %s telemetry responses'%(str(len(resps))))
+
+      peers = filter(no_error,resps)
+      error_resps = filter(contains_error,resps)
+
+      print ('%s responses from peers'%(str(len(list(peers)))))
+      print ('%s error responses'%(str(len(list(error_resps)))))
 
       key_value_peers = [ ((p['node_ip_addr'], p['node_peer_id']), p) for p in peers ]
 
@@ -85,13 +109,28 @@ def main():
       unqueried_peers.update([ p['peer_id'] for p in list(itertools.chain(*[ p['peers'] for p in peers ])) ])
       unqueried_peers.difference_update(queried_peers)
 
-    resp = exec_on_seed("coda advanced telemetry -daemon-port " + seed_daemon_port + " -daemon-peers")
+      for e in error_resps:
+        error = str(e['error'])
+        if 'handshake error' in error:
+          telemetry_handshake_errors.update(e)
+        elif 'heartbeats' in error:
+          telemetry_heartbeat_errors.update(e)
+        elif 'transport stopped' in error:
+          telemetry_transport_stopped_errors.update(e)
+        else:
+          telemetry_other_errors.update(e)
+
+    print ('Gathering telemetry from daemon peers')
+
+    resp = exec_on_seed("coda advanced telemetry -daemon-port " + seed_daemon_port + " -daemon-peers" + " -show-errors")
     add_resp(resp, [])
 
     while len(unqueried_peers) > 0:
       peer_ids = ','.join(list(unqueried_peers))
 
-      resp = exec_on_seed("coda advanced telemetry -daemon-port " + seed_daemon_port + " -peer-ids " + peer_ids)
+      print ('Gathering telemetry on %s specified peers'%(str(len(peer_ids))))
+
+      resp = exec_on_seed("coda advanced telemetry -daemon-port " + seed_daemon_port + " -peer-ids " + peer_ids + " -show-errors")
       add_resp(resp, list(unqueried_peers))
 
     seed_status = exec_on_seed("coda client status")
@@ -149,7 +188,7 @@ def main():
     def has_forks():
       roots_with_children = [ root for root in roots if len(fork_tree[root]['children']) > 0 ]
       # can be multiple roots because of nodes syncing from genesis; however there shouldn't be multiple roots with children, that would indicate a fork longer than k
-      if len(roots_with_children) > 1: 
+      if len(roots_with_children) > 1:
         return True
       root = roots_with_children[0]
       tips = [ node for node,values in summarized_fork_tree.items() if len(values['children']) == 0 ]
@@ -159,7 +198,10 @@ def main():
         return True
       return False
 
-    has_participants = len(args.accounts_csv.strip()) > 0
+    if args.accounts_csv is None:
+      has_participants = False
+    else:
+      has_participants = len(args.accounts_csv.strip()) > 0
 
     participants_online = []
     participants_offline = []
@@ -183,6 +225,10 @@ def main():
     report = {
       "namespace": args.namespace,
       "nodes": len(peer_table),
+      "telemetry_handshake_errors": len(telemetry_handshake_errors),
+      "telemetry_heartbeat_errors": len(telemetry_heartbeat_errors),
+      "telemetry_transport_stopped_errors": len(telemetry_transport_stopped_errors),
+      "telemetry_other_errors": len(telemetry_other_errors),
       "epoch": epoch,
       "epoch_slot": slot,
       "global_slot": global_slot,
@@ -285,4 +331,3 @@ if __name__ == "__main__":
     if discord_webhook_url is not None and len(discord_webhook_url) > 0:
       webhook = DiscordWebhook(url=discord_webhook_url, content="Exited with error: " + str(trace))
       response = webhook.execute()
-
