@@ -107,6 +107,32 @@ resource "google_container_node_pool" "east4_primary_nodes" {
   }
 }
 
+resource "google_container_node_pool" "east4_preemptible_nodes" {
+  provider = google.google_east4
+  name       = "mina-preemptible-east14"
+  location   = "us-east4"
+  cluster    = google_container_cluster.coda_cluster_east4.name
+  node_count = 4
+  autoscaling {
+    min_node_count = 0
+    max_node_count = 15
+  }
+  node_config {
+    preemptible  = true
+    machine_type = "n1-standard-16"
+    disk_size_gb = 100
+
+    metadata = {
+      disable-legacy-endpoints = "true"
+    }
+
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+    ]
+  }
+}
+
 provider helm {
   alias = "helm_east4"
   kubernetes {
