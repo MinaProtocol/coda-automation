@@ -4,7 +4,10 @@ set -e
 
 TESTNET="$1"
 GENERATE_KEYS="$2"
-CLUSTER="${CLUSTER:-gke_o1labs-192920_us-east1_coda-infra-east}"
+
+if [ -z "$CLUSTER" ]; then
+  CLUSTER="$(kubectl config current-context)"
+fi
 
 docker_tag_exists() {
     IMAGE=$(echo $1 | awk -F: '{ print $1 }')
@@ -35,7 +38,7 @@ echo "WAITING FOR IMAGE ${image} TO APPEAR IN DOCKER REGISTRY"
 #  sleep 10
 #done
 
-if [[ -n "$2" ]] ; then
+if [[ -n "$GENERATE_KEYS" ]] ; then
   echo 'GENERATING KEYS'
   scripts/generate-keys-and-ledger.sh "${TESTNET}" "$2" "$3" # Generates whale (10), fish (1), community (variable), and service keys (2)
 fi
@@ -47,6 +50,7 @@ terraform init
 
 # Ask about destroy
 read -p "Terraform destroy? [y/N] " -n 1 -r
+#REPLY="Y"
 [[ $REPLY =~ ^[Yy]$ ]] && terraform destroy -auto-approve || echo "not destroying, continue to terraform plan + apply..."
 
 # Show the plan
