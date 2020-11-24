@@ -106,6 +106,32 @@ resource "google_container_node_pool" "east_primary_nodes" {
   }
 }
 
+resource "google_container_node_pool" "east1_preemptible_nodes" {
+  provider = google.google_east
+  name       = "mina-preemptible-east1"
+  location   = "us-east1"
+  cluster    = google_container_cluster.coda_cluster_east.name
+  node_count = 4
+  autoscaling {
+    min_node_count = 0
+    max_node_count = 15
+  }
+  node_config {
+    preemptible  = true
+    machine_type = "n1-standard-16"
+    disk_size_gb = 500
+
+    metadata = {
+      disable-legacy-endpoints = "true"
+    }
+
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+    ]
+  }
+}
+
 ## Buildkite
 
 resource "google_container_cluster" "buildkite_infra_east1" {
