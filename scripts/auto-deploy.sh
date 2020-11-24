@@ -77,10 +77,15 @@ python3 scripts/testnet-keys.py k8s "upload-online-whale-keys" \
   --key-dir "keys/testnet-keys/${TESTNET}_online-fish-keyfiles" \
   --count "$(echo keys/testnet-keys/${TESTNET}_online-fish-keyfiles/*.pub | wc -w)"
 
-#python3 scripts/testnet-keys.py k8s "upload-service-keys" \
-#  --namespace "$TESTNET" \
-#  --cluster "$CLUSTER" \
-#  --key-dir "keys/keysets/$TESTNET_online-service-keys"
+if [ -e keys/testnet-keys/bots/echo_service.pub ]; then
+  python3 scripts/testnet-keys.py k8s "upload-service-keys" \
+    --namespace "$TESTNET" \
+    --cluster "$CLUSTER" \
+    --key-dir "keys/testnet-keys/bots"
+else
+  echo '*** NOT UPLOADING BOT KEYS (required when running with bots sidecar)'
+fi
+
 
 if [ -e keys/api-keys/o1-discord-api-key ]; then
   kubectl create secret generic o1-discord-api-key \
