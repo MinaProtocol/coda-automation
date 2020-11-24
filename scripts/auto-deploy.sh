@@ -15,7 +15,6 @@ docker_tag_exists() {
     curl --silent -f -lSL https://index.docker.io/v1/repositories/$IMAGE/tags/$TAG > /dev/null
 }
 k() { kubectl --cluster="$CLUSTER" --namespace="$TESTNET" "$@" ; }
-#-gke_o1labs-192920_us-central1_coda-infra-central1
 
 if [ -z "$TESTNET" ]; then
   echo 'MISSING ARGUMENT'
@@ -50,14 +49,14 @@ echo 'RUNNING TERRAFORM in '"$terraform_dir"
 terraform init
 
 # Ask about destroy
-#read -p "Terraform destroy? [y/N] " -n 1 -r
-REPLY="Y"
+read -p "Terraform destroy? [y/N] " -n 1 -r
+#REPLY="Y"
 [[ $REPLY =~ ^[Yy]$ ]] && terraform destroy -auto-approve || echo "not destroying, continue to terraform plan + apply..."
 
 # Show the plan
 terraform plan
-#read -p "Is the above terraform plan correct? [y/N] " -n 1 -r
-#[[ ! $REPLY =~ ^[Yy]$ ]] && echo "incorrect terraform plan, exiting before doing anything destructive" && exit 1
+read -p "Is the above terraform plan correct? [y/N] " -n 1 -r
+[[ ! $REPLY =~ ^[Yy]$ ]] && echo "incorrect terraform plan, exiting before doing anything destructive" && exit 1
 
 # Apply and move forward only when plan is approved by the user, from here we auto-approve
 echo "Applying Terraform..."
