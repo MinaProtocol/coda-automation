@@ -170,10 +170,12 @@ def main():
       for row in reader:
         rows.append(row)
 
-      key_to_discord = { row[2]: row[1] for row in rows[1:] }
+      key_to_discord = { row[1]: row[0] for row in rows[1:] }
 
       participants_online = [ discord for (key,discord) in key_to_discord.items() if key in block_producers ]
       participants_offline = [ discord for (key,discord) in key_to_discord.items() if key not in block_producers ]
+    else:
+      key_to_discord = {}
 
     # ==========================================
     # Make report
@@ -192,6 +194,7 @@ def main():
       "has_participants": has_participants,
       "participants_online": participants_online,
       "participants_offline": participants_offline,
+      "peer_table": peer_table,
     }
 
     #import IPython; IPython.embed()
@@ -260,6 +263,15 @@ def main():
 
       webhook.add_file(file=str(report['participants_online']), filename='particpants_online.txt')
       webhook.add_file(file=str(report['participants_offline']), filename='participants_offline.txt')
+
+      peer_table_dict = { str(k): { 'block_producers': v['block_producers'],
+                               'protocol_state_hash': v['protocol_state_hash'],
+                               'discord(s)': [ key_to_discord.get(key, '') for key in v['block_producers'] ] } for k,v in report['peer_table'].items() }
+
+
+      peer_table_str = json.dumps(peer_table_dict, indent=2)
+
+      webhook.add_file(file=peer_table_str, filename='peer_table.txt')
 
       response = webhook.execute()
 
