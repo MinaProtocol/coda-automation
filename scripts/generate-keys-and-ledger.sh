@@ -6,7 +6,7 @@ TESTNET="${1:-turbo-pickles}"
 COMMUNITY_ENABLED="${2:-false}"
 RESET="${3:-false}"
 
-WHALE_COUNT=15
+WHALE_COUNT=5
 FISH_COUNT=1
 
 PATH=$PATH:./bin/

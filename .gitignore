@@ -29,3 +29,7 @@ Digraph.gv.png
 nightly-logs
 
 daemon.json
+
+discord_webhook_url.txt
+*-accounts.csv
+block_tree.gv.png
