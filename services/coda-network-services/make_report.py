@@ -344,5 +344,5 @@ if __name__ == "__main__":
     trace = traceback.format_exc()
     print(str(namespace) + " Exited with error", trace)
     if discord_webhook_url is not None and len(discord_webhook_url) > 0:
-      webhook = DiscordWebhook(url=discord_webhook_url, content="Exited with error: " + str(trace))
+      webhook = DiscordWebhook(url=discord_webhook_url, content=str(namespace) + " Exited with error: " + str(trace))
       response = webhook.execute()
