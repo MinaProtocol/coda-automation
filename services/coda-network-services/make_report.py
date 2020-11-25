@@ -342,7 +342,7 @@ if __name__ == "__main__":
   except Exception as e:
     exc_type, exc_obj, exc_tb = sys.exc_info()
     trace = traceback.format_exc()
-    print(str(namespace) + " Exited with error", trace)
+    print(str(namespace) + " exited with error", trace)
     if discord_webhook_url is not None and len(discord_webhook_url) > 0:
-      webhook = DiscordWebhook(url=discord_webhook_url, content="Exited with error: " + str(trace))
+      webhook = DiscordWebhook(url=discord_webhook_url, content=str(namespace) + " exited with error: " + str(trace))
       response = webhook.execute()
