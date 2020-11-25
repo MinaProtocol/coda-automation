@@ -1,0 +1,35 @@
+{
+  "genesis": {
+    "genesis_state_timestamp": "2020-01-01T00:00:00Z"
+  },
+  "ledger": {
+    "name": "ci-net",
+    "num_accounts": 3,
+    "accounts": [
+      {
+        "pk": "B62qndJi5mnRoBZ8SAYDM1oR2SgAk5WpZC8hGpJUZ4e64kDHGbFMeLJ",
+        "balance": "50000.000000000",
+        "delegate": "B62qndJi5mnRoBZ8SAYDM1oR2SgAk5WpZC8hGpJUZ4e64kDHGbFMeLJ",
+        "sk": null
+      },
+      {
+        "pk": "B62qjz7F44S3BQNyYakjoZqmxUe2yxU1dNG9TbzT2Pw8D7ynjkzsYvi",
+        "balance": "66003.000000000",
+        "delegate": "B62qjz7F44S3BQNyYakjoZqmxUe2yxU1dNG9TbzT2Pw8D7ynjkzsYvi",
+        "sk": null,
+        "timing": {
+          "initial_minimum_balance": "30000",
+          "cliff_time": "250",
+          "vesting_period": "4",
+          "vesting_increment": "200"
+        }
+      },
+      {
+        "pk": "B62qirJjCUso6xzUL2zkg1fXAmFgqAuLzb5Mi5rB4RRcwJ1Zo7fjErw",
+        "balance": "20000.000000000",
+        "delegate": "B62qirJjCUso6xzUL2zkg1fXAmFgqAuLzb5Mi5rB4RRcwJ1Zo7fjErw",
+        "sk": null
+      }
+    ]
+  }
+}
