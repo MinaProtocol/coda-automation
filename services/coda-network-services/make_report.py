@@ -62,13 +62,15 @@ def main():
     seed_vars_dict = [ v.to_dict() for v in seed_daemon_container.env ]
     seed_daemon_port = [ v['value'] for v in seed_vars_dict if v['name'] == 'DAEMON_CLIENT_PORT'][0]
 
+    request_timeout_seconds = 60
+
     def exec_on_seed(command):
       exec_command = [
         '/bin/bash',
         '-c',
         command
       ]
-      return stream.stream(v1.connect_get_namespaced_pod_exec, seed.metadata.name, args.namespace, command=exec_command, container='seed', stderr=True, stdout=True, stdin=False, tty=False)
+      return stream.stream(v1.connect_get_namespaced_pod_exec, seed.metadata.name, args.namespace, command=exec_command, container='seed', stderr=True, stdout=True, stdin=False, tty=False, _request_timeout=request_timeout_seconds)
 
 
     peer_table = {}
@@ -139,6 +141,8 @@ def main():
       add_resp(resp, list(unqueried_peers))
 
     seed_status = exec_on_seed("coda client status")
+    if seed_status == '':
+      raise Exception("unable to connect to seed node within " + str(request_timeout_seconds) + " seconds" )
 
     get_status_value = lambda key: [ s for s in seed_status.split('\n') if key in s ][0].split(':')[1].strip()
 
