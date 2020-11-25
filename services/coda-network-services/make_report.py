@@ -48,6 +48,9 @@ def main():
 
     namespace = args.namespace
 
+    if namespace.startswith('integration-test-'):
+      return
+
     discord_webhook_url = args.discord_webhook_url
     if discord_webhook_url is not None:
       discord_webhook_url = discord_webhook_url.strip()
