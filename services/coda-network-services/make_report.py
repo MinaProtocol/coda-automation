@@ -81,10 +81,10 @@ def main():
     queried_peers = set()
     unqueried_peers = set()
 
-    telemetry_heartbeat_errors = set()
-    telemetry_transport_stopped_errors = set()
-    telemetry_handshake_errors = set()
-    telemetry_other_errors = set()
+    telemetry_heartbeat_errors = []
+    telemetry_transport_stopped_errors = []
+    telemetry_handshake_errors = []
+    telemetry_other_errors = []
 
     def contains_error(resp):
       try:
@@ -122,13 +122,13 @@ def main():
       for e in error_resps:
         error = str(e['error'])
         if 'handshake error' in error:
-          telemetry_handshake_errors.update(e)
+          telemetry_handshake_errors.append(e)
         elif 'heartbeats' in error:
-          telemetry_heartbeat_errors.update(e)
+          telemetry_heartbeat_errors.append(e)
         elif 'transport stopped' in error:
-          telemetry_transport_stopped_errors.update(e)
+          telemetry_transport_stopped_errors.append(e)
         else:
-          telemetry_other_errors.update(e)
+          telemetry_other_errors.append(e)
 
     print ('Gathering telemetry from daemon peers')
 
