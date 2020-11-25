@@ -14,10 +14,17 @@ provider "aws" {
 }
 
 provider "google" {
+<<<<<<< HEAD
   alias   = "google-us-east4"
   project = "o1labs-192920"
   region  = "us-east4"
   zone    = "us-east4-b"
+=======
+  alias   = "google-us-central1"
+  project = "o1labs-192920"
+  region  = "us-central1"
+  zone    = "us-central1-c"
+>>>>>>> 90f5a8a... add initial (variable + minimal) testnet setup for ci-net
 }
 
 variable "testnet_name" {
@@ -31,13 +38,18 @@ variable "coda_image" {
   type = string
 
   description = "Mina daemon image to use in provisioning a ci-net"
+<<<<<<< HEAD
   default     = "gcr.io/o1labs-192920/coda-daemon:0.0.17-beta11-develop"
+=======
+  default     = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.16-beta7-4.1-turbo-pickles-79f7316-turbo-pickles-a2ec945"
+>>>>>>> 90f5a8a... add initial (variable + minimal) testnet setup for ci-net
 }
 
 variable "coda_archive_image" {
   type = string
 
   description = "Mina archive node image to use in provisioning a ci-net"
+<<<<<<< HEAD
   default     = "gcr.io/o1labs-192920/coda-archive:0.0.17-beta11-develop"
 }
 
@@ -58,12 +70,7 @@ variable "fish_count" {
 locals {
   seed_region = "us-east4"
   seed_zone = "us-east4-b"
-  seed_discovery_keypairs = [
-  "CAESQBEHe2zCcQDHcSaeIydGggamzmTapdCS8SP0hb5FWvYhe9XEygmlUGV4zNu2P8zAIba4X84Gm4usQFLamjRywA8=,CAESIHvVxMoJpVBleMzbtj/MwCG2uF/OBpuLrEBS2po0csAP,12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv",
-  "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5" ]
-
 }
-
 
 module "ci_testnet" {
   providers = { google = google.google-us-east4 }
@@ -98,6 +105,7 @@ module "ci_testnet" {
 
   log_level              = "Info"
   log_txn_pool_gossip    = false
+  log_received_blocks    = true
 
   block_producer_key_pass = "naughty blue worm"
   block_producer_starting_host_port = 10501
@@ -146,3 +154,4 @@ module "ci_testnet" {
 output "testnet_genesis_ledger" {
   value = module.ci_testnet.genesis_ledger
 }
+
