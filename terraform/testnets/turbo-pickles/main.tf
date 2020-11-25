@@ -36,7 +36,7 @@ provider "google" {
 
 locals {
   testnet_name = "turbo-pickles"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.16-beta7-4.1-turbo-pickles-79f7316-turbo-pickles-a2ec945"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.17-beta6-7f0440c-turbo-pickles-1e39dbf"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-4.1-turbo-pickles-2f36b15"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
