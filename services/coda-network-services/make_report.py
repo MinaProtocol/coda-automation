@@ -19,11 +19,13 @@ from graphviz import Digraph
 from kubernetes import client, config, stream
 from discord_webhook import DiscordWebhook
 
+namespace = ''
 discord_webhook_url = None
 
 def main():
 
     global discord_webhook_url
+    global namespace
     parser = argparse.ArgumentParser(description="Make a report for the active network and optionally send to discord")
     parser.add_argument("-n", "--namespace", help="testnet namespace", required=True, type=str, dest="namespace")
     parser.add_argument("-ic", "--incluster", help="if we're running from inside the cluster", required=False, default=False, type=bool, dest="incluster")
@@ -34,6 +36,7 @@ def main():
 
     args = parser.parse_args(sys.argv[1:])
 
+
     if args.incluster:
         config.load_incluster_config()
         assert(args.namespace == '')
@@ -42,6 +45,8 @@ def main():
     else:
         config.load_kube_config()
     v1 = client.CoreV1Api()
+
+    namespace = args.namespace
 
     discord_webhook_url = args.discord_webhook_url
     if discord_webhook_url is not None:
@@ -333,7 +338,7 @@ if __name__ == "__main__":
   except Exception as e:
     exc_type, exc_obj, exc_tb = sys.exc_info()
     trace = traceback.format_exc()
-    print("Exited with error", trace)
+    print(str(namespace) + " Exited with error", trace)
     if discord_webhook_url is not None and len(discord_webhook_url) > 0:
       webhook = DiscordWebhook(url=discord_webhook_url, content="Exited with error: " + str(trace))
       response = webhook.execute()
