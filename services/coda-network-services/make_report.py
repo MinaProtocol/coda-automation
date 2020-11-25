@@ -293,7 +293,7 @@ def main():
 
     make_block_tree_graph()
 
-    copy = [ 'namespace', 'nodes', 'epoch', 'epoch_slot', 'global_slot', 'blocks', 'block_fill_rate', 'has_forks', 'has_participants' ]
+    copy = [ 'namespace', 'nodes', 'epoch', 'epoch_slot', 'global_slot', 'blocks', 'block_fill_rate', 'has_forks', 'has_participants', "telemetry_handshake_errors", "telemetry_heartbeat_errors", "telemetry_transport_stopped_errors", "telemetry_other_errors" ]
     json_report = {}
     for c in copy:
       json_report[c] = report[c]
