@@ -65,7 +65,7 @@ def main():
     seed_vars_dict = [ v.to_dict() for v in seed_daemon_container.env ]
     seed_daemon_port = [ v['value'] for v in seed_vars_dict if v['name'] == 'DAEMON_CLIENT_PORT'][0]
 
-    request_timeout_seconds = 60
+    request_timeout_seconds = 600
 
     def exec_on_seed(command):
       exec_command = [
