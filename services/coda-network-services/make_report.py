@@ -102,8 +102,8 @@ def main():
 
       print ('Received %s telemetry responses'%(str(len(resps))))
 
-      peers = filter(no_error,resps)
-      error_resps = filter(contains_error,resps)
+      peers = list(filter(no_error,resps))
+      error_resps = list(filter(contains_error,resps))
 
       print ('%s responses from peers'%(str(len(list(peers)))))
       print ('%s error responses'%(str(len(list(error_resps)))))
@@ -315,10 +315,15 @@ def main():
 
     formatted_report = json.dumps(json_report, indent=2)
 
+    print(formatted_report)
+    import IPython; IPython.embed()
+
+
     if discord_webhook_url is not None and len(discord_webhook_url) > 0:
       discord_char_limit = 2000
       if len(formatted_report) > discord_char_limit - 5:
         formatted_report[:discord_char_limit - 5] + '...'
+
 
       webhook = DiscordWebhook(url=discord_webhook_url, content=formatted_report)
 
