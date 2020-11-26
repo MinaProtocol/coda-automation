@@ -138,7 +138,7 @@ def main():
     while len(unqueried_peers) > 0:
       peer_ids = ','.join(list(unqueried_peers))
 
-      print ('Gathering telemetry on %s specified peers'%(str(len(peer_ids))))
+      print ('Gathering telemetry on %s specified peers'%(str(len(unqueried_peers))))
 
       resp = exec_on_seed("coda advanced telemetry -daemon-port " + seed_daemon_port + " -peer-ids " + peer_ids + " -show-errors")
       add_resp(resp, list(unqueried_peers))
@@ -316,7 +316,6 @@ def main():
     formatted_report = json.dumps(json_report, indent=2)
 
     print(formatted_report)
-    import IPython; IPython.embed()
 
 
     if discord_webhook_url is not None and len(discord_webhook_url) > 0:
