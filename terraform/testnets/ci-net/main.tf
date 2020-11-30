@@ -31,14 +31,14 @@ variable "coda_image" {
   type = string
 
   description = "Mina daemon image to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.16-beta7-4.1-turbo-pickles-79f7316-turbo-pickles-a2ec945"
+  default     = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-develop"
 }
 
 variable "coda_archive_image" {
   type = string
 
   description = "Mina archive node image to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-4.1-turbo-pickles-2f36b15"
+  default     = "gcr.io/o1labs-192920/coda-archive:0.0.17-beta6-develop"
 }
 
 locals {
@@ -73,7 +73,7 @@ module "testnet_east" {
 
   mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/2f36b15d48e956e5242c0abc134f1fa7711398dd/src/app/archive/create_schema.sql"
 
-  # runtime_config = local.runtime_config
+  runtime_config = local.runtime_config
 
   additional_seed_peers = [
     "/dns4/seed-one.${var.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
