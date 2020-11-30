@@ -15,7 +15,6 @@ A terraform module to launch a Seed Node on Google Compute Engine
 | cos\_image\_name | The forced COS image to use instead of latest | `string` | `"cos-stable-77-12371-89-0"` | no |
 | discovery\_keypair | The LibP2P Keypair to use when launching the seed node. | `any` | n/a | yes |
 | instance\_name | The desired name to assign to the deployed instance | `string` | `"coda-seed-node"` | no |
-| network | The name of the subnetwork to deploy addresses into | `any` | n/a | yes |
 | project\_id | The project ID to deploy resources into | `any` | n/a | yes |
 | region | The GCP region to deploy addresses into | `string` | n/a | yes |
 | seed\_peers | An Optional space-separated list of -peer <peer-string> arguments for the coda daemon | `string` | `""` | no |
