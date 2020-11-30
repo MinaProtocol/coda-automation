@@ -14,17 +14,10 @@ provider "aws" {
 }
 
 provider "google" {
-<<<<<<< HEAD
   alias   = "google-us-east4"
   project = "o1labs-192920"
   region  = "us-east4"
   zone    = "us-east4-b"
-=======
-  alias   = "google-us-central1"
-  project = "o1labs-192920"
-  region  = "us-central1"
-  zone    = "us-central1-c"
->>>>>>> 90f5a8a... add initial (variable + minimal) testnet setup for ci-net
 }
 
 variable "testnet_name" {
@@ -38,18 +31,13 @@ variable "coda_image" {
   type = string
 
   description = "Mina daemon image to use in provisioning a ci-net"
-<<<<<<< HEAD
   default     = "gcr.io/o1labs-192920/coda-daemon:0.0.17-beta11-develop"
-=======
-  default     = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.16-beta7-4.1-turbo-pickles-79f7316-turbo-pickles-a2ec945"
->>>>>>> 90f5a8a... add initial (variable + minimal) testnet setup for ci-net
 }
 
 variable "coda_archive_image" {
   type = string
 
   description = "Mina archive node image to use in provisioning a ci-net"
-<<<<<<< HEAD
   default     = "gcr.io/o1labs-192920/coda-archive:0.0.17-beta11-develop"
 }
 
