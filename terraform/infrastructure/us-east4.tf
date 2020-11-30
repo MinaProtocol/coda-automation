@@ -1,13 +1,9 @@
-provider "google" {
-  alias   = "google_east4"
-  project = "o1labs-192920"
-  region  = "us-east4"
-}
-
 ### Testnets
 
 locals {
   k8s_context = "gke_o1labs-192920_us-east4_coda-infra-east4"
+  region = "us-east4"
+
   east4_prometheus_helm_values = {
     server = {
       global = {
@@ -38,9 +34,21 @@ locals {
   }
 }
 
+provider "google" {
+  alias   = "google_east4"
+  project = "o1labs-192920"
+  region  = local.region
+}
+
+data "google_compute_zones" "east4_available" {
+  project = "o1labs-192920"
+  region = local.region
+  status = "UP"
+}
+
 resource "kubernetes_storage_class" "east4_ssd" {
   metadata {
-    name = "us-east4-ssd"
+    name = "${local.region}-ssd"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
@@ -51,7 +59,7 @@ resource "kubernetes_storage_class" "east4_ssd" {
 
 resource "kubernetes_storage_class" "east4_standard" {
   metadata {
-    name = "us-east4-standard"
+    name = "${local.region}-standard"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
@@ -63,8 +71,10 @@ resource "kubernetes_storage_class" "east4_standard" {
 resource "google_container_cluster" "coda_cluster_east4" {
   provider = google.google_east4
   name     = "coda-infra-east4"
-  location = "us-east4"
+  location = local.region
   min_master_version = "1.15"
+
+  node_locations = data.google_compute_zones.east4_available.names
 
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
@@ -85,7 +95,7 @@ resource "google_container_cluster" "coda_cluster_east4" {
 resource "google_container_node_pool" "east4_primary_nodes" {
   provider = google.google_east4
   name       = "coda-infra-east4"
-  location   = "us-east4"
+  location   = local.region
   cluster    = google_container_cluster.coda_cluster_east4.name
   node_count = 4
   autoscaling {
@@ -164,14 +174,10 @@ resource "helm_release" "east4_prometheus" {
 resource "google_container_cluster" "buildkite_infra_east4" {
   provider = google.google_east4
   name     = "buildkite-infra-east4"
-  location = "us-east4"
+  location = local.region
   min_master_version = "1.15"
 
-  node_locations = [
-    "us-east4-a",
-    "us-east4-b",
-    "us-east4-c"
-  ]
+  node_locations = data.google_compute_zones.east4_available.names
 
   remove_default_node_pool = true
   initial_node_count       = 1
@@ -189,7 +195,7 @@ resource "google_container_cluster" "buildkite_infra_east4" {
 resource "google_container_node_pool" "east4_compute_nodes" {
   provider = google.google_east4
   name       = "buildkite-east4-compute"
-  location   = "us-east4"
+  location   = local.region
   cluster    = google_container_cluster.buildkite_infra_east4.name
 
   # total nodes provisioned = node_count * # of AZs

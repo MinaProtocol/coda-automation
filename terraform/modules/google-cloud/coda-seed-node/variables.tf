@@ -16,11 +16,6 @@ variable "seed_peers" {
   description = "An Optional space-separated list of -peer <peer-string> arguments for the coda daemon"
 }
 
-
-variable "network" {
-  description = "The name of the subnetwork to deploy addresses into"
-}
-
 variable "instance_name" {
   description = "The desired name to assign to the deployed instance"
   default     = "coda-seed-node"
