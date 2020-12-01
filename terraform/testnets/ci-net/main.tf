@@ -31,7 +31,7 @@ variable "coda_image" {
   type = string
 
   description = "Mina daemon image to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/coda-daemon:0.0.16-beta7-develop"
+  default     = "gcr.io/o1labs-192920/coda-daemon:0.0.17-beta6-develop-0344dd5"
 }
 
 variable "coda_archive_image" {
