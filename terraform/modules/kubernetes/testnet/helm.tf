@@ -151,8 +151,14 @@ resource "helm_release" "seed" {
   values = [
     yamlencode(local.seed_vars)
   ]
-  wait        = true
-  depends_on  = [kubernetes_role_binding.helm_release, var.gcloud_seeds]
+  wait        = false
+  timeout     = 600
+  depends_on  = [
+    kubernetes_role_binding.helm_release,
+    var.gcloud_seeds,
+    null_resource.block_producer_whalekey_uploads,
+    null_resource.block_producer_fishkey_uploads
+  ]
 }
 
 
@@ -168,6 +174,7 @@ resource "helm_release" "block_producers" {
     yamlencode(local.block_producer_vars)
   ]
   wait        = false
+  timeout     = 600
   depends_on  = [helm_release.seed]
 }
 
@@ -183,6 +190,7 @@ resource "helm_release" "snark_workers" {
     yamlencode(local.snark_worker_vars)
   ]
   wait        = false
+  timeout     = 600
   depends_on  = [helm_release.seed]
 }
 
@@ -199,6 +207,7 @@ resource "helm_release" "archive_node" {
   values     = [
     yamlencode(local.archive_node_vars)
   ]
-  wait = false
+  wait        = false
+  timeout     = 600
   depends_on = [helm_release.seed]
 }
