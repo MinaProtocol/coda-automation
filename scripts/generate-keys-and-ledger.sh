@@ -179,10 +179,11 @@ generate_keyset_from_file "o1-keys.txt" "online-o1" "employee"
 
 # GENESIS
 
-if [[ -s "terraform/testnets/${TESTNET}/genesis_ledger.json" ]] ; then
-  echo "-- genesis_ledger.json already exists for this testnet, refusing to overwrite. Delete \'terraform/testnets/${TESTNET}/genesis_ledger.json\' to force re-creation."
-  exit
-fi
+# CI=1
+# if [[ !${CI} && -s "terraform/testnets/${TESTNET}/genesis_ledger.json" ]] ; then
+#   echo "-- genesis_ledger.json already exists for this testnet, refusing to overwrite. Delete \'terraform/testnets/${TESTNET}/genesis_ledger.json\' to force re-creation."
+#   exit
+# fi
 
 #if $COMMUNITY_ENABLED ; then 
 #    echo "-- Creating genesis ledger with 'coda-network genesis' --"
