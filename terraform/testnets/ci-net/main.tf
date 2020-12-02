@@ -54,7 +54,7 @@ locals {
 }
 
 
-module "testnet_east" {
+module "ci_testnet" {
   providers = { google = google.google-us-central1 }
   source    = "../../modules/kubernetes/testnet"
 
