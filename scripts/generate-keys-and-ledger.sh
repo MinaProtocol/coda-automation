@@ -36,6 +36,10 @@ done
 
 CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
 
+WHALE_COUNT=1
+FISH_COUNT=1
+EXTRA_COUNT=1 # Extra community keys to be handed out manually
+
 WHALE_AMOUNT=2250000
 FISH_AMOUNT=20000
 O1_AMOUNT="${FISH_AMOUNT}"
