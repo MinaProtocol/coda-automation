@@ -61,11 +61,7 @@ locals {
 }
 
 module "ci_testnet" {
-<<<<<<< HEAD
   providers = { google = google.google-us-east4 }
-=======
-  providers = { google = google.google-us-central1 }
->>>>>>> c952668... rename ci-net testnet module and secrets (now artifact generation/upload) file
   source    = "../../modules/kubernetes/testnet"
 
   k8s_context = "gke_o1labs-192920_us-east4_coda-infra-east4"

@@ -226,8 +226,10 @@ variable "archive_persistence_class" {
 }
 
 variable "archive_persistence_access_mode" {
-  type    = string
-  default = "ReadWriteOnce"
+  type    = list
+  default = [
+    "ReadWriteOnce"
+  ]
 }
 
 variable "archive_persistence_size" {
