@@ -75,10 +75,7 @@ module "ci_testnet" {
 
   runtime_config = local.runtime_config
 
-  additional_seed_peers = [
-    "/dns4/seed-one.${var.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
-    "/dns4/seed-two.${var.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[1])[2]}"
-  ]
+  additional_seed_peers = []
 
   seed_zone = local.seed_zone
   seed_region = local.seed_region
