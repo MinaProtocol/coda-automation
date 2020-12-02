@@ -23,7 +23,7 @@ done
 
 CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
 
-WHALE_COUNT=5
+WHALE_COUNT=1
 FISH_COUNT=1
 
 
@@ -145,7 +145,7 @@ echo
 
 # ================================================================================
 
-EXTRA_COUNT=400
+EXTRA_COUNT=0
 # EXTRA FISH
 if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/online_fish_account_1.pub" ]]; then
 echo "using existing fish keys"
