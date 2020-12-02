@@ -111,7 +111,7 @@ locals {
       image = var.coda_archive_image
       remoteSchemaFile = var.mina_archive_schema
     }
-    postgresql = {
+    postgres = {
       persistence = {
         enabled = var.archive_persistence_enabled
         storageClass = "${var.cluster_region}-${var.archive_persistence_class}"
