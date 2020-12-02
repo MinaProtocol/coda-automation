@@ -213,6 +213,28 @@ variable "gcloud_seeds" {
   default = []
 }
 
+# Archive-Postgres Vars
+
+variable "archive_persistence_enabled" {
+  type    = bool
+  default = true
+}
+
+variable "archive_persistence_class" {
+  type    = string
+  default = "ssd"
+}
+
+variable "archive_persistence_access_mode" {
+  type    = string
+  default = "ReadWriteOnce"
+}
+
+variable "archive_persistence_size" {
+  type    = string
+  default = "8Gi"
+}
+
 # Coda network services vars
 
 variable "restart_nodes" {
