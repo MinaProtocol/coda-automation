@@ -107,19 +107,19 @@ resource "google_container_node_pool" "central1_primary_nodes" {
   }
 }
 
-resource "google_container_node_pool" "central1_experimental_nodes" {
+resource "google_container_node_pool" "central1_preemptible_nodes" {
   provider = google.google_central1
-  name       = "coda-infra-central1"
+  name       = "mina-preemptible-central1"
   location   = "us-central1"
   cluster    = google_container_cluster.coda_cluster_central1.name
-  node_count = 1
+  node_count = 4
   autoscaling {
     min_node_count = 0
-    max_node_count = 5
+    max_node_count = 10
   }
   node_config {
-    preemptible  = false
-    machine_type = "n2d-standard-32"
+    preemptible  = true
+    machine_type = "n1-standard-16"
     disk_size_gb = 100
 
     metadata = {
