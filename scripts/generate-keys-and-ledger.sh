@@ -34,6 +34,21 @@ set -e
 
 privkey_pass="naughty blue worm"
 
+function generate_key_files {
+
+  COUNT=$1
+  name_prefix=$2
+  output_dir="$3"
+  mkdir -p $output_dir
+
+  for k in $(seq 1 $COUNT); do
+    docker run \
+      --mount type=bind,source=${output_dir},target=/keys \
+      --entrypoint /bin/bash $CODA_DAEMON_IMAGE \
+      -c "CODA_PRIVKEY_PASS='${privkey_pass}' coda advanced generate-keypair -privkey-path /keys/${name_prefix}_${k}"
+  done
+}
+
 # ================================================================================
 
 # WHALES
@@ -46,17 +61,8 @@ echo "using existing whale keys"
 else
   # Recreate the online whale keys with ones we can put in secrets
   sed -ie 's/"publicKey":"[^"]*"/"publicKey":"PLACEHOLDER"/g' "keys/keysets/${TESTNET}_online-whales"
-
   output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_online-whale-keyfiles"
-  mkdir -p $output_dir
-
-  for k in $(seq 1 $WHALE_COUNT); do
-    docker run \
-      --mount type=bind,source=${output_dir},target=/keys \
-      --entrypoint /bin/bash $CODA_DAEMON_IMAGE \
-      -c "CODA_PRIVKEY_PASS='${privkey_pass}' coda advanced generate-keypair -privkey-path /keys/online_whale_account_${k}"
-  done
-
+  generate_key_files $WHALE_COUNT "online_whale_account" $output_dir
 
   sleep 5 #previous script may not be waiting for all keys, for loop misses last key sometimes
 fi
@@ -82,14 +88,7 @@ else
   # Recreate the online fish keys with ones we can put in secrets
   sed -ie 's/"publicKey":"[^"]*"/"publicKey":"PLACEHOLDER"/g' "keys/keysets/${TESTNET}_online-fish"
   output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_online-fish-keyfiles"
-  mkdir -p $output_dir
-
-  for k in $(seq 1 $FISH_COUNT); do
-    docker run \
-      --mount type=bind,source=${output_dir},target=/keys \
-      --entrypoint /bin/bash $CODA_DAEMON_IMAGE \
-      -c "CODA_PRIVKEY_PASS='${privkey_pass}' coda advanced generate-keypair -privkey-path /keys/online_fish_account_${k}"
-  done
+  generate_key_files $FISH_COUNT "online_fish_account" $output_dir
 
   sleep 5 #previous script may not be waiting for all keys, for loop misses last key sometimes
 fi
@@ -119,16 +118,8 @@ echo "using existing fish keys"
 else
   # Recreate the online fish keys with ones we can put in secrets
   sed -ie 's/"publicKey":"[^"]*"/"publicKey":"PLACEHOLDER"/g' "keys/keysets/${TESTNET}_extra-fish"
-
   output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_extra-fish-keyfiles"
-  mkdir -p $output_dir
-
-  for k in $(seq 1 $EXTRA_COUNT); do
-    docker run \
-      --mount type=bind,source=${output_dir},target=/keys \
-      --entrypoint /bin/bash $CODA_DAEMON_IMAGE \
-      -c "CODA_PRIVKEY_PASS='${privkey_pass}' coda advanced generate-keypair -privkey-path /keys/online_fish_account_${k}"
-  done
+  generate_key_files $EXTRA_COUNT "online_fish_account" $output_dir
 
   sleep 5 #previous script may not be waiting for all keys, for loop misses last key sometimes
 fi
