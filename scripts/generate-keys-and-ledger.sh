@@ -16,7 +16,8 @@ cd "${SCRIPTPATH}/../"
 
 if $RESET; then
   echo "resetting keys and genesis_ledger"
-  rm -rf keys/genesis keys/keysets keys/keypairs keys/testnet-keys
+  ls keys/keysets/* | grep -v "bots" | xargs -I % rm "%"
+  rm -rf keys/genesis keys/keypairs keys/testnet-keys
   rm -rf terraform/testnets/${TESTNET}/*.json
 fi
 
