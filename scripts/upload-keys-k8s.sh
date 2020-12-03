@@ -1,8 +1,22 @@
 
 TESTNET="$1"
+KEYS_PREFIX="$2"
 
 if [ -z "$CLUSTER" ]; then
   CLUSTER="$(kubectl config current-context)"
+fi
+
+whale_keys=${KEYS_PREFIX}keys/testnet-keys/${TESTNET}_online-whale-keyfiles
+fish_keys=${KEYS_PREFIX}keys/testnet-keys/${TESTNET}_online-fish-keyfiles
+
+if [ ! -d $fish_keys ]; then
+  echo "fish keys folder does not exist at $fish_keys"
+  exit 1
+fi
+
+if [ ! -d $whale_keys ]; then
+  echo "whale keys folder does not exist at $whale_keys"
+  exit 1
 fi
 
 if [ -z "$TESTNET" ]; then
@@ -29,14 +43,14 @@ function upload_keys_by_folder {
 echo 'UPLOADING KEYS'
 
 #whales
-upload_keys_by_folder keys/testnet-keys/${TESTNET}_online-whale-keyfiles
+upload_keys_by_folder $whale_keys
 
 #fish
-upload_keys_by_folder keys/testnet-keys/${TESTNET}_online-fish-keyfiles
+upload_keys_by_folder $fish_keys
 
 #bots
 if [ -e keys/testnet-keys/bots/echo_service.pub ]; then
-  upload_keys_by_folder keys/testnet-keys/bots
+  upload_keys_by_folder ${KEYS_PREFIX}keys/testnet-keys/bots
 else
   echo '*** NOT UPLOADING BOT KEYS (required when running with bots sidecar)'
 fi
@@ -45,7 +59,7 @@ if [ -e keys/api-keys/o1-discord-api-key ]; then
   kubectl create secret generic o1-discord-api-key \
     "--cluster=$CLUSTER" \
     "--namespace=$TESTNET" \
-    "--from-file=o1discord=keys/api-keys/o1-discord-api-key"
+    "--from-file=o1discord=${KEYS_PREFIX}keys/api-keys/o1-discord-api-key"
 else
   echo '*** NOT UPLOADING DISCORD API KEY (required when running with bots sidecar)'
 fi
