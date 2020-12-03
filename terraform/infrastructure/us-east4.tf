@@ -109,7 +109,7 @@ resource "google_container_node_pool" "east4_primary_nodes" {
 
 resource "google_container_node_pool" "east4_preemptible_nodes" {
   provider = google.google_east4
-  name       = "mina-preemptible-east14"
+  name       = "mina-preemptible-east4"
   location   = "us-east4"
   cluster    = google_container_cluster.coda_cluster_east4.name
   node_count = 4
