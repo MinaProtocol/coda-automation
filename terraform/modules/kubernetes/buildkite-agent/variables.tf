@@ -115,7 +115,7 @@ variable "agent_version" {
   type = string
 
   description = "Version of Buildkite agent to launch"
-  default     = "3-ubuntu"
+  default     = "3.25.0-ubuntu"
 }
 
 variable "chart_version" {
