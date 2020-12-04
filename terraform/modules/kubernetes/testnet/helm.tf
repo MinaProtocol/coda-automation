@@ -116,7 +116,15 @@ locals {
     archive = {
       image = var.coda_archive_image
       remoteSchemaFile = var.mina_archive_schema
-   }
+    }
+    postgresql = {
+      persistence = {
+        enabled = var.archive_persistence_enabled
+        storageClass = "${var.cluster_region}-${var.archive_persistence_class}"
+        accessModes = var.archive_persistence_access_mode
+        size = var.archive_persistence_size
+      }
+    }
   }
   
 }

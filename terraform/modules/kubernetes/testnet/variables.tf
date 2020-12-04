@@ -204,14 +204,14 @@ variable "gcloud_seeds" {
 
 # Coda network services vars
 
-variable "restart_nodes_every_mins" {
-  type = string
-  default = "60"
-}
-
 variable "restart_nodes" {
   type    = bool
   default = true
+}
+
+variable "restart_nodes_every_mins" {
+  type = string
+  default = "60"
 }
 
 variable "make_report_every_mins" {
@@ -232,4 +232,26 @@ variable "make_report_discord_webhook_url" {
 variable "make_report_accounts" {
   type    = string
   default = ""
+}
+
+# Archive-Postgres Vars
+
+variable "archive_persistence_enabled" {
+  type    = bool
+  default = true
+}
+
+variable "archive_persistence_class" {
+  type    = string
+  default = "ssd"
+}
+
+variable "archive_persistence_access_mode" {
+  type    = string
+  default = "ReadWriteOnce"
+}
+
+variable "archive_persistence_size" {
+  type    = string
+  default = "8Gi"
 }
