@@ -26,7 +26,7 @@ while true; do\n\
   rm -f /root/.coda-config/.mina-lock\n\
   coda "$command" -config-file "'${CONFIG_FILE}'" "$@" 2>&1 >coda.log &\n\
   coda_pid=$!\n\
-  tail -q -f coda.log &\n\
+  tail -q -f coda.log -f .coda-config/coda-prover.log -f .coda-config/coda-verifier.log -f .coda-config/mina-best-tip.log &\n\
   tail_pid=$!\n\
   wait "$coda_pid"\n\
   echo "Coda process exited with status code $?"\n\
