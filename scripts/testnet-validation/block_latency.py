@@ -344,13 +344,14 @@ def update_sender_time():
                 
 
 def start():
-    sink = setup('deploy-test1')
+    namespace = 'hard-fork'
+    sink = setup(namespace)
     with open(latency_data_file, 'w') as data_file:
         writer = csv.writer(data_file, delimiter=",")
         writer.writerow(csv_header)
     print ("subscribing to the logs..")
     subscriber.subscribe(subscription_name, process_logs)
-    time.sleep(600)
+    time.sleep(1800)
     update_sender_time()
     print ("senders: {}".format(senders))
     print ("data: {}".format(block_latency))
