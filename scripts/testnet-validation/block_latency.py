@@ -313,7 +313,8 @@ def stats(data):
         print ("No data")
 
 def update_sender_time():
-    for (state_hash, lines) in block_latency_temp.items():
+    for state_hash in list(block_latency_temp):
+        lines = block_latency_temp[state_hash]
         for line in lines:
             (sender, host, timestamp) = line
             if (state_hash in senders) and (sender in senders[state_hash]):
@@ -351,7 +352,7 @@ def start():
         writer.writerow(csv_header)
     print ("subscribing to the logs..")
     subscriber.subscribe(subscription_name, process_logs)
-    time.sleep(1800)
+    time.sleep(3600)
     update_sender_time()
     print ("senders: {}".format(senders))
     print ("data: {}".format(block_latency))
