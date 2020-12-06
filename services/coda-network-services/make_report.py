@@ -11,6 +11,7 @@ import time
 import random
 import itertools
 import numpy as np
+import math
 import ast
 import json
 import csv
@@ -21,6 +22,7 @@ from discord_webhook import DiscordWebhook
 
 namespace = ''
 discord_webhook_url = None
+discord_char_limit = 2000
 
 def main():
 
@@ -68,12 +70,42 @@ def main():
     request_timeout_seconds = 60
 
     def exec_on_seed(command):
-      exec_command = [
-        '/bin/bash',
-        '-c',
-        command
-      ]
-      return stream.stream(v1.connect_get_namespaced_pod_exec, seed.metadata.name, args.namespace, command=exec_command, container='seed', stderr=True, stdout=True, stdin=False, tty=False, _request_timeout=request_timeout_seconds)
+
+      def exec_cmd(command, timeout):
+        exec_command = [
+          '/bin/bash',
+          '-c',
+          command,
+        ]
+        result = stream.stream(v1.connect_get_namespaced_pod_exec, seed.metadata.name, args.namespace, command=exec_command, container='seed', stderr=True, stdout=True, stdin=False, tty=False, _request_timeout=timeout)
+        return result
+
+      start = time.time()
+      result = exec_cmd(command + ' &> /tmp/cns_command.out', request_timeout_seconds)
+      end = time.time()
+
+      print('ran command', command)
+      print('\tseconds to run:', end - start)
+
+      file_len = int(exec_cmd('stat --printf="%s" /tmp/cns_command.out', 10))
+      print('\tfile length:', str(file_len/(1024*1024)) + 'MB')
+
+
+      read_segment = lambda start, size: exec_cmd('cat /tmp/cns_command.out | head -c ' + str(start + size) + ' | tail -c ' + str(size), 240)
+      chunk_size = int(20e6)
+      read_chunk = lambda i: read_segment(i*chunk_size, min((i+1)*chunk_size, file_len) - i*chunk_size)
+      num_chunks = math.ceil(file_len/chunk_size)
+
+      start = time.time()
+      chunks = list(map(read_chunk, range(num_chunks)))
+      result = ''.join(chunks)
+      end = time.time()
+
+      print('\tseconds to get result:', end - start)
+
+      assert(file_len == len(result.encode('utf-8')))
+
+      return result
 
 
     peer_table = {}
@@ -132,20 +164,24 @@ def main():
 
     print ('Gathering telemetry from daemon peers')
 
+    seed_status = exec_on_seed("coda client status")
+    if seed_status == '':
+      raise Exception("unable to connect to seed node within " + str(request_timeout_seconds) + " seconds" )
+
     resp = exec_on_seed("coda advanced telemetry -daemon-port " + seed_daemon_port + " -daemon-peers" + " -show-errors")
     add_resp(resp, [])
 
-    while len(unqueried_peers) > 0:
+    requests = 0
+
+    while len(unqueried_peers) > 0 and requests < 10:
       peer_ids = ','.join(list(unqueried_peers))
 
-      print ('Gathering telemetry on %s specified peers'%(str(len(peer_ids))))
+      print ('Queried ' + str(len(queried_peers)) + ' peers. Gathering telemetry on %s unqueried peers'%(str(len(unqueried_peers))))
 
       resp = exec_on_seed("coda advanced telemetry -daemon-port " + seed_daemon_port + " -peer-ids " + peer_ids + " -show-errors")
       add_resp(resp, list(unqueried_peers))
 
-    seed_status = exec_on_seed("coda client status")
-    if seed_status == '':
-      raise Exception("unable to connect to seed node within " + str(request_timeout_seconds) + " seconds" )
+      requests += 1
 
     get_status_value = lambda key: [ s for s in seed_status.split('\n') if key in s ][0].split(':')[1].strip()
 
@@ -242,7 +278,8 @@ def main():
 
     report = {
       "namespace": args.namespace,
-      "nodes": len(peer_table),
+      "queried_nodes": len(queried_peers),
+      "responding_nodes": len(peer_table),
       "telemetry_handshake_errors": len(telemetry_handshake_errors),
       "telemetry_heartbeat_errors": len(telemetry_heartbeat_errors),
       "telemetry_transport_stopped_errors": len(telemetry_transport_stopped_errors),
@@ -296,7 +333,7 @@ def main():
 
     make_block_tree_graph()
 
-    copy = [ 'namespace', 'nodes', 'epoch', 'epoch_slot', 'global_slot', 'blocks', 'block_fill_rate', 'has_forks', 'has_participants', "telemetry_handshake_errors", "telemetry_heartbeat_errors", "telemetry_transport_stopped_errors", "telemetry_other_errors" ]
+    copy = [ 'namespace', 'queried_nodes', 'responding_nodes', 'epoch', 'epoch_slot', 'global_slot', 'blocks', 'block_fill_rate', 'has_forks', 'has_participants', "telemetry_handshake_errors", "telemetry_heartbeat_errors", "telemetry_transport_stopped_errors", "telemetry_other_errors" ]
     json_report = {}
     for c in copy:
       json_report[c] = report[c]
@@ -315,10 +352,10 @@ def main():
 
     formatted_report = json.dumps(json_report, indent=2)
 
+    print(formatted_report)
     if discord_webhook_url is not None and len(discord_webhook_url) > 0:
-      discord_char_limit = 2000
       if len(formatted_report) > discord_char_limit - 5:
-        formatted_report[:discord_char_limit - 5] + '...'
+        formatted_report = formatted_report[:discord_char_limit - 5] + '...'
 
       webhook = DiscordWebhook(url=discord_webhook_url, content=formatted_report)
 
@@ -347,5 +384,8 @@ if __name__ == "__main__":
     trace = traceback.format_exc()
     print(str(namespace) + " exited with error", trace)
     if discord_webhook_url is not None and len(discord_webhook_url) > 0:
-      webhook = DiscordWebhook(url=discord_webhook_url, content=str(namespace) + " exited with error: " + str(trace))
+      msg = str(namespace) + " exited with error: " + str(trace)
+      if len(msg) > discord_char_limit - 5:
+        msg = msg[:discord_char_limit - 5] + '...'
+      webhook = DiscordWebhook(url=discord_webhook_url, content=msg)
       response = webhook.execute()
