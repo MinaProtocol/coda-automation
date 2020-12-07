@@ -1,0 +1,76 @@
+import datetime,timedelta
+import json
+import re
+import subprocess
+
+from kubernetes import client, config
+import click
+
+@click.group()
+@click.option('--debug/--no-debug', default=False)
+def cli(debug):
+    pass
+
+
+@cli.group()
+def janitor():
+    pass
+
+
+@cli.group()
+def watchdog():
+    pass
+
+###
+# Commands for Testnet kubernetes resource cleanup
+###
+
+DEFAULT_K8S_CONFIG_PATH = "kube-config"
+DEFAULT_CLEANUP_THRESHOLD = (60 * 60 * 24 * 7)  # 7 days
+
+DEFAULT_CLEANUP_PATTERNS = [
+    r".*integration.*"
+]
+
+DEFAULT_K8S_CONTEXTS = [
+    "gke_o1labs-192920_us-west1_mina-integration-west1"
+]
+
+@janitor.command()
+@click.option('--namespace-pattern',
+              multiple=True,
+              default=DEFAULT_CLEANUP_PATTERNS,
+              help='regular expression expressing a list of namespace patterns to include in the cleanup operation')
+@click.option('--cleanup-older-than',
+              default=DEFAULT_CLEANUP_THRESHOLD,
+              help='threshold in seconds over which to include discovered namespaces in cleanup')
+@click.option('--k8s-context',
+              multiple=True,
+              default=DEFAULT_K8S_CONTEXTS,
+              help='Kubernetes cluster context to scan for namespaces to cleanup')
+@click.option('--kube-config-file',
+              default=DEFAULT_K8S_CONFIG_PATH,
+              help='Path to load Kubernetes config from')
+def cleanup_namespace_resources(namespace_pattern, cleanup_older_than, k8s_context, kube_config_File):
+    """Delete resources within target namespaces which have exceeded some AGE threshold."""
+
+    for ctx in k8s_context:
+        config.load_kube_config(context=ctx, config_file="/home/ahmad/.kube/config")
+        v1 = client.CoreV1Api()
+        for pattern in namespace_pattern:
+            response = v1.list_namespace()
+            for ns in response.items:
+                regexp = re.compile(pattern)
+                # cleanup all namespace resources which match pattern and whose creation time is older than threshold
+                if regexp.search(ns.metadata.name) and (now-timedelta(seconds=cleanup_older_than) <= ns.metadata.creation_timestamp <= datetime.now):
+                        command = "kubectl delete all --all -n {namespace}".format(namespace=ns)
+                        process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+                        output, error = process.communicate()
+                        if error:
+                            print(error)
+                        if output:
+                            print(output)
+
+
+if __name__ == "__main__":
+    cli()
