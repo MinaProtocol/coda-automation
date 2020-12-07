@@ -61,7 +61,7 @@ for i in $(seq 60); do
   sleep 30
 done
 
-cat bake/Dockerfile | docker build --no-cache \
+cat bake/Dockerfile | docker build \
   -t "${hub_baked_tag}" \
   --build-arg "BAKE_VERSION=${DOCKER_TAG}" \
   --build-arg "COMMIT_HASH=${AUTOMATION_PATHSPEC}" \
