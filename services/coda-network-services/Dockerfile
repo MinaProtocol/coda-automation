@@ -21,6 +21,7 @@ ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 COPY . /code
 
 COPY ./scripts /scripts
+COPY ./entrypoints /entrypoint.d
 
 COPY ./requirements.txt requirements.txt
 RUN pip install -r requirements.txt
@@ -28,5 +29,8 @@ RUN pip install -r requirements.txt
 WORKDIR /code
 RUN chmod -R 777 /code/
 RUN chmod -R 777 /scripts/
+
+COPY entrypoint.sh /entrypoint
+ENTRYPOINT ["/entrypoint"]
 
 CMD [ "bash", "main.sh" ]
