@@ -65,7 +65,7 @@ def main():
     seed_vars_dict = [ v.to_dict() for v in seed_daemon_container.env ]
     seed_daemon_port = [ v['value'] for v in seed_vars_dict if v['name'] == 'DAEMON_CLIENT_PORT'][0]
 
-    request_timeout_seconds = 60
+    request_timeout_seconds = 600
 
     def exec_on_seed(command):
       exec_command = [
@@ -102,8 +102,8 @@ def main():
 
       print ('Received %s telemetry responses'%(str(len(resps))))
 
-      peers = filter(no_error,resps)
-      error_resps = filter(contains_error,resps)
+      peers = list(filter(no_error,resps))
+      error_resps = list(filter(contains_error,resps))
 
       print ('%s responses from peers'%(str(len(list(peers)))))
       print ('%s error responses'%(str(len(list(error_resps)))))
@@ -138,7 +138,7 @@ def main():
     while len(unqueried_peers) > 0:
       peer_ids = ','.join(list(unqueried_peers))
 
-      print ('Gathering telemetry on %s specified peers'%(str(len(peer_ids))))
+      print ('Gathering telemetry on %s specified peers'%(str(len(unqueried_peers))))
 
       resp = exec_on_seed("coda advanced telemetry -daemon-port " + seed_daemon_port + " -peer-ids " + peer_ids + " -show-errors")
       add_resp(resp, list(unqueried_peers))
@@ -315,10 +315,14 @@ def main():
 
     formatted_report = json.dumps(json_report, indent=2)
 
+    print(formatted_report)
+
+
     if discord_webhook_url is not None and len(discord_webhook_url) > 0:
       discord_char_limit = 2000
       if len(formatted_report) > discord_char_limit - 5:
         formatted_report[:discord_char_limit - 5] + '...'
+
 
       webhook = DiscordWebhook(url=discord_webhook_url, content=formatted_report)
 
