@@ -1,4 +1,4 @@
-import datetime,timedelta
+import datetime, timedelta
 import json
 import re
 import subprocess
@@ -51,18 +51,18 @@ DEFAULT_K8S_CONTEXTS = [
 @click.option('--kube-config-file',
               default=DEFAULT_K8S_CONFIG_PATH,
               help='Path to load Kubernetes config from')
-def cleanup_namespace_resources(namespace_pattern, cleanup_older_than, k8s_context, kube_config_File):
+def cleanup_namespace_resources(namespace_pattern, cleanup_older_than, k8s_context, kube_config_file):
     """Delete resources within target namespaces which have exceeded some AGE threshold."""
 
     for ctx in k8s_context:
-        config.load_kube_config(context=ctx, config_file="/home/ahmad/.kube/config")
+        config.load_kube_config(context=ctx, config_file=kube_config_file)
         v1 = client.CoreV1Api()
+        response = v1.list_namespace()
         for pattern in namespace_pattern:
-            response = v1.list_namespace()
+            regexp = re.compile(pattern)
             for ns in response.items:
-                regexp = re.compile(pattern)
                 # cleanup all namespace resources which match pattern and whose creation time is older than threshold
-                if regexp.search(ns.metadata.name) and (now-timedelta(seconds=cleanup_older_than) <= ns.metadata.creation_timestamp <= datetime.now):
+                if regexp.search(ns.metadata.name) and (ns.metadata.creation_timestamp <= now-timedelta(seconds=cleanup_older_than)):
                         command = "kubectl delete all --all -n {namespace}".format(namespace=ns)
                         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
                         output, error = process.communicate()
