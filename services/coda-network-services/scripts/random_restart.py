@@ -13,7 +13,6 @@ def main():
     parser.add_argument("-i", "--interval", help="how often (in minutes) to kill a pod", required=True, type=int, dest="interval")
     parser.add_argument("-ic", "--incluster", help="if we're running from inside the cluster", required=False, default=False, type=bool, dest="incluster")
 
-
     args = parser.parse_args(sys.argv[1:])
 
     if args.incluster:
