@@ -45,7 +45,7 @@ sink_name= name
 
 csv_header = ["state_hash", "sender", "block_creation_start_timestamp", "sender_timestamp", "receiver", "receiver_timestamp", "rebroadcast_timestamp", "from_creator"]
 
-event_data_header = ["event", "host", "parent_state_hash", "state_hash", "timestamp, ""sender", "is_rebroadcast"]
+event_data_header = ["event", "host", "parent_state_hash", "state_hash", "timestamp", "sender", "is_rebroadcast"]
 #Generate, host, parent_state_hash, "", creation_state_timestamp, "", ""
 #Send, host, parent_state_hash, sent_state_hash, sent_timestamp, "", T/F
 #Receive, host, "", received_state_hash, received_timestamp, sender, ""
