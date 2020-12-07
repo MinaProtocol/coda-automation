@@ -59,6 +59,34 @@ function build_keyset_from_testnet_keys {
   done | jq -n ".name = \"${TESTNET}_${keyset_name}\" | .entries |= [inputs]" > keys/keysets/${TESTNET}_${keyset_name}
 }
 
+function generate_keyset_from_file {
+  file=$1
+  keyset=$2
+  keys_name=$3
+
+  declare -a PUBKEYS
+  read -ra PUBKEYS <<< $(tr '\n' ' ' < ${file})
+  COMMUNITY_SIZE=${#PUBKEYS[@]}
+  echo "Generating $COMMUNITY_SIZE $keys_name keys..."
+
+  if [[ -s "keys/testnet-keys/${TESTNET}_${keyset}" ]]; then
+    echo "using existing ${keyset} keys"
+  else
+
+    k=1
+    for key in ${PUBKEYS[@]}; do
+      nickname=${TESTNET}_${keyset}${k}
+      k=$(($k + 1))
+      jq -n ".publicKey = \"$key\" | .nickname = \"$nickname\""
+    done | jq -n ".name = \"${TESTNET}_${keyset}\" | .entries |= [inputs]" > keys/keysets/${TESTNET}_${keyset}
+
+  fi
+
+  echo "${keyset} Keyset:"
+  cat keys/keysets/${TESTNET}_${keyset}
+  echo
+
+}
 # ================================================================================
 
 if [[ -s "keys/testnet-keys/${TESTNET}_online-whale-keyfiles/online_whale_account_1.pub" ]]; then
@@ -124,81 +152,13 @@ echo
 # ================================================================================
 
 if $COMMUNITY_ENABLED; then
-
-  # COMMUNITY 1
-  declare -a PUBKEYS
-  read -ra PUBKEYS <<< $(tr '\n' ' ' < community-keys-1.txt)
-  COMMUNITY_SIZE=${#PUBKEYS[@]}
-  echo "Generating $COMMUNITY_SIZE community keys..."
-
-  for keyset in online-community; do
-    [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count ${COMMUNITY_SIZE} --name "${TESTNET}_${keyset}"
-  done
-
-  if [[ -s "keys/testnet-keys/${TESTNET}_online-community" ]]; then
-    echo "using existing community1 keys"
-  else
-    sed -ie 's/"publicKey":"[^"]*"/"publicKey":"PLACEHOLDER"/g' keys/keysets/${TESTNET}_online-community
-  fi
-
-  # Replace the community keys with the ones from community-keys.txt
-  for key in ${PUBKEYS[@]}; do
-    sed -ie "s/PLACEHOLDER/$key/" keys/keysets/${TESTNET}_online-community
-  done
-  echo "Online Community Keyset:"
-  cat keys/keysets/${TESTNET}_online-community
-  echo
-
-  # COMMUNITY 2
-  declare -a PUBKEYS
-  read -ra PUBKEYS <<< $(tr '\n' ' ' < community-keys-2.txt)
-  COMMUNITY_SIZE=${#PUBKEYS[@]}
-  echo "Generating $COMMUNITY_SIZE community2 keys..."
-
-  for keyset in online-community2; do
-    [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count ${COMMUNITY_SIZE} --name "${TESTNET}_${keyset}"
-  done
-
-  if [[ -s "keys/testnet-keys/${TESTNET}_online-community2" ]]; then
-    echo "using existing community2 keys"
-  else
-    sed -ie 's/"publicKey":"[^"]*"/"publicKey":"PLACEHOLDER"/g' keys/keysets/${TESTNET}_online-community2
-  fi
-
-  # Replace the community keys with the ones from community-keys.txt
-  for key in ${PUBKEYS[@]}; do
-    sed -ie "s/PLACEHOLDER/$key/" keys/keysets/${TESTNET}_online-community2
-  done
-  echo "Online Community 2 Keyset:"
-  cat keys/keysets/${TESTNET}_online-community2
-  echo
-
+  generate_keyset_from_file "community-keys-1.txt" "online-community" "community"
 else
   echo "community keys disabled"
 fi
 # ================================================================================
 
-  declare -a PUBKEYS
-  read -ra PUBKEYS <<< $(tr '\n' ' ' < o1-keys.txt)
-  COMMUNITY_SIZE=${#PUBKEYS[@]}
-  echo "Generating $COMMUNITY_SIZE employee keys..."
-
-  keyset=online-o1
-  [[ -s "keys/keysets/${TESTNET}_${keyset}" ]] || coda-network keyset create --count ${COMMUNITY_SIZE} --name "${TESTNET}_${keyset}"
-
-  if [[ -s "keys/testnet-keys/${TESTNET}_${keyset}" ]]; then
-    echo "using existing ${keyset} keys"
-  else
-    sed -ie 's/"publicKey":"[^"]*"/"publicKey":"PLACEHOLDER"/g' keys/keysets/${TESTNET}_${keyset}
-  fi
-
-  # Replace the community keys with the ones from community-keys.txt
-  for key in ${PUBKEYS[@]}; do
-    sed -ie "s/PLACEHOLDER/$key/" keys/keysets/${TESTNET}_${keyset}
-  done
-  echo "${keyset} Keyset:"
-  cat keys/keysets/${TESTNET}_${keyset}
-  echo
+generate_keyset_from_file "o1-keys.txt" "online-o1" "employee"
 
 # SERVICES
 # echo "Generating 2 service keys..."
