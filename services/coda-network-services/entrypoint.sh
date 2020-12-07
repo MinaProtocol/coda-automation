@@ -8,15 +8,11 @@ shopt -s nullglob
 # Print all commands executed if DEBUG mode enabled
 [ -n "${DEBUG:-""}" ] && set -x
 
-# We execute instead of sourcing the script so that we have the flexibility to
-# use a different interpreter (e.g. Ruby, Python) rather than force the use of bash.
+# Attempt to execute or source custom entrypoint scripts accordingly
 for script in /entrypoint.d/*; do
   if [ -x "$script" ]; then
     "$script" "$@"
-  else [[ "$script" = *.bash ]]; then
-    # Otherwise, attempt to source the script.
-    # Sourcing scripts allows them to set environment variables and do other
-    # dangerous things, so use them sparingly.
+  else
     source "$script"
   fi
 done
