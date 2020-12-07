@@ -7,6 +7,7 @@ provider "google" {
 ### Testnets
 
 locals {
+  k8s_context = "gke_o1labs-192920_us-east4_coda-infra-east4"
   east4_prometheus_helm_values = {
     server = {
       global = {
@@ -210,5 +211,42 @@ resource "google_container_node_pool" "east4_compute_nodes" {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
     ]
+  }
+}
+
+# Utilities
+
+provider kubernetes {
+    config_context  = local.k8s_context
+}
+
+resource "kubernetes_cron_job" "integration-testnet-cleanup" {
+  metadata {
+    name = "integration-test-cleanup"
+    namespace = "default"
+  }
+  spec {
+    concurrency_policy            = "Replace"
+    failed_jobs_history_limit     = 5
+    schedule                      = "0 0 * * *"
+    starting_deadline_seconds     = 10
+    successful_jobs_history_limit = 10
+    job_template {
+      metadata {}
+      spec {
+        backoff_limit              = 2
+        ttl_seconds_after_finished = 10
+        template {
+          metadata {}
+          spec {
+            container {
+              name    = "integration-test-janitor"
+              image   = "gcr.io/o1labs-192920/coda-network-services:latest"
+              command = ["/bin/bash", "-c", "/scripts/network-utilities.py janitor cleanup_namespace_resources"]
+            }
+          }
+        }
+      }
+    }
   }
 }
