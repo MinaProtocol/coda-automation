@@ -13,6 +13,7 @@ import time
 import csv
 import click
 import glob
+import functools
 
 uuid = str(uuid.uuid1())
 
@@ -53,6 +54,14 @@ event_generate = "Generate"
 event_send = "Send"
 event_receive = "Receive"
 
+def exists(str, sub):
+    return (str.find(sub) != -1)
+
+def required_log(line):
+    def f(acc, x):
+        return (acc or exists(line, x))
+    required_logs=[block_received_filter,block_broadcasted_filter,block_rebroadcast_filter,block_generation_started,block_production]
+    return (functools.reduce(f, required_logs , False ))
 
 
 def time_diff(start, end):
@@ -61,17 +70,26 @@ def time_diff(start, end):
     diff = (end-start)/(timedelta(milliseconds=1))
     return diff
 
+def snd(tuple2):
+    (x,y) = tuple2
+    return y
+
+def thrd(tuple3):
+    (x,y,z) = tuple3
+    return z
+
 def stat_of_event_file(directory):
     creators = dict ()
     senders_parent_state_hash = dict () #for calculating block production time
     senders = dict ()
     receivers = dict ()
-    event_file_list = glob.glob('block_event*')
+    event_file_list = glob.glob(directory+'/block_event*')
     for file in event_file_list:    
         with open(file, 'r') as data_file:
             reader = csv.reader(data_file, delimiter=',')
             next(reader) #skip header
             for [event, host, parent_state_hash, state_hash, timestamp, sender, is_rebroadcast] in reader:
+                is_rebroadcast = is_rebroadcast=="True"
                 if (event==event_generate):
                     if parent_state_hash in creators:
                         hosts = creators[parent_state_hash]
@@ -98,7 +116,9 @@ def stat_of_event_file(directory):
                         hosts = receivers[state_hash]
                     else:
                         hosts= dict()
-                    hosts[host]=(timestamp, sender)
+                    if host not in hosts:
+                        #anything recieved after is a dulicate and will be discarded
+                        hosts[host]=(timestamp, sender)
                     receivers[state_hash]=hosts
                 else:
                     print("Invalid event {}".format(event))
@@ -108,7 +128,8 @@ def stat_of_event_file(directory):
         for (host, sent_timestamp) in hosts.items():
             if (parent_state_hash in creators) and (host in creators[parent_state_hash]):
                 diff = time_diff(creators[parent_state_hash][host],sent_timestamp )
-                list.append(block_production_times, diff)
+                #assuming there multiple daemons with same pubkey are not running on the same machine with the same libp2p keypair
+                list.append(block_production_times, (parent_state_hash, host,diff))
     #calculate single-hop-times, validation-times, total_gossip_times
     single_hop_times = []
     total_gossip_time = dict()
@@ -123,7 +144,6 @@ def stat_of_event_file(directory):
             if (state_hash in senders) and (sender in senders[state_hash]):
                 sent_timestamp, is_rebroadcast = senders[state_hash][sender]
                 diff = time_diff(sent_timestamp,received_timestamp)
-                print("SH diff:{}\n".format(diff))
                 list.append(single_hop_times, diff)
             #total gossip time
             if state_hash in total_gossip_time:
@@ -141,26 +161,25 @@ def stat_of_event_file(directory):
             if (state_hash in senders) and (host in senders[state_hash]):
                 host_sent_timestamp, is_rebroadcast = senders[state_hash][host]
                 diff = time_diff(received_timestamp, host_sent_timestamp)
-                list.append(validation_times, diff)
+                list.append(validation_times, (state_hash,host,diff))
     #print stats
     print("creators: {}\n senders_parent: {}\n senders: {}\n receivers: {}\n".format(creators, senders_parent_state_hash, senders, receivers))
-    list.sort(block_production_times)
-    list.sort(validation_times)
     list.sort(single_hop_times)
-    print("block production times:{}\n".format(block_production_times))
+    print("block production times:{}\n".format(sorted(block_production_times, key=thrd)))
     print("single_hop_times {}\n".format(single_hop_times))
-    print("validation times {}\n".format(validation_times))
+    print("validation times {}\n".format(sorted(validation_times, key=thrd)))
     #total gossip time
     total_gossip_time_list=[]
     for (state_hash,(sent,latest_received,received_count)) in total_gossip_time.items():
-        diff = time_diff(sent,latest_received_timestamp)
-        list.append(total_gossip_time_list,(diff, received_count))
+        if latest_received != "":
+            diff = time_diff(sent,latest_received)
+            list.append(total_gossip_time_list,(diff, received_count))
     print("total gossip times {}\n".format(total_gossip_time_list))
-    avg_bp=(sum(block_production_times,0.0))/(max(len(block_production_times),1))
+    avg_bp=(sum(map(thrd,block_production_times),0.0))/(max(len(block_production_times),1))
     print("Average block production time(ms): {}".format(avg_bp))
     avg_hop=(sum(single_hop_times,0.0))/(max(len(single_hop_times),1))
     print("Average single hop time(ms): {}".format(avg_hop))
-    avg_vt=(sum(validation_times,0.0))/(max(len(validation_times),1))
+    avg_vt=(sum(map(thrd,validation_times),0.0))/(max(len(validation_times),1))
     print("Average validation time(ms): {}".format(avg_vt))
 
 
@@ -171,19 +190,19 @@ def cli(debug):
     pass
 
 @cli.group()
-def generate():
+def collect():
   pass
 
 @cli.group()
 def stats():
   pass
 
-@generate.command()
+@collect.command()
 @click.option('--namespace', default="hard-fork", help='Namespace to Query.')
 @click.option('--source', default="cloud", help='cloud/local for the source of logs')
 @click.option('--log-directory', default=".", help='Local directory containing log files')
-@click.option('--event-directory', default=".", help='Local directory to store event data files')
-def start(namespace, source, directory):
+@click.option('--event-file-directory', default=".", help='Local directory to store event data files')
+def start(namespace, source, log_directory, event_file_directory):
 
     def filter(namespace):
         return """
@@ -218,10 +237,6 @@ def start(namespace, source, directory):
     receivers = dict()
 
     block_latency = dict()
-
-
-    def exists(str, sub):
-        return (str.find(sub) != -1)
 
     logline_creation = '''{
     "insertId": "7jk4vufvm7qmbtsbp",  
@@ -353,11 +368,9 @@ def start(namespace, source, directory):
         timestamp = jsonPayload["timestamp"]
         #print ("timestamp: {}".format(timestamp))
         metadata = jsonPayload["metadata"]
-        host = host_str(metadata)
-        print("host: {}\n".format(host))
-        print ("host: {}".format(host))
         if exists(log_message, block_broadcasted_filter):
             print ("new block broadcasted")
+            host = host_str(metadata)
             state_hash = metadata["state_hash"]
             parent_hash = (metadata["message"][1])["protocol_state"]["previous_state_hash"]
             print ("state_hash: {}".format(state_hash))
@@ -371,6 +384,7 @@ def start(namespace, source, directory):
         else:
             if exists(log_message, block_rebroadcast_filter):
                 print ("block rebroadcasted")
+                host = host_str(metadata)
                 state_hash = metadata["state_hash"]
                 parent_hash = (metadata["external_transition"]["data"])["protocol_state"]["previous_state_hash"]
                 print ("state_hash: {}".format(state_hash))
@@ -386,6 +400,7 @@ def start(namespace, source, directory):
             else:
                 if exists(log_message, block_received_filter):
                     print ("block received")
+                    host = host_str(metadata)
                     state_hash = metadata["state_hash"]
                     print ("state_hash: {}".format(state_hash))
                     sender_b = metadata["sender"]
@@ -401,6 +416,7 @@ def start(namespace, source, directory):
                 else:
                     if exists(log_message, block_generation_started):
                         print ("block generation started")
+                        host = host_str(metadata)
                         crumb = metadata["breadcrumb"]
                         parent_hash = crumb["validated_transition"]["hash"]
                         if parent_hash in creators:
@@ -411,7 +427,7 @@ def start(namespace, source, directory):
                         print("setting block creator start time:{}".format(s[host]))
                         creators[parent_hash] = s
                     else:
-                        print ("unexpected log message: {}".format(log_message))
+                        print ("skipping log message: {}".format(log_message))
 
     def process_stackdriver_logs(message):
         data = json.loads(message.data)
@@ -422,7 +438,7 @@ def start(namespace, source, directory):
         message.ack()
 
 
-    def write_event_file(block_event_file):
+    def write_event_file(file):
         rows = []
         na = "NA"
         for (parent_state_hash, hosts) in creators.items():
@@ -434,10 +450,11 @@ def start(namespace, source, directory):
         for (state_hash,items) in receivers.items():
             for (sender, host, received_timestamp) in items:
                 list.append(rows, [event_receive, host, na, state_hash, received_timestamp, sender, na])
-        with open(block_event_file, 'w') as data_file:
+        with open(file, 'w') as data_file:
             writer = csv.writer(data_file, delimiter=",")
             writer.writerow(event_data_header)
             writer.writerows(rows)
+
     def update_sender_time():
         for state_hash in list(receivers):
             lines = receivers[state_hash]
@@ -524,6 +541,13 @@ def start(namespace, source, directory):
         else:
             print ("No data")
 
+    event_file=event_file_directory+"/"+block_event_file
+
+    def cleanup(sink, publisher, subscriber):
+        publisher.delete_topic(topic_name)
+        sink.delete()
+        subscriber.delete_subscription(subscription_name)
+
     def collect_from_stackdriver(namespace):
         sink, publisher, subscriber = setup(namespace)
         #with open(latency_data_file, 'w') as data_file:
@@ -532,30 +556,38 @@ def start(namespace, source, directory):
         print ("subscribing to the logs..")
         subscriber.subscribe(subscription_name, process_stackdriver_logs)
         time.sleep(900)
-        write_event_file(block_event_file)
-        return (sink, publisher, subscriber)
-
-    if source=="cloud":
-        sink, publisher, subscriber = collect_from_stackdriver(namespace)
-        print("generating stats")
-        stat_of_event_file(block_event_file)
+        write_event_file(event_file)
         print("Cleaning up")
         cleanup(sink, publisher, subscriber)
+
+    def collect_from_local_logs():
+        files=glob.glob(log_directory+'/coda.log*')
+        for file in files:
+            with open(file, 'r', errors='ignore') as f:
+                print("Reading log file {}".format(file))
+                while True:
+                    try:
+                        payload = f.readline(2*1024*1024)
+                        if not(payload):
+                            break
+                        print("log line: {}".format(payload))
+                        if required_log(payload):
+                            payload=json.loads(payload)
+                            print("payload:{}".format(payload))
+                            process_payload(payload)
+                    except:
+                        print("Read error: ignoring a log (possibly some binary blurb)")
+        write_event_file(event_file)
+
+    if source=="cloud":
+        collect_from_stackdriver(namespace)
     elif source=="local":
-        for payload in [logline_creation,logline_sent,logline_received1, logline_received2]:
-            payload=json.loads(payload)
-            process_payload(payload["jsonPayload"])
-        write_event_file(block_event_file)
-        stat_of_event_file(block_event_file)
+        collect_from_local_logs()
     else:
         print("Invalid source option {}. Should be either cloud or local".format(source))
+    print("generating stats")
+    stat_of_event_file(event_file_directory)
     print ("Done!")
-
-    def cleanup(sink, publisher, subscriber):
-        publisher.delete_topic(topic_name)
-        sink.delete()
-        subscriber.delete_subscription(subscription_name)
-
 
     def stat_from_file(file_name):
         data_dict = dict()
