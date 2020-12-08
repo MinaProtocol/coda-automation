@@ -3,7 +3,6 @@ testnetName: "coda-testnet"
 coda:
   runtimeConfig: ""
   logLevel: "Trace"
-  logReceivedBlocks: false
   logSnarkWorkGossip: false
   image: codaprotocol/coda-daemon:0.0.12-beta-new-genesis-01eca9b
   privkeyPass: "naughty blue worm"

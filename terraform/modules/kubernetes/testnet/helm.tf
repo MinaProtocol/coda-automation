@@ -29,7 +29,6 @@ locals {
     privkeyPass        = var.block_producer_key_pass
     seedPeers          = concat(var.additional_seed_peers, local.seed_peers)
     logLevel           = var.log_level
-    logReceivedBlocks  = var.log_received_blocks
     logSnarkWorkGossip = var.log_snark_work_gossip
   }
   

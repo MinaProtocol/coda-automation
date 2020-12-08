@@ -105,11 +105,6 @@ variable "log_level" {
   default = "Trace"
 }
 
-variable "log_received_blocks" {
-  type    = bool
-  default = false
-}
-
 variable "log_snark_work_gossip" {
   type    = bool
   default = false

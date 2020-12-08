@@ -56,7 +56,6 @@ module "testnet_east" {
 
   log_level              = "Trace"
   log_txn_pool_gossip    = true
-  log_received_blocks    = true
 
   block_producer_key_pass = "naughty blue worm"
   block_producer_starting_host_port = 10005
