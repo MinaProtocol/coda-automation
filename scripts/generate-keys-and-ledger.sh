@@ -1,10 +1,24 @@
 #! /bin/bash
 
-# ARGS
-TESTNET="${1:-turbo-pickles}"
-#COMMUNITY_KEYFILE="${2:-community-keys.txt}"
-COMMUNITY_ENABLED="${2:-false}"
-RESET="${3:-false}"
+# Set defaults before parsing args
+TESTNET=turbo-pickles
+COMMUNITY_KEYFILE=""
+RESET=false
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --testnet=*)
+      TESTNET="${1#*=}"
+      ;;
+    --community-keyfile=*)
+      COMMUNITY_KEYFILE="${1#*=}"
+      ;;
+    --reset=*)
+      RESET="${1#*=}"
+      ;;
+  esac
+  shift
+done
 
 
 CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
@@ -98,7 +112,6 @@ else
   generate_key_files $WHALE_COUNT "online_whale_account" $online_output_dir
   generate_key_files $WHALE_COUNT "offline_whale_account" $offline_output_dir
 
-  sleep 5 #previous scripts may not be waiting for all keys, for loop misses last key sometimes
   build_keyset_from_testnet_keys $online_output_dir "online-whales"
   build_keyset_from_testnet_keys $offline_output_dir "offline-whales"
 
@@ -119,7 +132,6 @@ else
   generate_key_files $FISH_COUNT "online_fish_account" $online_output_dir
   generate_key_files $FISH_COUNT "offline_fish_account" $offline_output_dir
 
-  sleep 5 #previous scripts may not be waiting for all keys, for loop misses last key sometimes
   build_keyset_from_testnet_keys $online_output_dir "online-fish"
   build_keyset_from_testnet_keys $offline_output_dir "offline-fish"
 fi
@@ -141,7 +153,6 @@ else
   output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_extra-fish-keyfiles"
   generate_key_files $EXTRA_COUNT "extra_fish_account" $output_dir
 
-  sleep 5 #previous scripts may not be waiting for all keys, for loop misses last key sometimes
   build_keyset_from_testnet_keys $output_dir "extra-fish"
 fi
 
@@ -151,7 +162,7 @@ echo
 
 # ================================================================================
 
-if $COMMUNITY_ENABLED; then
+if [ ! -z $COMMUNITY_KEYFILE ]; then
   generate_keyset_from_file "community-keys-1.txt" "online-community" "community"
 else
   echo "community keys disabled"
