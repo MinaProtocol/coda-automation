@@ -163,7 +163,7 @@ echo
 # ================================================================================
 
 if [ ! -z $COMMUNITY_KEYFILE ]; then
-  generate_keyset_from_file "community-keys-1.txt" "online-community" "community"
+  generate_keyset_from_file $COMMUNITY_KEYFILE "online-community" "community"
 else
   echo "community keys disabled"
 fi
