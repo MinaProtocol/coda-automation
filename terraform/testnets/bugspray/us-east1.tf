@@ -27,8 +27,6 @@ module "testnet_east" {
   num_fish_block_producers = 200
   block_producer_key_pass = "naughty blue worm"
   block_producer_starting_host_port = 10001
-  whale_block_producer_log_received_blocks = true
-  fish_block_producer_log_received_blocks = true
   fish_block_producers_with_bots = [0]
 
   snark_worker_replicas = 128
