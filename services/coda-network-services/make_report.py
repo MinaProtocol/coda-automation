@@ -19,6 +19,7 @@ from os import listdir
 from os.path import isfile, join
 from graphviz import Digraph
 from datetime import datetime
+import uuid
 
 from kubernetes import client, config, stream
 from discord_webhook import DiscordWebhook
@@ -83,18 +84,20 @@ def main():
         result = stream.stream(v1.connect_get_namespaced_pod_exec, seed.metadata.name, args.namespace, command=exec_command, container='seed', stderr=True, stdout=True, stdin=False, tty=False, _request_timeout=timeout)
         return result
 
+      tmp_file = '/tmp/cns_command.' + str(uuid.uuid4()) + '.out'
+
       start = time.time()
-      result = exec_cmd(command + ' &> /tmp/cns_command.out', request_timeout_seconds)
+      result = exec_cmd(command + ' &> ' + tmp_file, request_timeout_seconds)
       end = time.time()
 
       print('ran command', command)
       print('\tseconds to run:', end - start)
 
-      file_len = int(exec_cmd('stat --printf="%s" /tmp/cns_command.out', 10))
+      file_len = int(exec_cmd('stat --printf="%s" ' + tmp_file, 10))
       print('\tfile length:', str(file_len/(1024*1024)) + 'MB')
 
 
-      read_segment = lambda start, size: exec_cmd('cat /tmp/cns_command.out | head -c ' + str(start + size) + ' | tail -c ' + str(size), 240)
+      read_segment = lambda start, size: exec_cmd('cat ' + tmp_file + ' | head -c ' + str(start + size) + ' | tail -c ' + str(size), 240)
       chunk_size = int(20e6)
       read_chunk = lambda i: read_segment(i*chunk_size, min((i+1)*chunk_size, file_len) - i*chunk_size)
       num_chunks = math.ceil(file_len/chunk_size)
@@ -105,6 +108,8 @@ def main():
       end = time.time()
 
       print('\tseconds to get result:', end - start)
+
+      exec_cmd('rm ' + tmp_file, 10)
 
       assert(file_len == len(result.encode('utf-8')))
 
