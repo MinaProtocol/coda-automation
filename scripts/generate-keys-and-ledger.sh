@@ -188,44 +188,58 @@ fi
 #    echo "-- Creating genesis ledger with 'coda-network genesis' --"
 #else
 #  echo "-- Creating genesis ledger with 'coda-network genesis' without community keys --"
+if [ ! -f keys/keysets/bots ]; then
+  echo "Bots keyset is missing, building ledger without them"
+  PROMPT_KEYSETS="${TESTNET}_extra-fish
+  66003
+  ${TESTNET}_extra-fish
+  y
+  ${TESTNET}_offline-whales
+  2250000
+  ${TESTNET}_online-whales
+  y
+  ${TESTNET}_offline-fish
+  20000
+  ${TESTNET}_online-fish
+  y
+  ${TESTNET}_online-fish
+  20000
+  ${TESTNET}_online-fish
+  y
+  ${TESTNET}_online-o1
+  20000
+  ${TESTNET}_online-o1
+  n
+  "
+else
+  echo "bots keyset"
+  PROMPT_KEYSETS="${TESTNET}_extra-fish
+  66003
+  ${TESTNET}_extra-fish
+  y
+  ${TESTNET}_offline-whales
+  2250000
+  ${TESTNET}_online-whales
+  y
+  ${TESTNET}_offline-fish
+  20000
+  ${TESTNET}_online-fish
+  y
+  ${TESTNET}_online-fish
+  20000
+  ${TESTNET}_online-fish
+  y
+  ${TESTNET}_online-o1
+  20000
+  ${TESTNET}_online-o1
+  y
+  bots
+  50000
+  bots
+  n
+  "
+fi
 
-PROMPT_KEYSETS="online-fish-a-4.1
-66000
-online-fish-a-4.1
-y
-online-fish-b-4.1
-66001
-online-fish-b-4.1
-y
-online-fish-c-4.1
-66002
-online-fish-c-4.1
-y
-${TESTNET}_extra-fish
-66003
-${TESTNET}_extra-fish
-y
-${TESTNET}_offline-whales
-2250000
-${TESTNET}_online-whales
-y
-${TESTNET}_offline-fish
-20000
-${TESTNET}_online-fish
-y
-${TESTNET}_online-fish
-20000
-${TESTNET}_online-fish
-y
-${TESTNET}_online-o1
-20000
-${TESTNET}_online-o1
-y
-bots
-50000
-bots
-n
-"
 
 #fi
 
