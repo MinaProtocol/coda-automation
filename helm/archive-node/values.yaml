@@ -2,7 +2,6 @@ testnetName: "coda-testnet"
 coda:
   runtimeConfig: ""
   logLevel: "Trace"
-  logReceivedBlocks: false
   logSnarkWorkGossip: false
   image: codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898
   privkeyPass: "naughty blue worm"
