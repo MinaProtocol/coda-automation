@@ -30,13 +30,8 @@ def watchdog():
 DEFAULT_K8S_CONFIG_PATH = "kube-config"
 DEFAULT_CLEANUP_THRESHOLD = (60 * 60 * 24 * 7)  # 7 days
 
-DEFAULT_CLEANUP_PATTERNS = [
-    r".*integration.*"
-]
-
-DEFAULT_K8S_CONTEXTS = [
-    "gke_o1labs-192920_us-west1_mina-integration-west1"
-]
+DEFAULT_CLEANUP_PATTERNS = []
+DEFAULT_K8S_CONTEXTS = []
 
 @janitor.command()
 @click.option('--namespace-pattern',
