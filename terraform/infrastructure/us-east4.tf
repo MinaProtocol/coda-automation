@@ -242,7 +242,11 @@ resource "kubernetes_cron_job" "integration-testnet-cleanup" {
             container {
               name    = "integration-test-janitor"
               image   = "gcr.io/o1labs-192920/coda-network-services:latest"
-              command = ["/bin/bash", "-c", "/scripts/network-utilities.py janitor cleanup_namespace_resources"]
+              command = ["/bin/sh", "-c", "/scripts/network-utilities.py janitor cleanup_namespace_resources"]
+              env {
+                name  = "GCLOUD_APPLICATION_CREDENTIALS_JSON"
+                value = base64decode(google_service_account_key.janitor_svc_key.private_key)
+              }
             }
           }
         }
