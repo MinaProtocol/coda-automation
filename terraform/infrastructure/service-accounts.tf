@@ -20,9 +20,9 @@ resource "google_project_iam_member" "janitor_iam_memberships" {
 
   project      =  local.gke_project
   role         =  local.janitor_roles[count.index]
-  member       = "serviceAccount:${google_service_account.gcp_janitor_account[0].email}"
+  member       = "serviceAccount:${google_service_account.gcp_janitor_account.email}"
 }
 
 resource "google_service_account_key" "janitor_svc_key" {
-  service_account_id = google_service_account.gcp_janitor_account[0].name
+  service_account_id = google_service_account.gcp_janitor_account.name
 }
