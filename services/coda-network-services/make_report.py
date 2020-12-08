@@ -14,7 +14,10 @@ import numpy as np
 import ast
 import json
 import csv
+from os import listdir
+from os.path import isfile, join
 from graphviz import Digraph
+from datetime import datetime
 
 from kubernetes import client, config, stream
 from discord_webhook import DiscordWebhook
@@ -237,6 +240,56 @@ def main():
     else:
       key_to_discord = {}
 
+    # --------------------
+    # collect long-running data
+
+    value_to_discords = lambda v: [ key_to_discord.get(key, '') for key in v['block_producers'] ]
+
+    peer_table_dict = { str(k): { 'block_producers': v['block_producers'],
+                               'protocol_state_hash': v['protocol_state_hash'],
+                               'discord(s)': value_to_discords(v)  } for k,v in peer_table.items() }
+
+    new_fname = 'peer_table.' + str(time.time()) + '.txt'
+    with open(new_fname, 'w') as wfile:
+      wfile.write(json.dumps(peer_table_dict))
+
+    files = [f for f in listdir('.') if isfile(join('.', f))]
+
+    windows_in_hours = [ 1, 3, 6, 12, 24, 72, 24*7 ]
+
+    responding_peers_by_window = {}
+    responding_ips_by_window = {}
+    responding_discords_by_window = {}
+
+    oldest_report = time.time()
+    now = time.time()
+
+    for fname in files:
+      if 'peer_table' not in fname or fname.startswith('.'):
+        continue
+      with open(fname, 'r') as f:
+        contents = f.read()
+        peers = ast.literal_eval(contents)
+
+        file_timestamp = float('.'.join(fname.split('.')[1:-1]))
+
+        oldest_report = min(oldest_report, file_timestamp)
+
+        ip_peer_ids = set(peers.keys())
+        ips = set(map(lambda x: ast.literal_eval(x)[0], ip_peer_ids))
+        discords = set(itertools.chain(*map(lambda x: x['discord(s)'], peers.values())))
+
+        for w in windows_in_hours:
+          responding_peers_by_window.setdefault(w, set())
+          responding_ips_by_window.setdefault(w, set())
+          responding_discords_by_window.setdefault(w, set())
+
+          if (now - file_timestamp) <= w*3600:
+            responding_peers_by_window[w].update(ip_peer_ids)
+            responding_ips_by_window[w].update(ips)
+            responding_discords_by_window[w].update(discords)
+
+
     # ==========================================
     # Make report
 
@@ -259,6 +312,10 @@ def main():
       "participants_online": participants_online,
       "participants_offline": participants_offline,
       "peer_table": peer_table,
+      "oldest_responses_report": oldest_report,
+      "responding_peers_by_window": responding_peers_by_window,
+      "responding_ips_by_window": responding_ips_by_window,
+      "responding_discords_by_window": responding_discords_by_window,
     }
 
     #import IPython; IPython.embed()
@@ -305,13 +362,22 @@ def main():
     json_report['participants_offline'] = len(report['participants_offline'])
 
     json_report['number_of_peer_percentiles'] = ' | '.join([ str(p) + '%: ' + str(v) for (p,v) in report['number_of_peer_percentiles'] ])
+    json_report['oldest_responses_report'] = str((now - report['oldest_responses_report'])/3600) + ' hours old'
+
+    def format_responses_in_window(responding_in_window):
+      responses_in_window = { k: len(v) for (k,v) in responding_in_window.items() }
+      string = ' | '.join([ str(p) + ' hours: ' + str(v) for (p,v) in responses_in_window.items() ])
+      return string
+
+    json_report['unique_responding_peers_in_window'] = format_responses_in_window(report['responding_peers_by_window'])
+    json_report['unique_responding_ips_in_window'] = format_responses_in_window(report['responding_ips_by_window'])
+    json_report['unique_responding_discords_in_window'] = format_responses_in_window(report['responding_discords_by_window'])
 
     if json_report['has_forks']:
       json_report['has_forks'] = str(json_report['has_forks']) + ' :warning:'
 
     if json_report['block_fill_rate'] < .75 - .10:
       json_report['block_fill_rate'] = str(json_report['block_fill_rate']) + ' :warning:'
-
 
     formatted_report = json.dumps(json_report, indent=2)
 
@@ -331,10 +397,6 @@ def main():
 
       webhook.add_file(file=str(report['participants_online']), filename='particpants_online.txt')
       webhook.add_file(file=str(report['participants_offline']), filename='participants_offline.txt')
-
-      peer_table_dict = { str(k): { 'block_producers': v['block_producers'],
-                               'protocol_state_hash': v['protocol_state_hash'],
-                               'discord(s)': [ key_to_discord.get(key, '') for key in v['block_producers'] ] } for k,v in report['peer_table'].items() }
 
 
       peer_table_str = json.dumps(peer_table_dict, indent=2)
