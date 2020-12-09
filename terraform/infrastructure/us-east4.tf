@@ -234,7 +234,7 @@ resource "kubernetes_cron_job" "integration-testnet-cleanup" {
     job_template {
       metadata {}
       spec {
-        backoff_limit              = 2
+        backoff_limit              = 5
         ttl_seconds_after_finished = 10
         template {
           metadata {}
@@ -242,7 +242,7 @@ resource "kubernetes_cron_job" "integration-testnet-cleanup" {
             container {
               name    = "integration-test-janitor"
               image   = "gcr.io/o1labs-192920/coda-network-services:0.3.0"
-              command = [
+              args = [
                 "/scripts/network-utilities.py",
                 "janitor",
                 "cleanup-namespace-resources",
