@@ -5,6 +5,10 @@ TESTNET=turbo-pickles
 COMMUNITY_KEYFILE=""
 RESET=false
 
+WHALE_COUNT=5
+FISH_COUNT=1
+EXTRA_COUNT=400
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --testnet=*)
@@ -16,6 +20,15 @@ while [ $# -gt 0 ]; do
     --reset=*)
       RESET="${1#*=}"
       ;;
+    --wc=*)
+      WHALE_COUNT="${1#*=}"
+      ;;
+    --fc=*)
+      FISH_COUNT="${1#*=}"
+      ;;
+    --efc=*)
+      EXTRA_COUNT="${1#*=}"
+      ;;
   esac
   shift
 done
@@ -23,8 +36,6 @@ done
 
 CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
 
-WHALE_COUNT=5
-FISH_COUNT=1
 
 PATH=$PATH:./bin/
 
@@ -145,7 +156,6 @@ echo
 
 # ================================================================================
 
-EXTRA_COUNT=400
 # EXTRA FISH
 if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/online_fish_account_1.pub" ]]; then
 echo "using existing fish keys"
