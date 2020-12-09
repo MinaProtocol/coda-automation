@@ -120,7 +120,7 @@ locals {
       persistence = {
         enabled = var.archive_persistence_enabled
         storageClass = "${var.cluster_region}-${var.archive_persistence_class}"
-        accessModes = var.archive_persistence_access_mode
+        accessModes = var.archive_persistence_access_modes
         size = var.archive_persistence_size
       }
     }
