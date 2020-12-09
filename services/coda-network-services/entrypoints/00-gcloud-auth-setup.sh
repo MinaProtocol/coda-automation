@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eou pipefail
+set -eo pipefail
 set +x
 
 # Activate service account/cluster credentials if provided
@@ -19,4 +19,6 @@ if [[ -n $GCLOUD_APPLICATION_CREDENTIALS_JSON && -n $CLUSTER_SERVICE_EMAIL ]]; t
     for cluster in "${!k8s_cluster_mappings[@]}"; do
         gcloud container clusters get-credentials "${cluster}" --region "${k8s_cluster_mappings[$cluster]}"
     done
+else
+    echo "GCLOUD credentials not provided - account authorization deactivated."
 fi

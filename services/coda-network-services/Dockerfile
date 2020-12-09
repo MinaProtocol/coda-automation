@@ -1,8 +1,9 @@
-FROM python:3.7-slim-buster
+FROM python:3.7-slim-stretch
 
 ARG GCLOUDSDK_DOWNLOAD_URL="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-296.0.1-linux-x86_64.tar.gz"
 
-RUN apt update && apt install -y gnupg2 lsb-core apt-transport-https curl jq wget graphviz
+RUN apt update && apt install -y \
+    gnupg2 lsb-core apt-transport-https git curl jq wget graphviz dumb-init
 
 # Install GCloud SDK
 RUN wget ${GCLOUDSDK_DOWNLOAD_URL} && tar -zxf $(basename ${GCLOUDSDK_DOWNLOAD_URL}) -C /usr/local/
