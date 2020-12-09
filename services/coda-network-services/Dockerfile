@@ -1,4 +1,4 @@
-FROM python:3.7-stretch
+FROM python:3.7-slim-buster
 
 ARG GCLOUDSDK_DOWNLOAD_URL="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-296.0.1-linux-x86_64.tar.gz"
 
