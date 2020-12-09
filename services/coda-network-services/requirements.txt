@@ -6,3 +6,4 @@ discord-webhook
 numpy
 graphviz
 click
+timedelta

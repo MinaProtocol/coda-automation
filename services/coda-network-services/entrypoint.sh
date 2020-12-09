@@ -18,4 +18,4 @@ for script in /entrypoint.d/*; do
 done
 
 # Always run command under dumb-init so signals are forwarded correctly
-exec /usr/local/bin/dumb-init "$@"
+exec /usr/bin/dumb-init "$@"
