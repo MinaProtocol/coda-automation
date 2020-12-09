@@ -195,6 +195,10 @@ function add_another_to_prompt {
   amount=$2
   to=$3
 
+  if [ -z $to ]; then
+    to=$from
+  fi
+
   PROMPT_KEYSETS="${PROMPT_KEYSETS}y
   ${from}
   ${amount}
