@@ -26,10 +26,10 @@ CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-48
 WHALE_COUNT=5
 FISH_COUNT=1
 
-PATH=$PATH:./bin/
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 cd "${SCRIPTPATH}/../"
+PATH=$PATH:$(pwd)/bin
 
 if $RESET; then
   echo "resetting keys and genesis_ledger"
