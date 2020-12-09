@@ -188,60 +188,41 @@ fi
 #    echo "-- Creating genesis ledger with 'coda-network genesis' --"
 #else
 #  echo "-- Creating genesis ledger with 'coda-network genesis' without community keys --"
-if [ ! -f keys/keysets/bots ]; then
-  echo "Bots keyset is missing, building ledger without them"
-  PROMPT_KEYSETS="${TESTNET}_extra-fish
-  66003
-  ${TESTNET}_extra-fish
-  y
-  ${TESTNET}_offline-whales
-  2250000
-  ${TESTNET}_online-whales
-  y
-  ${TESTNET}_offline-fish
-  20000
-  ${TESTNET}_online-fish
-  y
-  ${TESTNET}_online-fish
-  20000
-  ${TESTNET}_online-fish
-  y
-  ${TESTNET}_online-o1
-  20000
-  ${TESTNET}_online-o1
-  n
+
+PROMPT_KEYSETS=""
+function add_another_to_prompt {
+  from=$1
+  amount=$2
+  to=$3
+
+  PROMPT_KEYSETS="${PROMPT_KEYSETS}y
+  ${from}
+  ${amount}
+  ${to}
   "
+}
+
+
+# add initial keyset
+PROMPT_KEYSETS="${TESTNET}_extra-fish
+66003
+${TESTNET}_extra-fish
+"
+add_another_to_prompt ${TESTNET}_offline-whales 2250000 ${TESTNET}_online-whales
+add_another_to_prompt ${TESTNET}_offline-fish 2250000 ${TESTNET}_online-fish
+add_another_to_prompt ${TESTNET}_online-fish 2250000 ${TESTNET}_online-fish
+add_another_to_prompt ${TESTNET}_online-o1 2250000 ${TESTNET}_online-o1
+
+if [ -f keys/keysets/bots ];
+then
+  add_another_to_prompt bots 50000 bots
 else
-  echo "bots keyset"
-  PROMPT_KEYSETS="${TESTNET}_extra-fish
-  66003
-  ${TESTNET}_extra-fish
-  y
-  ${TESTNET}_offline-whales
-  2250000
-  ${TESTNET}_online-whales
-  y
-  ${TESTNET}_offline-fish
-  20000
-  ${TESTNET}_online-fish
-  y
-  ${TESTNET}_online-fish
-  20000
-  ${TESTNET}_online-fish
-  y
-  ${TESTNET}_online-o1
-  20000
-  ${TESTNET}_online-o1
-  y
-  bots
-  50000
-  bots
-  n
-  "
+  echo "Bots keyset is missing, building ledger without them"
 fi
 
-
-#fi
+# set not another keyset
+PROMPT_KEYSETS="${PROMPT_KEYSETS}n
+"
 
 # Handle passing the above keyset info into interactive 'coda-network genesis' prompts
 while read input
