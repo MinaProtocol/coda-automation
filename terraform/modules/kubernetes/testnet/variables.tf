@@ -241,9 +241,9 @@ variable "archive_persistence_class" {
   default = "ssd"
 }
 
-variable "archive_persistence_access_mode" {
-  type    = string
-  default = "ReadWriteOnce"
+variable "archive_persistence_access_modes" {
+  type    = list
+  default = ["ReadWriteOnce"]
 }
 
 variable "archive_persistence_size" {
