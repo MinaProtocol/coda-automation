@@ -245,11 +245,13 @@ resource "kubernetes_cron_job" "integration-testnet-cleanup" {
               command = [
                 "/scripts/network-utilities.py",
                 "janitor",
-                "cleanup_namespace_resources",
+                "cleanup-namespace-resources",
                 "--namespace-pattern",
                 ".*integration.*",
                 "--k8s-context",
-                "gke_o1labs-192920_us-west1_mina-integration-west1"
+                "gke_o1labs-192920_us-west1_mina-integration-west1",
+                "--kube-config-file",
+                "/root/.kube/config"
               ]
               env {
                 name  = "GCLOUD_APPLICATION_CREDENTIALS_JSON"
