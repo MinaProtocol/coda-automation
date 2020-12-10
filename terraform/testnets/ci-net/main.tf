@@ -82,7 +82,6 @@ module "ci_testnet" {
 
   log_level              = "Info"
   log_txn_pool_gossip    = false
-  log_received_blocks    = true
 
   block_producer_key_pass = "naughty blue worm"
   block_producer_starting_host_port = 10501
@@ -95,8 +94,8 @@ module "ci_testnet" {
         id                     = i + 1
         private_key_secret     = "online-whale-account-${i + 1}-key"
         enable_gossip_flooding = false
-        run_with_user_agent    = true
-        run_with_bots          = true
+        run_with_user_agent    = false
+        run_with_bots          = false
         enable_peer_exchange   = true
         isolated               = false
       }
@@ -110,7 +109,7 @@ module "ci_testnet" {
         enable_gossip_flooding = false
         run_with_user_agent    = false
         run_with_bots          = false
-        enable_peer_exchange   = false
+        enable_peer_exchange   = true
         isolated               = false
       }
     ]
