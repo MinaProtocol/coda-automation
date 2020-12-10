@@ -1,8 +1,9 @@
 ### Testnets
 
 locals {
+  east4_k8s_context = "gke_o1labs-192920_us-east4_coda-infra-east4"
+  east4_region = "us-east4"
   k8s_context = "gke_o1labs-192920_us-east4_coda-infra-east4"
-  region = "us-east4"
 
   east4_prometheus_helm_values = {
     server = {
@@ -36,19 +37,19 @@ locals {
 
 provider "google" {
   alias   = "google_east4"
-  project = "o1labs-192920"
-  region  = local.region
+  project = local.gcp_project
+  region  = local.east4_region
 }
 
 data "google_compute_zones" "east4_available" {
   project = "o1labs-192920"
-  region = local.region
+  region = local.east4_region
   status = "UP"
 }
 
 resource "kubernetes_storage_class" "east4_ssd" {
   metadata {
-    name = "${local.region}-ssd"
+    name = "${local.east4_region}-ssd"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
@@ -59,7 +60,7 @@ resource "kubernetes_storage_class" "east4_ssd" {
 
 resource "kubernetes_storage_class" "east4_standard" {
   metadata {
-    name = "${local.region}-standard"
+    name = "${local.east4_region}-standard"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
@@ -71,7 +72,7 @@ resource "kubernetes_storage_class" "east4_standard" {
 resource "google_container_cluster" "coda_cluster_east4" {
   provider = google.google_east4
   name     = "coda-infra-east4"
-  location = local.region
+  location = local.east4_region
   min_master_version = "1.15"
 
   node_locations = data.google_compute_zones.east4_available.names
@@ -95,7 +96,7 @@ resource "google_container_cluster" "coda_cluster_east4" {
 resource "google_container_node_pool" "east4_primary_nodes" {
   provider = google.google_east4
   name       = "coda-infra-east4"
-  location   = local.region
+  location   = local.east4_region
   cluster    = google_container_cluster.coda_cluster_east4.name
   node_count = 4
   autoscaling {
@@ -121,7 +122,7 @@ resource "google_container_node_pool" "east4_primary_nodes" {
 resource "google_container_node_pool" "east4_preemptible_nodes" {
   provider = google.google_east4
   name       = "mina-preemptible-east4"
-  location   = "us-east4"
+  location   = local.east4_region
   cluster    = google_container_cluster.coda_cluster_east4.name
   node_count = 4
   autoscaling {
@@ -147,12 +148,7 @@ resource "google_container_node_pool" "east4_preemptible_nodes" {
 provider helm {
   alias = "helm_east4"
   kubernetes {
-    host                   = "https://${google_container_cluster.coda_cluster_east4.endpoint}"
-    client_certificate     = base64decode(google_container_cluster.coda_cluster_east4.master_auth[0].client_certificate)
-    client_key             = base64decode(google_container_cluster.coda_cluster_east4.master_auth[0].client_key)
-    cluster_ca_certificate = base64decode(google_container_cluster.coda_cluster_east4.master_auth[0].cluster_ca_certificate)
-    token                  = data.google_client_config.current.access_token
-    load_config_file       = false
+    config_context = local.east4_k8s_context
   }
 }
 
@@ -174,7 +170,7 @@ resource "helm_release" "east4_prometheus" {
 resource "google_container_cluster" "buildkite_infra_east4" {
   provider = google.google_east4
   name     = "buildkite-infra-east4"
-  location = local.region
+  location = local.east4_region
   min_master_version = "1.15"
 
   node_locations = data.google_compute_zones.east4_available.names
@@ -195,7 +191,7 @@ resource "google_container_cluster" "buildkite_infra_east4" {
 resource "google_container_node_pool" "east4_compute_nodes" {
   provider = google.google_east4
   name       = "buildkite-east4-compute"
-  location   = local.region
+  location   = local.east4_region
   cluster    = google_container_cluster.buildkite_infra_east4.name
 
   # total nodes provisioned = node_count * # of AZs
@@ -223,7 +219,7 @@ resource "google_container_node_pool" "east4_compute_nodes" {
 # Utilities
 
 provider kubernetes {
-    config_context  = local.k8s_context
+    config_context  = local.east4_k8s_context
 }
 
 resource "kubernetes_cron_job" "integration-testnet-cleanup" {

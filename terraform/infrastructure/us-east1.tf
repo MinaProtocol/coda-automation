@@ -1,5 +1,6 @@
 locals {
-  region = "us-east1"
+  east1_region = "us-east1"
+  east1_k8s_context = "gke_o1labs-192920_us-east1_coda-infra-east"
 
   east_prometheus_helm_values = {
     server = {
@@ -33,19 +34,19 @@ locals {
 
 provider "google" {
   alias   = "google_east"
-  project = "o1labs-192920"
-  region  = local.region
+  project = local.gcp_project
+  region  = local.east1_region
 }
 
 data "google_compute_zones" "east1_available" {
-  project = "o1labs-192920"
-  region = local.region
+  project = local.gcp_project
+  region = local.east1_region
   status = "UP"
 }
 
 resource "kubernetes_storage_class" "east1_ssd" {
   metadata {
-    name = "${local.region}-ssd"
+    name = "${local.east1_region}-ssd"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
@@ -56,7 +57,7 @@ resource "kubernetes_storage_class" "east1_ssd" {
 
 resource "kubernetes_storage_class" "east1_standard" {
   metadata {
-    name = "${local.region}-standard"
+    name = "${local.east1_region}-standard"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
@@ -68,7 +69,7 @@ resource "kubernetes_storage_class" "east1_standard" {
 resource "google_container_cluster" "coda_cluster_east" {
   provider = google.google_east
   name     = "coda-infra-east"
-  location = local.region
+  location = local.east1_region
   min_master_version = "1.15"
 
   node_locations = data.google_compute_zones.east1_available.names
@@ -93,7 +94,7 @@ resource "google_container_cluster" "coda_cluster_east" {
 resource "google_container_node_pool" "east_primary_nodes" {
   provider = google.google_east
   name       = "coda-infra-east"
-  location   = local.region
+  location   = local.east1_region
   cluster    = google_container_cluster.coda_cluster_east.name
   node_count = 4
   autoscaling {
@@ -119,7 +120,7 @@ resource "google_container_node_pool" "east_primary_nodes" {
 resource "google_container_node_pool" "east1_preemptible_nodes" {
   provider = google.google_east
   name       = "mina-preemptible-east1"
-  location   = "us-east1"
+  location   = local.east1_region
   cluster    = google_container_cluster.coda_cluster_east.name
   node_count = 4
   autoscaling {
@@ -147,7 +148,7 @@ resource "google_container_node_pool" "east1_preemptible_nodes" {
 resource "google_container_cluster" "buildkite_infra_east1" {
   provider = google.google_east
   name     = "buildkite-infra-east1"
-  location = local.region
+  location = local.east1_region
   min_master_version = "1.15"
 
   node_locations = data.google_compute_zones.east1_available.names
@@ -166,9 +167,9 @@ resource "google_container_cluster" "buildkite_infra_east1" {
 }
 
 resource "google_container_node_pool" "east1_compute_nodes" {
-  provider = google.google_east
+  provider   = google.google_east
   name       = "buildkite-east1-compute"
-  location   = local.region
+  location   = local.east1_region
   cluster    = google_container_cluster.buildkite_infra_east1.name
 
   # total nodes provisioned = node_count * # of AZs
@@ -198,12 +199,7 @@ resource "google_container_node_pool" "east1_compute_nodes" {
 provider helm {
   alias = "helm_east"
   kubernetes {
-    host                   = "https://${google_container_cluster.coda_cluster_east.endpoint}"
-    client_certificate     = base64decode(google_container_cluster.coda_cluster_east.master_auth[0].client_certificate)
-    client_key             = base64decode(google_container_cluster.coda_cluster_east.master_auth[0].client_key)
-    cluster_ca_certificate = base64decode(google_container_cluster.coda_cluster_east.master_auth[0].cluster_ca_certificate)
-    token                  = data.google_client_config.current.access_token
-    load_config_file       = false
+    config_context = local.east1_k8s_context
   }
 }
 
