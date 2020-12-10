@@ -1,7 +1,8 @@
 # Testnets
 
 locals {
-  region = "us-central1"
+  central1_region = "us-central1"
+  central1_k8s_context = "gke_o1labs-192920_us-central1_coda-infra-central1"
 
   central1_prometheus_helm_values = {
     server = {
@@ -35,19 +36,19 @@ locals {
 
 provider "google" {
   alias   = "google_central1"
-  project = "o1labs-192920"
-  region  = local.region
+  project = local.gcp_project
+  region  = local.central1_region
 }
 
 data "google_compute_zones" "central1_available" {
-  project = "o1labs-192920"
-  region = local.region
+  project = local.gcp_project
+  region = local.central1_region
   status = "UP"
 }
 
 resource "kubernetes_storage_class" "central1_ssd" {
   metadata {
-    name = "${local.region}-ssd"
+    name = "${local.central1_region}-ssd"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
@@ -58,7 +59,7 @@ resource "kubernetes_storage_class" "central1_ssd" {
 
 resource "kubernetes_storage_class" "central1_standard" {
   metadata {
-    name = "${local.region}-standard"
+    name = "${local.central1_region}-standard"
   }
   storage_provisioner = "kubernetes.io/gce-pd"
   reclaim_policy      = "Delete"
@@ -70,7 +71,7 @@ resource "kubernetes_storage_class" "central1_standard" {
 resource "google_container_cluster" "coda_cluster_central1" {
   provider = google.google_central1
   name     = "coda-infra-central1"
-  location = local.region
+  location = local.central1_region
   min_master_version = "1.15"
 
   node_locations = data.google_compute_zones.central1_available.names
@@ -94,7 +95,7 @@ resource "google_container_cluster" "coda_cluster_central1" {
 resource "google_container_node_pool" "central1_primary_nodes" {
   provider = google.google_central1
   name       = "coda-infra-central1"
-  location   = local.region
+  location   = local.central1_region
   cluster    = google_container_cluster.coda_cluster_central1.name
   node_count = 4
   autoscaling {
@@ -120,7 +121,7 @@ resource "google_container_node_pool" "central1_primary_nodes" {
 resource "google_container_node_pool" "central1_preemptible_nodes" {
   provider = google.google_central1
   name       = "mina-preemptible-central1"
-  location   = local.region
+  location   = local.central1_region
   cluster    = google_container_cluster.coda_cluster_central1.name
   
   node_count = 4
@@ -147,12 +148,7 @@ resource "google_container_node_pool" "central1_preemptible_nodes" {
 provider helm {
   alias = "helm_central1"
   kubernetes {
-    host                   = "https://${google_container_cluster.coda_cluster_central1.endpoint}"
-    client_certificate     = base64decode(google_container_cluster.coda_cluster_central1.master_auth[0].client_certificate)
-    client_key             = base64decode(google_container_cluster.coda_cluster_central1.master_auth[0].client_key)
-    cluster_ca_certificate = base64decode(google_container_cluster.coda_cluster_central1.master_auth[0].cluster_ca_certificate)
-    token                  = data.google_client_config.current.access_token
-    load_config_file       = false
+    config_context = local.central1_k8s_context
   }
 }
 
@@ -174,7 +170,7 @@ resource "helm_release" "central1_prometheus" {
 resource "google_container_cluster" "buildkite_infra_central1" {
   provider = google.google_central1
   name     = "buildkite-infra-central1"
-  location = local.region
+  location = local.central1_region
   min_master_version = "1.15"
 
   node_locations = data.google_compute_zones.central1_available.names
@@ -195,7 +191,7 @@ resource "google_container_cluster" "buildkite_infra_central1" {
 resource "google_container_node_pool" "central1_compute_nodes" {
   provider = google.google_central1
   name     = "buildkite-central1-compute"
-  location = local.region
+  location = local.central1_region
   cluster  = google_container_cluster.buildkite_infra_central1.name
 
   # total nodes provisioned = node_count * # of AZs
