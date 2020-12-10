@@ -206,6 +206,44 @@ function add_another_to_prompt {
   "
 }
 
+WHALE_AMOUNT=2250000
+FISH_AMOUNT=20000
+COMMUNITY_AMOUNT=66000
+COMMUNITY_TIMING=${TESTNET_DIR}/
+O1_AMOUNT="${FISH_AMOUNT}"
+
+function dynamic_keysets {
+  from=$1
+
+  case $from in
+    *line-fish)
+      amount=${FISH_AMOUNT}
+      to=${TESTNET}_online-fish
+      ;;
+    *line-whales)
+      amount=${WHALE_AMOUNT}
+      to=${TESTNET}_online-whales
+      ;;
+    *community*)
+      amount=${COMMUNITY_AMOUNT}
+      to=${2}
+      ;;
+    *o1)
+      amount=${O1_AMOUNT}
+      to=${2}
+      ;;
+    *)
+      amount=$3
+      to=$2
+  esac
+
+  if [ -z $to ]; then
+    to=$from
+  fi
+
+  echo -e "y\n${from}\n${amount}\n${to}"
+}
+
 
 # add initial keyset
 PROMPT_KEYSETS="${TESTNET}_extra-fish
@@ -215,7 +253,7 @@ ${TESTNET}_extra-fish
 add_another_to_prompt ${TESTNET}_offline-whales 2250000 ${TESTNET}_online-whales
 add_another_to_prompt ${TESTNET}_offline-fish 2250000 ${TESTNET}_online-fish
 add_another_to_prompt ${TESTNET}_online-fish 2250000 ${TESTNET}_online-fish
-add_another_to_prompt ${TESTNET}_online-o1 2250000 ${TESTNET}_online-o1
+add_another_to_prompt ${TESTNET}_o1 2250000 ${TESTNET}_o1
 
 if [ -f keys/keysets/bots ];
 then
