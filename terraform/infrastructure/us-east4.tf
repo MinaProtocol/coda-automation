@@ -7,6 +7,7 @@ provider "google" {
 ### Testnets
 
 locals {
+  k8s_context = "gke_o1labs-192920_us-east4_coda-infra-east4"
   east4_prometheus_helm_values = {
     server = {
       global = {
@@ -210,5 +211,60 @@ resource "google_container_node_pool" "east4_compute_nodes" {
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
     ]
+  }
+}
+
+# Utilities
+
+provider kubernetes {
+    config_context  = local.k8s_context
+}
+
+resource "kubernetes_cron_job" "integration-testnet-cleanup" {
+  metadata {
+    name = "integration-test-cleanup"
+    namespace = "default"
+  }
+  spec {
+    concurrency_policy            = "Replace"
+    failed_jobs_history_limit     = 5
+    schedule                      = "0 0 * * *"
+    starting_deadline_seconds     = 10
+    successful_jobs_history_limit = 10
+    job_template {
+      metadata {}
+      spec {
+        backoff_limit              = 5
+        ttl_seconds_after_finished = 10
+        template {
+          metadata {}
+          spec {
+            container {
+              name    = "integration-test-janitor"
+              image   = "gcr.io/o1labs-192920/coda-network-services:0.3.0"
+              args = [
+                "/scripts/network-utilities.py",
+                "janitor",
+                "cleanup-namespace-resources",
+                "--namespace-pattern",
+                ".*integration.*",
+                "--k8s-context",
+                "gke_o1labs-192920_us-west1_mina-integration-west1",
+                "--kube-config-file",
+                "/root/.kube/config"
+              ]
+              env {
+                name  = "GCLOUD_APPLICATION_CREDENTIALS_JSON"
+                value = base64decode(google_service_account_key.janitor_svc_key.private_key)
+              }
+              env {
+                name  = "CLUSTER_SERVICE_EMAIL"
+                value = google_service_account.gcp_janitor_account.email
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
