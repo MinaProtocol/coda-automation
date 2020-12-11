@@ -1,6 +1,6 @@
 resource "null_resource" "block_producer_key_generation" {
   provisioner "local-exec" {
-      command = "../../../scripts/generate-keys-and-ledger.sh ${var.testnet_name} true false"
+      command = "../../../scripts/generate-keys-and-ledger.sh --testnet=${var.testnet_name} --reset=false"
   }
 }
 
@@ -11,24 +11,14 @@ resource "null_resource" "prepare_keys_for_deployment" {
   depends_on  = [kubernetes_namespace.testnet_namespace, null_resource.block_producer_key_generation]
 }
 
-resource "null_resource" "block_producer_whalekey_uploads" {
+resource "null_resource" "block_producer_uploads" {
   provisioner "local-exec" {
-      command = "python3 ../../../scripts/testnet-keys.py k8s upload-online-whale-keys --namespace ${var.testnet_name} --cluster gke_o1labs-192920_${var.cluster_region}_${var.cluster_name} --key-dir ../../../terraform/testnets/${var.testnet_name}/keys/testnet-keys/${var.testnet_name}_online-whale-keyfiles"
+    command = "CLUSTER=${var.cluster_name} ../../../scripts/upload-keys-k8s.sh" ${var.testnet_name} "terraform/testnets/${var.testnet_name/}" 
   }
-  depends_on  = [
+  depends_on = [
     kubernetes_namespace.testnet_namespace,
     null_resource.block_producer_key_generation,
     null_resource.prepare_keys_for_deployment
   ]
 }
 
-resource "null_resource" "block_producer_fishkey_uploads" {
-  provisioner "local-exec" {
-      command = "python3 ../../../scripts/testnet-keys.py k8s upload-online-fish-keys --namespace ${var.testnet_name} --cluster gke_o1labs-192920_${var.cluster_region}_${var.cluster_name}  --key-dir ../../../terraform/testnets/${var.testnet_name}/keys/testnet-keys/${var.testnet_name}_online-fish-keyfiles"
-  }
-  depends_on  = [
-    kubernetes_namespace.testnet_namespace,
-    null_resource.block_producer_key_generation,
-    null_resource.prepare_keys_for_deployment
-  ]
-}
