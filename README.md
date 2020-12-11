@@ -133,7 +133,7 @@ Next, you must create a new testnet in `terraform/testnets/`. For ease of use, y
 
 ### Generate Keys and Genesis Ledger
 
-The script `scripts/generate-keys-and-ledger.sh` handles key and genesis ledger generation. This script will build keysets and public/private key files to the output path in `./keys/keysets` and `keys/testnet-keys`. 
+The script `scripts/generate-keys-and-ledger.sh` handles key and genesis ledger generation. This script will build keysets and public/private key files to the output path in `./keys/keysets` and `keys/testnet-keys`.
 It is necessary to set the number of whales, fish, and extra-fish. The testnet name will specify the genesis ledger output folder for daemon consumption. `terraform/tests/TESTNET/`
 You will need to have compiled coda-network to the `bin/`
 
@@ -182,7 +182,7 @@ Note: The deployment of keys relies on kubectl being properly configured for the
 `scripts/upload-keys-k8s.sh` is responsible for uploading the whale, fish, bots, and discord keys as secrets to kubernetes for a given testnet name. It assumes that the keys are specified at `keys/testnet-keys`. If the keys were generated with `generate-keys-and-ledger.sh` and not changed or moved you can leave `$KEYS_PREFIX` blank
 
 ```
-  scripts/upload-keys-k8s.sh $TESTNET_NAME $KEYS_PREFIX  
+  scripts/upload-keys-k8s.sh $TESTNET_NAME $KEYS_PREFIX
 ```
 
 ### Is it Working?
