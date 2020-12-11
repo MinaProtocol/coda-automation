@@ -151,8 +151,7 @@ resource "helm_release" "seed" {
   depends_on  = [
     kubernetes_role_binding.helm_release,
     var.gcloud_seeds,
-    null_resource.block_producer_whalekey_uploads,
-    null_resource.block_producer_fishkey_uploads
+    null_resource.block_producer_uploads,
   ]
 }
 
