@@ -13,7 +13,7 @@ resource "null_resource" "prepare_keys_for_deployment" {
 
 resource "null_resource" "block_producer_uploads" {
   provisioner "local-exec" {
-    command = "CLUSTER=${var.cluster_name} ../../../scripts/upload-keys-k8s.sh" ${var.testnet_name} "terraform/testnets/${var.testnet_name/}" 
+      command = "CLUSTER=${var.cluster_name} ../../../scripts/upload-keys-k8s.sh ${var.testnet_name} terraform/testnets/${var.testnet_name}/"
   }
   depends_on = [
     kubernetes_namespace.testnet_namespace,
