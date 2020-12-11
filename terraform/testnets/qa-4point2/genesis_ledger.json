@@ -14,6 +14,7 @@
         "timing": {
           "initial_minimum_balance": "60000",
           "cliff_time": "150",
+          "cliff_amount": "12000",
           "vesting_period": "6",
           "vesting_increment": "150"
         }
