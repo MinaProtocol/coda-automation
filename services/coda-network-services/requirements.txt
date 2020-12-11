@@ -5,3 +5,5 @@ prometheus_client
 discord-webhook
 numpy
 graphviz
+click
+timedelta
