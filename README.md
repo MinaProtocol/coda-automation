@@ -105,83 +105,6 @@ Most developers shouldn't have to worry about this, however it's worth noting th
 
 If you don't know if you _should_ do this, you probably shouldn't!
 
-### Generate Keys
-
-Currently, keys are managed by `scripts/testnet-keys.py`, you need to generate keys for each role and/or service you intend to deploy.
-
-The following is a series of example commands you might run to generate keys for a small network:
-
-```
-python3 scripts/testnet-keys.py keys  generate-offline-fish-keys --count 25
-python3 scripts/testnet-keys.py keys  generate-online-fish-keys --count 25
-python3 scripts/testnet-keys.py keys  generate-offline-whale-keys --count 5
-python3 scripts/testnet-keys.py keys  generate-online-whale-keys --count 5
-python3 scripts/testnet-keys.py keys  generate-service-keys //(optional)
-```
-
-These commands will generate folders in the `scripts` directory by default, this output directory is a configurable location.
-
-```
-$ python3 scripts/testnet-keys.py keys generate-offline-fish-keys --help
-Usage: testnet-keys.py keys generate-offline-fish-keys [OPTIONS]
-
-  Generate Public Keys for Offline Fish Accounts
-
-Options:
-  --count INTEGER      Number of Fish Account keys to generate.
-  --output-dir TEXT    Directory to output Fish Account Keys to.
-  --privkey-pass TEXT  The password to use when generating keys.
-  --help               Show this message and exit.
-```
-
-### Generate Genesis Ledger
-
-Once you have the keys for your deploymenet created, you can use them to generate a genesis ledger with the following command.
-
-```
-python3 scripts/testnet-keys.py ledger generate-ledger
-```
-
-The script will try to load keys from the default directories here, so if you wrote them to a different spot (or moved them), you can pass the location via the CLI.
-
-```
-$ python3 scripts/testnet-keys.py ledger generate-ledger --help
-Usage: testnet-keys.py ledger generate-ledger [OPTIONS]
-
-  Generates a Genesis Ledger based on previously generated Whale, Fish, and
-  Block Producer keys.  If keys are not present on the filesystem at the
-  specified location, they are not generated.
-
-Options:
-  --generate-remainder TEXT       Indicates that keys should be generated if
-                                  there are not a sufficient number of keys
-                                  present.
-  --service-accounts-directory TEXT
-                                  Directory where Service Account Keys will be
-                                  stored.
-  --num-whale-accounts INTEGER    Number of Whale accounts to be generated.
-  --online-whale-accounts-directory TEXT
-                                  Directory where Offline Whale Account Keys
-                                  will be stored.
-  --offline-whale-accounts-directory TEXT
-                                  Directory where Offline Whale Account Keys
-                                  will be stored.
-  --num-fish-accounts INTEGER     Number of Fish accounts to be generated.
-  --online-fish-accounts-directory TEXT
-                                  Directory where Online Fish Account Keys
-                                  will be stored.
-  --offline-fish-accounts-directory TEXT
-                                  Directory where Offline Fish Account Keys
-                                  will be stored.
-  --staker-csv-file TEXT          Location of a CSV file detailing Discord
-                                  Username and Public Key for Stakers.
-  --help                          Show this message and exit.
-```
-
-There's several gotchas here that the script will check for:
-
-- For a particular block producer "class", number of offline and online keys must be equal
-- Remember the path to the ledger file here, you will need it as an input to your deployment
 
 ### Create a Testnet
 
@@ -191,6 +114,38 @@ Next, you must create a new testnet in `terraform/testnets/`. For ease of use, y
 - Name of testnet
 - number of nodes to deploy
 - Location of the Genesis Ledger
+
+
+### Generate Keys and Genesis Ledger
+
+The script `scripts/generate-keys-and-ledger.sh` handles key and genesis ledger generation. This script will build keysets and public/private key files to the output path in `./keys/keysets` and `keys/testnet-keys`. 
+It is necessary to set the number of whales, fish, and extra-fish. The testnet name will specify the genesis ledger output folder for daemon consumption. `terraform/tests/TESTNET/`
+You will need to have compiled coda-network to the `bin/`
+
+```
+./scripts/generate-keys-and-ledger.sh --testnet=beans --wc=5 --fc=1 --efc=2
+
+Options:
+  --testnet=STRING     Name of the testnet which keys are being generated for.
+  --wc=INTEGER         Number of Whale Account keys to generate.
+  --fc=INTEGER         Number of Fish Account keys to generate.
+  --efc=INTEGER        Number of extra Fish keys to generate.
+  --reset=true|false   Boolean to force regeneration of keys. Default is false
+```
+
+### Bake Script
+
+The bake script allows you to bundle keys and genesis ledger pre baked into the container with the latest mina daemon. It does this by pulling the genesis ledger from github specified by the automation commit and the testnet name. Therefore to use the script the genesis ledger must be pushed to github at the correct commit. The cloud flag can be set to true to build via GCP's cloud build functionality.
+
+```
+./scripts/bake.sh --testnet=nightly --docker-tag=0.0.17-beta6-develop --automation-commit=$(git log -1 --pretty=format:%H) --cloud=true
+
+Options:
+  --testnet=STRING            Name of the testnet.
+  --docker-tag=STRING         Docker tag for the mina daemon repository.
+  --automation-commit=STRING  Specifying commit for coda-automation.
+  --cloud=true|false          Should docker be built in cloud or locally.
+```
 
 ### Autodeploy.sh
 
@@ -206,6 +161,13 @@ Note: The deployment of keys relies on kubectl being properly configured for the
 
 ```
 ./scripts/auto-deploy.sh <testnet>
+```
+
+### Upload Secrets script
+`scripts/upload-keys-k8s.sh` is responsible for uploading the whale, fish, bots, and discord keys as secrets to kubernetes for a given testnet name. It assumes that the keys are specified at `keys/testnet-keys`. If the keys were generated with `generate-keys-and-ledger.sh` and not changed or moved you can leave `$KEYS_PREFIX` blank
+
+```
+  scripts/upload-keys-k8s.sh $TESTNET_NAME $KEYS_PREFIX  
 ```
 
 ### Is it Working?
