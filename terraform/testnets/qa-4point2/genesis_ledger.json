@@ -1,15 +1,15 @@
 {
   "genesis": {
-    "genesis_state_timestamp": "2020-12-11T03:06:31Z"
+    "genesis_state_timestamp": "2020-12-11T04:04:15Z"
   },
   "ledger": {
     "name": "qa-4point2",
     "num_accounts": 48,
     "accounts": [
       {
-        "pk": "B62qqzDx5TacgUN3nhQKQ8bXzbK1f9tn4WS1NY12753Sr3gHwDc6MD3",
+        "pk": "B62qmz9UQEqpm45yQ3uyCiZxuB39dAAz4bic6NxoceFU5D1nJZdPEtU",
         "balance": "66000.000000000",
-        "delegate": "B62qqzDx5TacgUN3nhQKQ8bXzbK1f9tn4WS1NY12753Sr3gHwDc6MD3",
+        "delegate": "B62qmz9UQEqpm45yQ3uyCiZxuB39dAAz4bic6NxoceFU5D1nJZdPEtU",
         "sk": null,
         "timing": {
           "initial_minimum_balance": "60000",
