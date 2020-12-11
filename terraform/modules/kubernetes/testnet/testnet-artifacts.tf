@@ -21,3 +21,4 @@ resource "null_resource" "block_producer_uploads" {
     null_resource.prepare_keys_for_deployment
   ]
 }
+
