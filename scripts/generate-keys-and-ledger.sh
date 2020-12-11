@@ -25,6 +25,12 @@ CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-48
 
 WHALE_COUNT=5
 FISH_COUNT=1
+EXTRA_COUNT=1 # Extra community keys to be handed out manually
+
+WHALE_AMOUNT=2250000
+FISH_AMOUNT=20000
+O1_AMOUNT="${FISH_AMOUNT}"
+COMMUNITY_AMOUNT=66000
 
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
@@ -145,7 +151,6 @@ echo
 
 # ================================================================================
 
-EXTRA_COUNT=400
 # EXTRA FISH
 if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/online_fish_account_1.pub" ]]; then
 echo "using existing fish keys"
@@ -206,11 +211,7 @@ function add_another_to_prompt {
   "
 }
 
-WHALE_AMOUNT=2250000
-FISH_AMOUNT=20000
-COMMUNITY_AMOUNT=66000
-COMMUNITY_TIMING=${TESTNET_DIR}/
-O1_AMOUNT="${FISH_AMOUNT}"
+#COMMUNITY_TIMING=terraform/testnets/${TESTNET}/community_timing.json
 
 function dynamic_keysets {
   from=$1
@@ -247,13 +248,13 @@ function dynamic_keysets {
 
 # add initial keyset
 PROMPT_KEYSETS="${TESTNET}_extra-fish
-66003
+${COMMUNITY_AMOUNT}
 ${TESTNET}_extra-fish
 "
-add_another_to_prompt ${TESTNET}_offline-whales 2250000 ${TESTNET}_online-whales
-add_another_to_prompt ${TESTNET}_offline-fish 2250000 ${TESTNET}_online-fish
-add_another_to_prompt ${TESTNET}_online-fish 2250000 ${TESTNET}_online-fish
-add_another_to_prompt ${TESTNET}_o1 2250000 ${TESTNET}_o1
+add_another_to_prompt ${TESTNET}_offline-whales ${WHALE_AMOUNT} ${TESTNET}_online-whales
+add_another_to_prompt ${TESTNET}_offline-fish ${FISH_AMOUNT} ${TESTNET}_online-fish
+add_another_to_prompt ${TESTNET}_online-fish ${FISH_AMOUNT} ${TESTNET}_online-fish
+add_another_to_prompt ${TESTNET}_o1 ${FISH_AMOUNT} ${TESTNET}_o1
 
 if [ -f keys/keysets/bots ];
 then
@@ -276,15 +277,10 @@ GENESIS_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Fix the ledger format for ease of use
 echo "Rewriting ./keys/genesis/* as terraform/testnets/${TESTNET}/genesis_ledger.json in the proper format for daemon consumption..."
-cat ./keys/genesis/* | jq '.[] | select(.balance=="2250000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/whales.json"
-cat ./keys/genesis/* | jq '.[] | select(.balance=="20000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/fish.json"
-cat ./keys/genesis/* | jq '.[] | select(.balance=="50000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/bots.json"
-#if $COMMUNITY_ENABLED ; then 
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="66000") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "60000", cliff_time:"150", vesting_period:"6", vesting_increment:"150"}}' | cat > "terraform/testnets/${TESTNET}/community_fast_locked_keys.json"
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="66001") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "30000", cliff_time:"250", vesting_period:"4", vesting_increment:"200"}}' | cat > "terraform/testnets/${TESTNET}/community_slow_locked_keys.json"
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="66002") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "30000", cliff_time:"250", vesting_period:"4", vesting_increment:"200"}}' | cat > "terraform/testnets/${TESTNET}/community_slowest_locked_keys.json"
-  cat ./keys/genesis/* | jq '.[] | select(.balance=="66003") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "30000", cliff_time:"250", vesting_period:"4", vesting_increment:"200"}}' | cat > "terraform/testnets/${TESTNET}/community_unused_keys.json"
-#fi
+cat ./keys/genesis/* | jq '.[] | select(.balance=="'${WHALE_AMOUNT}'") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/whales.json"
+cat ./keys/genesis/* | jq '.[] | select(.balance=="'${FISH_AMOUNT}'") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/fish.json"
+cat ./keys/genesis/* | jq '.[] | select(.balance=="'${COMMUNITY_AMOUNT}'") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "60000", cliff_time:"150", vesting_period:"6", vesting_increment:"150"}}' | cat > "terraform/testnets/${TESTNET}/community_fast_locked_keys.json"
+
 NUM_ACCOUNTS=$(jq -s 'length'  terraform/testnets/${TESTNET}/*.json)
 jq -s '{ genesis: { genesis_state_timestamp: "'${GENESIS_TIMESTAMP}'" }, ledger: { name: "'${TESTNET}'", num_accounts: '${NUM_ACCOUNTS}', accounts: [ .[] ] } }' terraform/testnets/${TESTNET}/*.json > "terraform/testnets/${TESTNET}/genesis_ledger.json"
 
