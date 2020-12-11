@@ -71,7 +71,7 @@ module "testnet_east" {
 
   mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/2f36b15d48e956e5242c0abc134f1fa7711398dd/src/app/archive/create_schema.sql"
 
-  # runtime_config = local.runtime_config
+  runtime_config = local.runtime_config
 
   # additional_seed_peers = []
 
