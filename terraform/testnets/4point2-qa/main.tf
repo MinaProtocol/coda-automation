@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "terraform-4.2-qa.tfstate"
+    key     = "terraform-4point2-qa.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -35,9 +35,9 @@ provider "google" {
 }
 
 locals {
-  testnet_name = "4.2-qa"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.17-beta10-880882e-turbo-pickles-052b435"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-4.1-turbo-pickles-2f36b15"
+  testnet_name = "4point2-qa"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.17-beta10-880882e-4.2-qa-d659e00"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.17-beta10-880882e"
   seed_region = "us-east4"
   seed_zone = "us-east4-b"
   seed_discovery_keypairs = [
@@ -54,9 +54,9 @@ module "testnet_east" {
   providers = { google = google.google-us-east4 }
   source    = "../../modules/kubernetes/testnet"
 
-  gcloud_seeds = [ module.seed_one, module.seed_two ]
+  # gcloud_seeds = []
 
-  cluster_name          = "coda-infra-east"
+  cluster_name          = "coda-infra-east4"
   cluster_region        = "us-east4"
   testnet_name          = local.testnet_name
 
@@ -73,10 +73,7 @@ module "testnet_east" {
 
   # runtime_config = local.runtime_config
 
-  additional_seed_peers = [
-    "/dns4/seed-one.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
-    "/dns4/seed-two.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[1])[2]}"
-  ]
+  # additional_seed_peers = []
 
   seed_zone = local.seed_zone
   seed_region = local.seed_region
