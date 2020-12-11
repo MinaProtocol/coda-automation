@@ -5,6 +5,10 @@ TESTNET=turbo-pickles
 COMMUNITY_KEYFILE=""
 RESET=false
 
+WHALE_COUNT=5
+FISH_COUNT=1
+EXTRA_COUNT=400
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --testnet=*)
@@ -15,6 +19,15 @@ while [ $# -gt 0 ]; do
       ;;
     --reset=*)
       RESET="${1#*=}"
+      ;;
+    --wc=*)
+      WHALE_COUNT="${1#*=}"
+      ;;
+    --fc=*)
+      FISH_COUNT="${1#*=}"
+      ;;
+    --efc=*)
+      EXTRA_COUNT="${1#*=}"
       ;;
   esac
   shift
@@ -31,7 +44,6 @@ WHALE_AMOUNT=2250000
 FISH_AMOUNT=20000
 O1_AMOUNT="${FISH_AMOUNT}"
 COMMUNITY_AMOUNT=66000
-
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 cd "${SCRIPTPATH}/../"
