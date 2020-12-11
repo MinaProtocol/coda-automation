@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "terraform-4.2-qa.tfstate"
+    key     = "terraform-qa-4point2.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -35,8 +35,8 @@ provider "google" {
 }
 
 locals {
-  testnet_name = "4.2-qa"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.17-beta10-880882e-4.2-qa-d659e00"
+  testnet_name = "qa-4point2"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.17-beta10-880882e-qa-4point2-79b0b4b"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.17-beta10-880882e"
   seed_region = "us-east4"
   seed_zone = "us-east4-b"
