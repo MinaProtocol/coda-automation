@@ -1,19 +1,9 @@
 provider helm {
   debug = true
   kubernetes {
-    host                   = "https://${data.google_container_cluster.cluster.endpoint}"
-    client_certificate     = base64decode(data.google_container_cluster.cluster.master_auth[0].client_certificate)
-    client_key             = base64decode(data.google_container_cluster.cluster.master_auth[0].client_key)
-    cluster_ca_certificate = base64decode(data.google_container_cluster.cluster.master_auth[0].cluster_ca_certificate)
-    token                  = data.google_client_config.current.access_token
-    load_config_file       = false
+    config_context  = var.k8s_context
   }
 }
-
-# data "helm_repository" "coda_helm_repo" {
-#   name = "coda-helm-repo"
-#   url  = var.coda_helm_repo
-# }
 
 locals {
   mina_helm_repo = "https://coda-charts.storage.googleapis.com"
