@@ -7,7 +7,7 @@ RESET=false
 
 WHALE_COUNT=5
 FISH_COUNT=1
-EXTRA_COUNT=400
+EXTRA_COUNT=1
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -35,10 +35,6 @@ done
 
 
 CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
-
-WHALE_COUNT=5
-FISH_COUNT=1
-EXTRA_COUNT=1 # Extra community keys to be handed out manually
 
 WHALE_AMOUNT=2250000
 FISH_AMOUNT=20000
@@ -266,7 +262,7 @@ ${TESTNET}_extra-fish
 add_another_to_prompt ${TESTNET}_offline-whales ${WHALE_AMOUNT} ${TESTNET}_online-whales
 add_another_to_prompt ${TESTNET}_offline-fish ${FISH_AMOUNT} ${TESTNET}_online-fish
 add_another_to_prompt ${TESTNET}_online-fish ${FISH_AMOUNT} ${TESTNET}_online-fish
-add_another_to_prompt ${TESTNET}_o1 ${FISH_AMOUNT} ${TESTNET}_o1
+add_another_to_prompt ${TESTNET}_online-o1 ${FISH_AMOUNT} ${TESTNET}_online-o1
 
 if [ -f keys/keysets/bots ];
 then

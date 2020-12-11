@@ -105,8 +105,15 @@ Most developers shouldn't have to worry about this, however it's worth noting th
 
 If you don't know if you _should_ do this, you probably shouldn't!
 
-
 ### Create a Testnet
+
+### Quick steps to launch a small network
+
+1) make a new terraform/testnets/<testnet>
+2) scripts/generate-keys-and-ledger.sh --testnet=<testnet> --wc=10 --fc=10
+3) ./scripts/bake.sh --testnet=nightly --docker-tag=<tag, ex. 0.0.17-beta6-develop> --automation-commit=$(git log -1 --pretty=format:%H) --cloud=true
+
+### Creating the Testnet directory
 
 Next, you must create a new testnet in `terraform/testnets/`. For ease of use, you can copy-paste an existing one, however it's important to go through the terraform and change the following things:
 
@@ -114,7 +121,6 @@ Next, you must create a new testnet in `terraform/testnets/`. For ease of use, y
 - Name of testnet
 - number of nodes to deploy
 - Location of the Genesis Ledger
-
 
 ### Generate Keys and Genesis Ledger
 
