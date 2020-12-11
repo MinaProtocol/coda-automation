@@ -105,8 +105,8 @@ module "testnet_east" {
         id                     = i + 1
         private_key_secret     = "online-fish-account-${i + 1}-key"
         enable_gossip_flooding = false
-        run_with_user_agent    = false
-        run_with_bots          = true
+        run_with_user_agent    = true
+        run_with_bots          = false
         enable_peer_exchange   = false
         isolated               = false
       }
