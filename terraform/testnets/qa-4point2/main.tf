@@ -36,8 +36,8 @@ provider "google" {
 
 locals {
   testnet_name = "qa-4point2"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.17-beta10-4.1-hardfork-qa-d185796-qa-4point2-a85a346"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.17-beta10-4.1-hardfork-qa-d185796"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.17-beta10-4.1-hardfork-qa-5d1183a-qa-4point2-3ca9bdc"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.17-beta10-4.1-hardfork-qa-5d1183a"
   seed_region = "us-east4"
   seed_zone = "us-east4-b"
   seed_discovery_keypairs = [
