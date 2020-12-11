@@ -287,7 +287,7 @@ GENESIS_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 echo "Rewriting ./keys/genesis/* as terraform/testnets/${TESTNET}/genesis_ledger.json in the proper format for daemon consumption..."
 cat ./keys/genesis/* | jq '.[] | select(.balance=="'${WHALE_AMOUNT}'") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/whales.json"
 cat ./keys/genesis/* | jq '.[] | select(.balance=="'${FISH_AMOUNT}'") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000") }' | cat > "terraform/testnets/${TESTNET}/fish.json"
-cat ./keys/genesis/* | jq '.[] | select(.balance=="'${COMMUNITY_AMOUNT}'") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "60000", cliff_time:"150", vesting_period:"6", vesting_increment:"150"}}' | cat > "terraform/testnets/${TESTNET}/community_fast_locked_keys.json"
+cat ./keys/genesis/* | jq '.[] | select(.balance=="'${COMMUNITY_AMOUNT}'") | . + { sk: null, delegate: .delegate, balance: (.balance + ".000000000"), timing: { initial_minimum_balance: "60000", cliff_time:"150", cliff_amount:"12000", vesting_period:"6", vesting_increment:"150"}}' | cat > "terraform/testnets/${TESTNET}/community_fast_locked_keys.json"
 
 NUM_ACCOUNTS=$(jq -s 'length'  terraform/testnets/${TESTNET}/*.json)
 jq -s '{ genesis: { genesis_state_timestamp: "'${GENESIS_TIMESTAMP}'" }, ledger: { name: "'${TESTNET}'", num_accounts: '${NUM_ACCOUNTS}', accounts: [ .[] ] } }' terraform/testnets/${TESTNET}/*.json > "terraform/testnets/${TESTNET}/genesis_ledger.json"
