@@ -114,8 +114,13 @@ If you don't know if you _should_ do this, you probably shouldn't!
 3) run `./scripts/bake.sh --testnet=<testnet> --docker-tag=<tag, ex. 0.0.17-beta6-develop> --automation-commit=$(git log -1 --pretty=format:%H) --cloud=true`
 4) copy the image tag from the output of bake.sh to `coda_image` in `terraform/testnets/<testnet>/main.tf`
 5) set the archive image tag to the corresponding tag name - for example, if the image is `0.0.17-beta10-880882e`, use  `gcr.io/o1labs-192920/coda-archive:0.0.17-beta10-880882e`
-6. run `terraform apply`
-7. after its done applying, run `./scripts/upload-keys-k8s.sh <testnet>`
+6) run `terraform apply`
+7) after its done applying, run `./scripts/upload-keys-k8s.sh <testnet>`
+
+For a public network, add on
+
+8) run `python3 scripts/get_peers.py <testnet>`
+9) run `scripts/upload_cloud_bake_to_docker.sh --testnet=<TESTNET> --docker-tag=<tag> --automation-commit=<automation commit>`
 
 ### Creating the Testnet directory
 
