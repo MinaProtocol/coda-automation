@@ -6,6 +6,10 @@ if [ -z "$CLUSTER" ]; then
   CLUSTER="$(kubectl config current-context)"
 fi
 
+# always relative to rootdir
+SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
+cd "${SCRIPTPATH}/../"
+
 whale_keys=${KEYS_PREFIX}keys/testnet-keys/${TESTNET}_online-whale-keyfiles
 fish_keys=${KEYS_PREFIX}keys/testnet-keys/${TESTNET}_online-fish-keyfiles
 
@@ -21,12 +25,6 @@ fi
 
 if [ -z "$TESTNET" ]; then
   echo 'MISSING ARGUMENT'
-  exit 1
-fi
-
-[ "$(pwd)" = "$(dirname "$0")" ] && cd ..
-if [ ! -d .git ]; then
-  echo "INVALID DIRECTORY -- this script must be run from either the ./ or ./scripts/ (relative to the git repository)"
   exit 1
 fi
 
