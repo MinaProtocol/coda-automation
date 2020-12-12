@@ -113,8 +113,8 @@ def main():
 
       exec_cmd('rm ' + tmp_file, 10)
 
-      # UTF8 encoding may be shorter than file size
-      # assert(file_len == len(result.encode('utf-8')))
+      received_len = len(result.encode('utf-8'))
+      assert(file_len - received_len == 0 or file_len - received_len == 1)
 
       return result
 
@@ -216,7 +216,10 @@ def main():
 
     block_producers = list(itertools.chain(*[ pv['block_producers'] for pv in peer_table.values() ]))
 
-    peer_to_k_block_hashes = { p: pv['k_block_hashes'] for p,pv in  peer_table.items() }
+    if len(peer_table) > 0 and 'k_block_hashes' in list(peer_table.values())[0]:
+      peer_to_k_block_hashes = { p: pv['k_block_hashes'] for p,pv in  peer_table.items() }
+    else:
+      peer_to_k_block_hashes = { p: [ a[0] for a in pv['k_block_hashes_and_timestamps'] ] for p,pv in  peer_table.items() }
 
     fork_tree = {}
 
@@ -280,12 +283,26 @@ def main():
       for row in reader:
         rows.append(row)
 
-      key_to_discord = { row[1]: row[0] for row in rows[1:] }
+      discord_to_keys = {}
+      key_to_discord = {}
+      for r in rows:
+        discord = r[0]
+        key = r[1]
+        if key != '':
+          discord_to_keys.setdefault(discord, set())
+          discord_to_keys[discord].add(key)
+          key_to_discord[key] = discord
 
-      participants_online = [ discord for (key,discord) in key_to_discord.items() if key in block_producers ]
-      participants_offline = [ discord for (key,discord) in key_to_discord.items() if key not in block_producers ]
+      online_discord_counts = {
+        discord: len([ k for k in keys if k in block_producers ]) for discord, keys in discord_to_keys.items()
+      }
+
+      participants_online = [ d for d,count in online_discord_counts.items() if count > 0 ]
+      participants_offline = [ d for d,count in online_discord_counts.items() if count == 0 ]
     else:
       key_to_discord = {}
+      discord_to_keys = {}
+      online_discord_counts = {}
 
     # --------------------
     # collect long-running data
@@ -312,7 +329,7 @@ def main():
     now = time.time()
 
     for fname in files:
-      if 'peer_table' not in fname or fname.startswith('.'):
+      if 'peer_table' not in fname or fname.startswith('.') or not fname.endswith('txt'):
         continue
       with open(fname, 'r') as f:
         contents = f.read()
@@ -365,6 +382,7 @@ def main():
       "responding_peers_by_window": responding_peers_by_window,
       "responding_ips_by_window": responding_ips_by_window,
       "responding_discords_by_window": responding_discords_by_window,
+      "online_discord_counts": online_discord_counts,
     }
 
     #import IPython; IPython.embed()
@@ -444,7 +462,7 @@ def main():
 
       webhook.add_file(file=str(report['participants_online']), filename='particpants_online.txt')
       webhook.add_file(file=str(report['participants_offline']), filename='participants_offline.txt')
-
+      webhook.add_file(file=str(report['online_discord_counts']), filename='online_discord_counts.txt')
 
       peer_table_str = json.dumps(peer_table_dict, indent=2)
 
