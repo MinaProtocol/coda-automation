@@ -84,13 +84,15 @@ def main():
         result = stream.stream(v1.connect_get_namespaced_pod_exec, seed.metadata.name, args.namespace, command=exec_command, container='seed', stderr=True, stdout=True, stdin=False, tty=False, _request_timeout=timeout)
         return result
 
+      print('running command:', command)
+
       tmp_file = '/tmp/cns_command.' + str(uuid.uuid4()) + '.out'
 
       start = time.time()
       result = exec_cmd(command + ' &> ' + tmp_file, request_timeout_seconds)
       end = time.time()
 
-      print('ran command', command)
+      print('done running command')
       print('\tseconds to run:', end - start)
 
       file_len = int(exec_cmd('stat --printf="%s" ' + tmp_file, 10))
@@ -111,7 +113,8 @@ def main():
 
       exec_cmd('rm ' + tmp_file, 10)
 
-      assert(file_len == len(result.encode('utf-8')))
+      # UTF8 encoding may be shorter than file size
+      # assert(file_len == len(result.encode('utf-8')))
 
       return result
 
@@ -124,6 +127,7 @@ def main():
     telemetry_heartbeat_errors = []
     telemetry_transport_stopped_errors = []
     telemetry_handshake_errors = []
+    telemetry_libp2p_errors = []
     telemetry_other_errors = []
 
     def contains_error(resp):
@@ -145,8 +149,8 @@ def main():
       peers = list(filter(no_error,resps))
       error_resps = list(filter(contains_error,resps))
 
-      print ('%s responses from peers'%(str(len(list(peers)))))
-      print ('%s error responses'%(str(len(list(error_resps)))))
+      print ('\t%s valid responses from peers'%(str(len(list(peers)))))
+      print ('\t%s error responses'%(str(len(list(error_resps)))))
 
       key_value_peers = [ ((p['node_ip_addr'], p['node_peer_id']), p) for p in peers ]
 
@@ -167,6 +171,8 @@ def main():
           telemetry_heartbeat_errors.append(e)
         elif 'transport stopped' in error:
           telemetry_transport_stopped_errors.append(e)
+        elif 'libp2p' in error:
+          telemetry_libp2p_errors.append(e)
         else:
           telemetry_other_errors.append(e)
 
@@ -341,6 +347,7 @@ def main():
       "telemetry_handshake_errors": len(telemetry_handshake_errors),
       "telemetry_heartbeat_errors": len(telemetry_heartbeat_errors),
       "telemetry_transport_stopped_errors": len(telemetry_transport_stopped_errors),
+      "telemetry_libp2p_errors": len(telemetry_libp2p_errors),
       "telemetry_other_errors": len(telemetry_other_errors),
       "epoch": epoch,
       "epoch_slot": slot,
@@ -395,7 +402,7 @@ def main():
 
     make_block_tree_graph()
 
-    copy = [ 'namespace', 'queried_nodes', 'responding_nodes', 'epoch', 'epoch_slot', 'global_slot', 'blocks', 'block_fill_rate', 'has_forks', 'has_participants', "telemetry_handshake_errors", "telemetry_heartbeat_errors", "telemetry_transport_stopped_errors", "telemetry_other_errors" ]
+    copy = [ 'namespace', 'queried_nodes', 'responding_nodes', 'epoch', 'epoch_slot', 'global_slot', 'blocks', 'block_fill_rate', 'has_forks', 'has_participants', "telemetry_handshake_errors", "telemetry_heartbeat_errors", "telemetry_transport_stopped_errors", "telemetry_libp2p_errors", "telemetry_other_errors" ]
     json_report = {}
     for c in copy:
       json_report[c] = report[c]
