@@ -285,11 +285,11 @@ def main():
         key = r[1]
         if key != '':
           discord_to_keys.setdefault(discord, set())
-          discord_to_keys.add(key)
+          discord_to_keys[discord].add(key)
           key_to_discord[key] = discord
 
       online_discord_counts = {
-        discord: len([ k for k in keys if k in block_producers ]) for discord, keys in discord_to_keys
+        discord: len([ k for k in keys if k in block_producers ]) for discord, keys in discord_to_keys.items()
       }
 
       participants_online = [ d for d,count in online_discord_counts.items() if count > 0 ]
