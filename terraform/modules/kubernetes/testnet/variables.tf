@@ -107,6 +107,16 @@ variable "seed_discovery_keypairs" {
 
 # Block Producer Vars
 
+variable "whale_count" {
+  type    = number
+  default = 1
+}
+
+variable "fish_count" {
+  type    = number
+  default = 1
+}
+
 variable "log_level" {
   type    = string
   default = "Trace"
