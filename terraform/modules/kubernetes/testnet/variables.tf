@@ -30,6 +30,16 @@ variable "coda_agent_image" {
   default = "codaprotocol/coda-user-agent:0.1.4"
 }
 
+variable "whale_count" {
+  type    = number
+  default = 1
+}
+
+variable "fish_count" {
+  type    = number
+  default = 1
+}
+
 variable "coda_agent_active" {
   type    = string
   default = "true"
