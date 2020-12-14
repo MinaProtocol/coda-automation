@@ -101,6 +101,9 @@ module "ci_testnet" {
   block_producer_key_pass = "naughty blue worm"
   block_producer_starting_host_port = 10501
 
+  whale_count = var.whale_count
+  fish_count = var.fish_count
+
   block_producer_configs = concat(
     [
       for i in range(var.whale_count): {
