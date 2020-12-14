@@ -5,6 +5,13 @@ provider helm {
   }
 }
 
+data "local_file" "genesis_ledger" {
+  filename = "genesis_ledger.json"
+  depends_on = [
+    null_resource.block_producer_key_generation
+  ]
+}
+
 locals {
   mina_helm_repo = "https://coda-charts.storage.googleapis.com"
   use_local_charts = false
@@ -14,7 +21,7 @@ locals {
   ]
 
   coda_vars = {
-    runtimeConfig      = var.runtime_config
+    runtimeConfig      = data.local_file.genesis_ledger.content
     image              = var.coda_image
     privkeyPass        = var.block_producer_key_pass
     seedPeers          = concat(var.additional_seed_peers, local.seed_peers)
@@ -150,7 +157,6 @@ resource "helm_release" "seed" {
   timeout     = 600
   depends_on  = [
     kubernetes_role_binding.helm_release,
-    var.gcloud_seeds,
     null_resource.block_producer_uploads,
   ]
 }

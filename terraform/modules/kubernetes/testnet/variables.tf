@@ -79,12 +79,6 @@ variable "archive_node_count" {
   default = 0
 }
 
-# empty string means that the deployment will use compile time constants
-variable "runtime_config" {
-  type    = string
-  default = ""
-}
-
 # Seed Vars
 
 variable "seed_region" {
