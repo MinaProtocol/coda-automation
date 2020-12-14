@@ -31,7 +31,7 @@ variable "coda_image" {
   type = string
 
   description = "Mina daemon image to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/coda-daemon:0.0.17-beta6-develop-0344dd5"
+  default     = "gcr.io/o1labs-192920/coda-daemon:0.0.17-beta6-develop"
 }
 
 variable "coda_archive_image" {
@@ -39,6 +39,21 @@ variable "coda_archive_image" {
 
   description = "Mina archive node image to use in provisioning a ci-net"
   default     = "gcr.io/o1labs-192920/coda-archive:0.0.17-beta6-develop"
+}
+
+variable "whale_count" {
+  type    = number
+  default = 1
+}
+
+variable "fish_count" {
+  type    = number
+  default = 1
+}
+
+variable "snark_worker_count" {
+  type    = number
+  default = 1
 }
 
 locals {
@@ -88,7 +103,7 @@ module "ci_testnet" {
 
   block_producer_configs = concat(
     [
-      for i in range(1): {
+      for i in range(var.whale_count): {
         name                   = "whale-block-producer-${i + 1}"
         class                  = "whale"
         id                     = i + 1
@@ -101,7 +116,7 @@ module "ci_testnet" {
       }
     ],
     [
-      for i in range(1): {
+      for i in range(var.fish_count): {
         name                   = "fish-block-producer-${i + 1}"
         class                  = "fish"
         id                     = i + 1
@@ -115,7 +130,7 @@ module "ci_testnet" {
     ]
   )
 
-  snark_worker_replicas = 1
+  snark_worker_replicas = var.snark_worker_count
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port = 10401
