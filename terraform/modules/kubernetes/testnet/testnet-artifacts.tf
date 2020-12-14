@@ -1,6 +1,6 @@
 resource "null_resource" "block_producer_key_generation" {
   provisioner "local-exec" {
-      command = "../../../scripts/generate-keys-and-ledger.sh --testnet=${var.testnet_name} --reset=false"
+      command = "../../../scripts/generate-keys-and-ledger.sh --testnet=${var.testnet_name} --wc=${var.whale_count} --fc=${var.fish_count} --reset=true"
   }
 }
 
