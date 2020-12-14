@@ -5,6 +5,10 @@ TESTNET=turbo-pickles
 COMMUNITY_KEYFILE=""
 RESET=false
 
+WHALE_COUNT=1
+FISH_COUNT=1
+EXTRA_COUNT=1 # Extra community keys to be handed out manually
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --testnet=*)
@@ -31,10 +35,6 @@ done
 
 
 CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
-
-WHALE_COUNT=1
-FISH_COUNT=1
-EXTRA_COUNT=1 # Extra community keys to be handed out manually
 
 WHALE_AMOUNT=2250000
 FISH_AMOUNT=20000
