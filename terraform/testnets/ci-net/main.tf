@@ -55,6 +55,21 @@ variable "fish_count" {
   default     = 2
 }
 
+variable "whale_count" {
+  type    = number
+  default = 1
+}
+
+variable "fish_count" {
+  type    = number
+  default = 1
+}
+
+variable "snark_worker_count" {
+  type    = number
+  default = 1
+}
+
 locals {
   seed_region = "us-east4"
   seed_zone = "us-east4-b"
@@ -126,7 +141,7 @@ module "ci_testnet" {
     ]
   )
 
-  snark_worker_replicas = 1
+  snark_worker_replicas = var.snark_worker_count
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port = 10401
