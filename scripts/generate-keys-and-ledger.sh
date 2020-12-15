@@ -7,9 +7,8 @@ RESET=false
 
 WHALE_COUNT=1
 FISH_COUNT=1
-EXTRA_COUNT=1 # Extra community keys to be handed out manually
+EXTRA_COUNT=0 # Extra community keys to be handed out manually
 
-<<<<<<< HEAD
 CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
 
 WHALE_AMOUNT=2250000
@@ -40,13 +39,6 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
-
-CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
-
-WHALE_AMOUNT=2250000
-FISH_AMOUNT=20000
-O1_AMOUNT="${FISH_AMOUNT}"
-COMMUNITY_AMOUNT=66000
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 cd "${SCRIPTPATH}/../"
@@ -166,7 +158,6 @@ echo
 
 # ================================================================================
 
-EXTRA_COUNT=0
 # EXTRA FISH
 if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/extra_fish_account_1.pub" ]]; then
 echo "using existing fish keys"
