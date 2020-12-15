@@ -32,6 +32,16 @@ variable "mina_archive_schema" {
   default = ""
 }
 
+variable "whale_count" {
+  type    = number
+  default = 1
+}
+
+variable "fish_count" {
+  type    = number
+  default = 1
+}
+
 variable "coda_agent_image" {
   type    = string
   default = "codaprotocol/coda-user-agent:0.1.4"
