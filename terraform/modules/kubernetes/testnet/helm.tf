@@ -40,7 +40,14 @@ locals {
 
   seed_vars = {
     testnetName = var.testnet_name
-    coda        = local.coda_vars
+    coda        = {
+      runtimeConfig      = data.local_file.genesis_ledger.content
+      image              = var.coda_image
+      privkeyPass        = var.block_producer_key_pass
+      seedPeers          = var.additional_seed_peers
+      logLevel           = var.log_level
+      logSnarkWorkGossip = var.log_snark_work_gossip
+    }
     seed        = {
       active = true
       discovery_keypair = var.seed_discovery_keypairs[0]

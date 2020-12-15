@@ -7,7 +7,7 @@ RESET=false
 
 WHALE_COUNT=1
 FISH_COUNT=1
-EXTRA_COUNT=0 # Extra community keys to be handed out manually
+EXTRA_COUNT=1 # Extra community keys to be handed out manually
 
 CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
 
