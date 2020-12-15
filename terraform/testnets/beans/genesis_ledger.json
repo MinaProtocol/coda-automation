@@ -1,15 +1,15 @@
 {
   "genesis": {
-    "genesis_state_timestamp": "2020-12-15T20:22:33Z"
+    "genesis_state_timestamp": "2020-12-15T22:38:58Z"
   },
   "ledger": {
     "name": "beans",
-    "num_accounts": 25,
+    "num_accounts": 26,
     "accounts": [
       {
-        "pk": "B62qoD4TTyanoBrtmAFntY1tEckDNVVxGU2whhkGUm35dmvc38raBk3",
+        "pk": "B62qrgi9Bed1hvy44ZbT9z7RVJGp8Am4sfqLzauteyoXbDRMoP9vZf2",
         "balance": "66000.000000000",
-        "delegate": "B62qoD4TTyanoBrtmAFntY1tEckDNVVxGU2whhkGUm35dmvc38raBk3",
+        "delegate": "B62qrgi9Bed1hvy44ZbT9z7RVJGp8Am4sfqLzauteyoXbDRMoP9vZf2",
         "sk": null,
         "timing": {
           "initial_minimum_balance": "60000",

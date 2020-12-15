@@ -21,7 +21,7 @@ locals {
   ]
 
   coda_vars = {
-    runtimeConfig      = data.local_file.genesis_ledger.content
+    runtimeConfig      = ""
     image              = var.coda_image
     privkeyPass        = var.block_producer_key_pass
     seedPeers          = concat(var.additional_seed_peers, local.seed_peers)
@@ -41,7 +41,7 @@ locals {
   seed_vars = {
     testnetName = var.testnet_name
     coda        = {
-      runtimeConfig      = data.local_file.genesis_ledger.content
+      runtimeConfig      = ""
       image              = var.coda_image
       privkeyPass        = var.block_producer_key_pass
       seedPeers          = var.additional_seed_peers
