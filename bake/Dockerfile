@@ -15,6 +15,8 @@ RUN coda daemon -config-file ${CONFIG_FILE} -generate-genesis-proof true; \
 
 RUN curl https://raw.githubusercontent.com/MinaProtocol/coda-automation/${COMMIT_HASH}/terraform/testnets/${TESTNET_NAME}/peers.txt -o /root/peers.txt
 
+RUN curl https://raw.githubusercontent.com/MinaProtocol/mina/develop/dockerfiles/scripts/healthcheck-utilities.sh -o /healthcheck/utilities.sh
+
 RUN echo '#!/bin/bash -x\n\
 mkdir -p .coda-config\n\
 touch .coda-config/coda-prover.log\n\
