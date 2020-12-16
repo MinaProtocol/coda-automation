@@ -159,7 +159,7 @@ echo
 # ================================================================================
 
 # EXTRA FISH
-if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/online_fish_account_1.pub" ]]; then
+if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/extra_fish_account_1.pub" ]]; then
 echo "using existing fish keys"
 else
   output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_extra-fish-keyfiles"
