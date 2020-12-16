@@ -63,6 +63,7 @@ variable "coda_archive_image" {
 }
 
 locals {
+  network_region = "us-east1"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
   seed_discovery_keypairs = [
