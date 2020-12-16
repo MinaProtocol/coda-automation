@@ -1,5 +1,3 @@
-# Testnets
-
 locals {
   west1_region = "us-west1"
   west1_k8s_context = "gke_o1labs-192920_us-west1_mina-integration-west1"
@@ -45,6 +43,8 @@ data "google_compute_zones" "west1_available" {
   region = local.west1_region
   status = "UP"
 }
+
+### Testnets
 
 resource "google_container_cluster" "mina_integration_west1" {
   provider = google.google_west1
@@ -95,6 +95,40 @@ resource "google_container_node_pool" "west1_integration_primary" {
     ]
   }
 }
+
+## Data Persistence
+
+resource "kubernetes_storage_class" "west1_ssd" {
+  count = length(local.storage_reclaim_policies)
+
+  metadata {
+    name = "${local.west1_region}-ssd-${lower(local.storage_reclaim_policies[count.index])}"
+  }
+
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = local.storage_reclaim_policies[count.index]
+  volume_binding_mode = "WaitForFirstConsumer"
+  parameters = {
+    type = "pd-ssd"
+  }
+}
+
+resource "kubernetes_storage_class" "west1_standard" {
+  count = length(local.storage_reclaim_policies)
+
+  metadata {
+    name = "${local.west1_region}-standard-${lower(local.storage_reclaim_policies[count.index])}"
+  }
+
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = local.storage_reclaim_policies[count.index]
+  volume_binding_mode = "WaitForFirstConsumer"
+  parameters = {
+    type = "pd-standard"
+  }
+}
+
+## Monitoring
 
 provider helm {
   alias = "helm_west1"
