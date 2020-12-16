@@ -17,7 +17,7 @@ locals {
   use_local_charts = false
 
   seed_peers = [
-    "/dns4/seed-node.${var.testnet_name}/tcp/8301/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
+    "/dns4/seed-node.${var.testnet_name}/tcp/${var.seed_port}/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
   ]
 
   coda_vars = {
@@ -47,6 +47,12 @@ locals {
       seedPeers          = var.additional_seed_peers
       logLevel           = var.log_level
       logSnarkWorkGossip = var.log_snark_work_gossip
+      ports = {
+        client  = "8301"
+        graphql = "3085"
+        metrics = "8081"
+        p2p     = var.seed_port
+      }
     }
     seed        = {
       active = true

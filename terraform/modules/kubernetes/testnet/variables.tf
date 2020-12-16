@@ -81,6 +81,11 @@ variable "deploy_archive" {
 
 # Seed Vars
 
+variable "seed_port" {
+  type    = string
+  default = "10001"
+}
+
 variable "seed_region" {
   type    = string
   default = "us-west1"

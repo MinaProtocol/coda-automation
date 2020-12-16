@@ -91,6 +91,8 @@ module "ci_testnet" {
 
   additional_seed_peers = []
 
+  seed_port = "10001"
+
   seed_zone = local.seed_zone
   seed_region = local.seed_region
 
