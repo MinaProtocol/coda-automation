@@ -17,7 +17,7 @@ locals {
   use_local_charts = false
 
   seed_peers = [
-    "/dns4/seed-node.${var.testnet_name}/tcp/8301/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
+    "/dns4/seed-node.${var.testnet_name}/tcp/${var.seed_port}/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
   ]
 
   coda_vars = {
@@ -40,7 +40,20 @@ locals {
 
   seed_vars = {
     testnetName = var.testnet_name
-    coda        = local.coda_vars
+    coda        = {
+      runtimeConfig      = data.local_file.genesis_ledger.content
+      image              = var.coda_image
+      privkeyPass        = var.block_producer_key_pass
+      seedPeers          = var.additional_seed_peers
+      logLevel           = var.log_level
+      logSnarkWorkGossip = var.log_snark_work_gossip
+      ports = {
+        client  = "8301"
+        graphql = "3085"
+        metrics = "8081"
+        p2p     = var.seed_port
+      }
+    }
     seed        = {
       active = true
       discovery_keypair = var.seed_discovery_keypairs[0]
