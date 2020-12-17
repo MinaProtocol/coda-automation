@@ -70,7 +70,7 @@ function generate_key_files {
 
   for k in $(seq 1 $COUNT); do
     docker run \
-      --mount type=bind,source=${output_dir},target=/keys \
+      -v "${output_dir}:/keys:z" \
       --entrypoint /bin/bash $CODA_DAEMON_IMAGE \
       -c "CODA_PRIVKEY_PASS='${privkey_pass}' coda advanced generate-keypair -privkey-path /keys/${name_prefix}_${k}"
   done
