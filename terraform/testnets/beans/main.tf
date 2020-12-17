@@ -52,7 +52,7 @@ variable "coda_archive_image" {
   type = string
 
   description = "Mina archive node image to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/coda-archive:0.0.17-beta6-develop"
+  default     = "gcr.io/o1labs-192920/coda-archive:0.1.0-beta1-develop"
 }
 
 locals {
