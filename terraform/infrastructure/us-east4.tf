@@ -39,6 +39,11 @@ provider "google" {
   region  = local.east4_region
 }
 
+provider "kubernetes" {
+  alias   = "k8s_east4"
+  config_context = local.east4_k8s_context
+}
+
 data "google_compute_zones" "east4_available" {
   project = "o1labs-192920"
   region = local.east4_region
@@ -177,6 +182,8 @@ resource "google_container_node_pool" "east4_compute_nodes" {
 ## Data Persistence
 
 resource "kubernetes_storage_class" "east4_ssd" {
+  provider = kubernetes.k8s_east4
+
   count = length(local.storage_reclaim_policies)
 
   metadata {
@@ -192,6 +199,8 @@ resource "kubernetes_storage_class" "east4_ssd" {
 }
 
 resource "kubernetes_storage_class" "east4_standard" {
+  provider = kubernetes.k8s_east4
+
   count = length(local.storage_reclaim_policies)
 
   metadata {
