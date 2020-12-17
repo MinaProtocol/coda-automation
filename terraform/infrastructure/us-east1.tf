@@ -79,7 +79,7 @@ resource "google_container_node_pool" "east_primary_nodes" {
   node_count = 4
   autoscaling {
     min_node_count = 0
-    max_node_count = 15
+    max_node_count = 7
   }
   node_config {
     preemptible  = false
@@ -105,7 +105,7 @@ resource "google_container_node_pool" "east1_preemptible_nodes" {
   node_count = 4
   autoscaling {
     min_node_count = 0
-    max_node_count = 15
+    max_node_count = 7
   }
   node_config {
     preemptible  = true
