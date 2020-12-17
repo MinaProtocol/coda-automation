@@ -44,27 +44,7 @@ data "google_compute_zones" "east1_available" {
   status = "UP"
 }
 
-resource "kubernetes_storage_class" "east1_ssd" {
-  metadata {
-    name = "${local.east1_region}-ssd"
-  }
-  storage_provisioner = "kubernetes.io/gce-pd"
-  reclaim_policy      = "Delete"
-  parameters = {
-    type = "pd-ssd"
-  }
-}
-
-resource "kubernetes_storage_class" "east1_standard" {
-  metadata {
-    name = "${local.east1_region}-standard"
-  }
-  storage_provisioner = "kubernetes.io/gce-pd"
-  reclaim_policy      = "Delete"
-  parameters = {
-    type = "pd-standard"
-  }
-}
+### Testnets
 
 resource "google_container_cluster" "coda_cluster_east" {
   provider = google.google_east
@@ -143,7 +123,7 @@ resource "google_container_node_pool" "east1_preemptible_nodes" {
   }
 }
 
-## Buildkite
+### Buildkite
 
 resource "google_container_cluster" "buildkite_infra_east1" {
   provider = google.google_east
@@ -194,7 +174,38 @@ resource "google_container_node_pool" "east1_compute_nodes" {
   }
 }
 
-## Helm 
+## Data Persistence
+
+resource "kubernetes_storage_class" "east1_ssd" {
+  count = length(local.storage_reclaim_policies)
+
+  metadata {
+    name = "${local.east1_region}-ssd-${lower(local.storage_reclaim_policies[count.index])}"
+  }
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = local.storage_reclaim_policies[count.index]
+  volume_binding_mode = "WaitForFirstConsumer"
+  parameters = {
+    type = "pd-ssd"
+  }
+}
+
+resource "kubernetes_storage_class" "east1_standard" {
+  count = length(local.storage_reclaim_policies)
+
+  metadata {
+    name = "${local.east1_region}-standard-${lower(local.storage_reclaim_policies[count.index])}"
+  }
+
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = local.storage_reclaim_policies[count.index]
+  volume_binding_mode = "WaitForFirstConsumer"
+  parameters = {
+    type = "pd-standard"
+  }
+}
+
+## Monitoring 
 
 provider helm {
   alias = "helm_east"
