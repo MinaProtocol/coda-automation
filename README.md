@@ -89,7 +89,7 @@ Public Testnets are functionally similar to QA Testnets but have the addition of
 
 # Deploy a QA Testnet
 
-Deployng a testnet is a relatively straightforward process once you have ironed out the configuration. At a high level, there are several pieces of configuration it's important to keep in mind or else your deployment might fail:
+Deploying a testnet is a relatively straightforward process once you have ironed out the configuration. At a high level, there are several pieces of configuration it's important to keep in mind or else your deployment might fail:
 
 - Coda Keypairs
 - Genesis Ledger
@@ -130,6 +130,7 @@ Next, you must create a new testnet in `terraform/testnets/`. For ease of use, y
 - Name of testnet
 - number of nodes to deploy
 - Location of the Genesis Ledger
+- Kubernetes context [k8s_context](https://github.com/MinaProtocol/coda-automation/commit/141db8821a133501d3d4ed9b739fcad1f9b88bef) for indicating which managed k8s cluster to deploy to (based on local config)
 
 ### Generate Keys and Genesis Ledger
 
