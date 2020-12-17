@@ -38,6 +38,11 @@ provider "google" {
   region  = local.central1_region
 }
 
+provider "kubernetes" {
+  alias   = "k8s_central1"
+  config_context = local.central1_k8s_context
+}
+
 data "google_compute_zones" "central1_available" {
   project = local.gcp_project
   region = local.central1_region
@@ -177,6 +182,8 @@ resource "google_container_node_pool" "central1_compute_nodes" {
 ## Data Persistence
 
 resource "kubernetes_storage_class" "central1_ssd" {
+  provider = kubernetes.k8s_central1
+
   count = length(local.storage_reclaim_policies)
 
   metadata {
@@ -192,6 +199,8 @@ resource "kubernetes_storage_class" "central1_ssd" {
 }
 
 resource "kubernetes_storage_class" "central1_standard" {
+  provider = kubernetes.k8s_central1
+
   count = length(local.storage_reclaim_policies)
 
   metadata {

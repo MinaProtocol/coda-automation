@@ -38,6 +38,11 @@ provider "google" {
   region  = local.west1_region
 }
 
+provider "kubernetes" {
+  alias   = "k8s_west1"
+  config_context = local.west1_k8s_context
+}
+
 data "google_compute_zones" "west1_available" {
   project = local.gcp_project
   region = local.west1_region
@@ -99,6 +104,8 @@ resource "google_container_node_pool" "west1_integration_primary" {
 ## Data Persistence
 
 resource "kubernetes_storage_class" "west1_ssd" {
+  provider = kubernetes.k8s_west1
+
   count = length(local.storage_reclaim_policies)
 
   metadata {
@@ -114,6 +121,8 @@ resource "kubernetes_storage_class" "west1_ssd" {
 }
 
 resource "kubernetes_storage_class" "west1_standard" {
+  provider = kubernetes.k8s_west1
+
   count = length(local.storage_reclaim_policies)
 
   metadata {
