@@ -31,19 +31,14 @@ variable "coda_image" {
   type = string
 
   description = "Mina daemon image to use in provisioning a ci-net"
-<<<<<<< HEAD
-  default     = "gcr.io/o1labs-192920/coda-daemon:0.0.17-beta11-develop"
-=======
   default     = "gcr.io/o1labs-192920/coda-daemon:0.1.0-beta1-develop"
->>>>>>> 8710f1a... incorporate key/ledger generation script & testnet module updates
 }
 
 variable "coda_archive_image" {
   type = string
 
   description = "Mina archive node image to use in provisioning a ci-net"
-<<<<<<< HEAD
-  default     = "gcr.io/o1labs-192920/coda-archive:0.0.17-beta11-develop"
+  default     = "gcr.io/o1labs-192920/coda-archive:0.1.0-beta1-add-archive-healthchecks-tooling"
 }
 
 variable "whale_count" {
@@ -58,35 +53,11 @@ variable "fish_count" {
 
   description = "Number of online fish for the network to run"
   default     = 2
-=======
-  default     = "gcr.io/o1labs-192920/coda-archive:0.1.0-beta1-develop"
->>>>>>> 8710f1a... incorporate key/ledger generation script & testnet module updates
-}
-
-variable "whale_count" {
-  type = number
-
-  description = "Number of online whales for the network to run"
-  default     = 1
-}
-
-variable "fish_count" {
-  type = number
-
-  description = "Number of online fish for the network to run"
-  default     = 1
 }
 
 locals {
   seed_region = "us-east4"
   seed_zone = "us-east4-b"
-<<<<<<< HEAD
-=======
-  seed_discovery_keypairs = [
-  "CAESQBEHe2zCcQDHcSaeIydGggamzmTapdCS8SP0hb5FWvYhe9XEygmlUGV4zNu2P8zAIba4X84Gm4usQFLamjRywA8=,CAESIHvVxMoJpVBleMzbtj/MwCG2uF/OBpuLrEBS2po0csAP,12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv",
-  "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5" ]
-
->>>>>>> 8710f1a... incorporate key/ledger generation script & testnet module updates
 }
 
 module "ci_testnet" {
