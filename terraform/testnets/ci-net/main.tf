@@ -31,28 +31,28 @@ variable "coda_image" {
   type = string
 
   description = "Mina daemon image to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/coda-daemon:0.1.0-beta1-develop"
+  default     = "gcr.io/o1labs-192920/coda-daemon:0.0.17-beta11-develop"
 }
 
 variable "coda_archive_image" {
   type = string
 
   description = "Mina archive node image to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/coda-archive:0.1.0-beta1-develop"
+  default     = "gcr.io/o1labs-192920/coda-archive:0.0.17-beta11-develop"
 }
 
 variable "whale_count" {
   type = number
 
   description = "Number of online whales for the network to run"
-  default     = 1
+  default     = 2
 }
 
 variable "fish_count" {
   type = number
 
   description = "Number of online fish for the network to run"
-  default     = 1
+  default     = 2
 }
 
 locals {
@@ -141,4 +141,8 @@ module "ci_testnet" {
   agent_min_tx = "0.0015"
   agent_max_tx = "0.0015"
   agent_send_every_mins = "1"
+}
+
+output "testnet_genesis_ledger" {
+  value = module.ci_testnet.genesis_ledger
 }

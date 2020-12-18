@@ -117,7 +117,7 @@ function generate_keyset_from_file {
 # ================================================================================
 
 if [[ -s "keys/testnet-keys/${TESTNET}_online-whale-keyfiles/online_whale_account_1.pub" ]]; then
-echo "using existing whale keys"
+  echo "using existing whale keys"
 else
   online_output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_online-whale-keyfiles"
   offline_output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_offline-whale-keyfiles"

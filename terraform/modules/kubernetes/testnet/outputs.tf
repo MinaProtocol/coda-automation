@@ -9,3 +9,7 @@
 output "seed_addresses" {
   value = local.seed_peers
 }
+
+output "genesis_ledger" {
+  value = data.local_file.genesis_ledger.content
+}

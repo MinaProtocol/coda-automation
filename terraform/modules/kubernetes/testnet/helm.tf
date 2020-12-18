@@ -57,6 +57,7 @@ locals {
     seed        = {
       active = true
       discovery_keypair = var.seed_discovery_keypairs[0]
+      fullname = "seed-node"
     }
     codaNetworkServicesConfig = local.coda_network_services_vars
   }
