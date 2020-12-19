@@ -86,7 +86,7 @@ module "ci_testnet" {
   coda_image            = var.coda_image
   coda_archive_image    = var.coda_archive_image
   coda_agent_image      = "codaprotocol/coda-user-agent:0.1.5"
-  coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
+  coda_bots_image       = "minaprotocol/mina-bots:latest"
   coda_points_image     = "codaprotocol/coda-points-hack:32b.4"
 
   whale_count           = var.whale_count
