@@ -34,7 +34,7 @@ while [ $# -gt 0 ]; do
 done
 
 
-CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
+CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.1.1-feature-pasta-up-to-date-235a404"
 
 WHALE_AMOUNT=2250000
 FISH_AMOUNT=20000
