@@ -2,7 +2,7 @@
 
 # Set defaults before parsing args
 TESTNET=turbo-pickles
-DOCKER_TAG=0.0.16-beta7-develop
+DOCKER_TAG=0.1.1-41db206
 AUTOMATION_PATHSPEC=$(git log master -1 --pretty=format:%H)
 CONFIG_FILE=/root/daemon.json
 CLOUD=false
