@@ -248,6 +248,11 @@ variable "archive_persistence_class" {
   default = "ssd"
 }
 
+variable "archive_persistence_reclaim_policy" {
+  type    = string
+  default = "retain"
+}
+
 variable "archive_persistence_access_modes" {
   type    = list
   default = ["ReadWriteOnce"]
