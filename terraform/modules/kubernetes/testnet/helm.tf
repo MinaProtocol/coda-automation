@@ -1,7 +1,12 @@
 provider helm {
   debug = true
   kubernetes {
-    config_context  = var.k8s_context
+    # config_context  = var.k8s_context
+    host                   = "https://${data.google_container_cluster.cluster.endpoint}"
+    client_certificate     = base64decode(data.google_container_cluster.cluster.master_auth[0].client_certificate)
+    client_key             = base64decode(data.google_container_cluster.cluster.master_auth[0].client_key)
+    cluster_ca_certificate = base64decode(data.google_container_cluster.cluster.master_auth[0].cluster_ca_certificate)
+    token                  = data.google_client_config.current.access_token
   }
 }
 
@@ -109,7 +114,7 @@ locals {
     postgresql = {
       persistence = {
         enabled = var.archive_persistence_enabled
-        storageClass = "${var.cluster_region}-${var.archive_persistence_class}-${lower(var.archive_persistence_reclaim_policy})"
+        storageClass = "${var.cluster_region}-${var.archive_persistence_class}-${lower(var.archive_persistence_reclaim_policy)}"
         accessModes = var.archive_persistence_access_modes
         size = var.archive_persistence_size
       }
