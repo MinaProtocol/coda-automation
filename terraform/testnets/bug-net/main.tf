@@ -36,8 +36,8 @@ provider "google" {
 
 locals {
   testnet_name = "bug-net"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.0.17-beta10-880882e-turbo-pickles-052b435"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.0.16-beta7-4.1-turbo-pickles-2f36b15"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.1.1-develop-until-adversarial-8b3c561-bug-net-afa191f"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.1.1-develop-until-adversarial-8b3c561"
   seed_region = "us-central1"
   seed_zone = "us-central1-b"
   seed_discovery_keypairs = [
@@ -56,7 +56,7 @@ module "testnet_central" {
 
   gcloud_seeds = [ module.seed_one, module.seed_two ]
 
-  cluster_name          = "coda-infra-central"
+  cluster_name          = "coda-infra-central1"
   cluster_region        = "us-central1"
   testnet_name          = local.testnet_name
 
@@ -70,8 +70,6 @@ module "testnet_central" {
   coda_faucet_fee       = "100000000"
 
   mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/2f36b15d48e956e5242c0abc134f1fa7711398dd/src/app/archive/create_schema.sql"
-
-  # runtime_config = local.runtime_config
 
   additional_seed_peers = [
     "/dns4/seed-one.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
