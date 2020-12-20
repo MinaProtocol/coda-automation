@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "terraform-bug-net.tfstate"
+    key     = "terraform-testworld.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -35,7 +35,7 @@ provider "google" {
 }
 
 locals {
-  testnet_name = "bug-net"
+  testnet_name = "testworld"
   coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.1.1-develop-until-adversarial-8b3c561-bug-net-afa191f"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.1.1-develop-until-adversarial-8b3c561"
   seed_region = "us-central1"
@@ -87,7 +87,7 @@ module "testnet_central" {
 
   block_producer_configs = concat(
     [
-      for i in range(10): {
+      for i in range(15): {
         name                   = "whale-block-producer-${i + 1}"
         class                  = "whale"
         id                     = i + 1
@@ -114,7 +114,7 @@ module "testnet_central" {
     ]
   )
 
-  snark_worker_replicas = 5
+  snark_worker_replicas = 20
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port = 10401
