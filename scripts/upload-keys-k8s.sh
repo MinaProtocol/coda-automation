@@ -64,3 +64,6 @@ else
   echo '*** NOT UPLOADING DISCORD API KEY (required when running with bots sidecar)'
 fi
 
+if [ -e gcloud-keyfile.json ]; then
+  kubectl create secret generic gcloud-keyfile --cluster=$CLUSTER --namespace=$TESTNET --from-file=keyfile=gcloud-keyfile.json
+fi

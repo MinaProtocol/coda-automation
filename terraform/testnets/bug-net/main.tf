@@ -36,8 +36,8 @@ provider "google" {
 
 locals {
   testnet_name = "bug-net"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.1.1-develop-until-adversarial-8b3c561-bug-net-afa191f"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.1.1-develop-until-adversarial-d7c1c39"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.1.1-develop-until-adversarial-8126d91-bug-net-006dee8"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.1.1-develop-until-adversarial-8126d91"
   seed_region = "us-central1"
   seed_zone = "us-central1-b"
   seed_discovery_keypairs = [
@@ -124,4 +124,6 @@ module "testnet_central" {
   agent_min_tx = "0.0015"
   agent_max_tx = "0.0015"
   agent_send_every_mins = "1"
+
+  upload_blocks_to_gcloud = true
 }
