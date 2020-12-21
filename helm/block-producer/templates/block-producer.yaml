@@ -202,6 +202,12 @@ spec:
           value: {{ $.Values.coda.ports.metrics | quote }}
         - name: DAEMON_EXTERNAL_PORT
           value: {{ $.Values.coda.ports.p2p | quote }}
+        - name: GCLOUD_KEYFILE
+          value: "/gcloud/keyfile.json"
+        - name: NETWORK_NAME
+          value: {{ $.Values.testnetName }}
+        - name: GCLOUD_BLOCK_UPLOAD_BUCKET 
+          value: "mina_network_block_data"
         - name: CODA_PRIVKEY_PASS
           value: {{ $.Values.coda.privkeyPass | quote }}
         - name: CODA_CLIENT_TRUSTLIST
