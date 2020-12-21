@@ -1,4 +1,4 @@
- # # Defaults to the provider project
+ # Defaults to the provider project
  data "google_project" "project" {
    provider = google.google-us-central1
  }

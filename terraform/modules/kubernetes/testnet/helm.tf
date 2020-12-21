@@ -12,7 +12,7 @@ provider helm {
 
 locals {
   mina_helm_repo = "https://coda-charts.storage.googleapis.com"
-  use_local_charts = false
+  use_local_charts = true
 
   seed_peers = [
     "/dns4/seed-node.${var.testnet_name}/tcp/10001/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
@@ -25,6 +25,7 @@ locals {
     seedPeers          = concat(var.additional_seed_peers, local.seed_peers)
     logLevel           = var.log_level
     logSnarkWorkGossip = var.log_snark_work_gossip
+    uploadBlocksToGCloud = var.upload_blocks_to_gcloud
   }
   
   coda_network_services_vars = {
