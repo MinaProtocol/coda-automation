@@ -102,10 +102,10 @@ resource "google_container_node_pool" "east4_preemptible_nodes" {
   name       = "mina-preemptible-east4"
   location   = local.east4_region
   cluster    = google_container_cluster.coda_cluster_east4.name
-  node_count = 4
+  node_count = 5
   autoscaling {
     min_node_count = 0
-    max_node_count = 7
+    max_node_count = 20
   }
   node_config {
     preemptible  = true
