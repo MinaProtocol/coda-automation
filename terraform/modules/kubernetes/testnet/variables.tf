@@ -74,9 +74,9 @@ variable "additional_seed_peers" {
   default = []
 }
 
-variable "deploy_archive" {
-  type    = bool
-  default = true
+variable "archive_node_count" {
+  type    = number
+  default = 0
 }
 
 # empty string means that the deployment will use compile time constants
