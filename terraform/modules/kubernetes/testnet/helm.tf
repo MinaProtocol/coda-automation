@@ -184,16 +184,17 @@ resource "helm_release" "snark_workers" {
 # Archive Node
 
 resource "helm_release" "archive_node" {
-  count      = var.deploy_archive ? 1 : 0
+  count       = var.archive_node_count
   
-  name       = "${var.testnet_name}-archive-node"
+  name        = "archive-node-${count.index}"
   repository  = local.use_local_charts ? "" : local.mina_helm_repo
   chart       = local.use_local_charts ? "../../../helm/archive-node" : "archive-node"
-  version    = "0.3.3"
-  namespace  = kubernetes_namespace.testnet_namespace.metadata[0].name
-  values     = [
+  version     = "0.3.3"
+  namespace   = kubernetes_namespace.testnet_namespace.metadata[0].name
+  values      = [
     yamlencode(local.archive_node_vars)
   ]
+
   wait = false
   depends_on = [helm_release.seed]
 }
