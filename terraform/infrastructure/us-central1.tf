@@ -107,10 +107,10 @@ resource "google_container_node_pool" "central1_preemptible_nodes" {
   location   = local.central1_region
   cluster    = google_container_cluster.coda_cluster_central1.name
   
-  node_count = 4
+  node_count = 5
   autoscaling {
     min_node_count = 0
-    max_node_count = 5
+    max_node_count = 15
   }
   node_config {
     preemptible  = true
