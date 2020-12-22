@@ -74,9 +74,9 @@ variable "additional_seed_peers" {
   default = []
 }
 
-variable "deploy_archive" {
-  type    = bool
-  default = true
+variable "archive_node_count" {
+  type    = number
+  default = 0
 }
 
 # Seed Vars
@@ -255,6 +255,11 @@ variable "archive_persistence_enabled" {
 variable "archive_persistence_class" {
   type    = string
   default = "ssd"
+}
+
+variable "archive_persistence_reclaim_policy" {
+  type    = string
+  default = "retain"
 }
 
 variable "archive_persistence_access_modes" {
