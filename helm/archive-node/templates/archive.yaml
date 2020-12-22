@@ -88,11 +88,11 @@ spec:
          "-server-port 3086" ]
         env:
         imagePullPolicy: Always
-      {{- if (ne $.Values.coda.runtimeConfig "") }}
-      volumeMounts:
+        {{- if (ne $.Values.coda.runtimeConfig "") }}
+        volumeMounts:
         - name: daemon-config
           mountPath: "/config/"
-      {{- end }}
+        {{- end }}
       volumes:
       - name: config-dir
         emptyDir: {}
