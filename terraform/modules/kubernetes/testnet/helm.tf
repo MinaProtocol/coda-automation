@@ -109,7 +109,7 @@ locals {
     postgresql = {
       persistence = {
         enabled = var.archive_persistence_enabled
-        storageClass = "${var.cluster_region}-${var.archive_persistence_class}-${lower(var.archive_persistence_reclaim_policy})"
+        storageClass = "${var.cluster_region}-${var.archive_persistence_class}-${lower(var.archive_persistence_reclaim_policy)}"
         accessModes = var.archive_persistence_access_modes
         size = var.archive_persistence_size
       }
