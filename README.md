@@ -89,7 +89,7 @@ Public Testnets are functionally similar to QA Testnets but have the addition of
 
 # Deploy a QA Testnet
 
-Deployng a testnet is a relatively straightforward process once you have ironed out the configuration. At a high level, there are several pieces of configuration it's important to keep in mind or else your deployment might fail:
+Deploying a testnet is a relatively straightforward process once you have ironed out the configuration. At a high level, there are several pieces of configuration it's important to keep in mind or else your deployment might fail:
 
 - Coda Keypairs
 - Genesis Ledger
@@ -130,6 +130,41 @@ Next, you must create a new testnet in `terraform/testnets/`. For ease of use, y
 - Name of testnet
 - number of nodes to deploy
 - Location of the Genesis Ledger
+- Kubernetes [context](https://github.com/MinaProtocol/coda-automation/commit/141db8821a133501d3d4ed9b739fcad1f9b88bef) for indicating which managed *k8s* cluster to deploy to
+
+### Manage *k8s* Cluster for Deployment
+
+Prior to deploying, reference your Kubernetes cloud provider for proper configuration of a Kubernetes cluster/context or reach out to #reliability-engineering within the `Mina Protocol` Discord server for guidance on internal engineering deployments.
+
+The following *Kubernetes* cluster contexts are maintained by O(1) Lab's infrastructure team:
+
+Cluster Name | Cluster Context | GCP/GKE *Kubernetes* Provider Region
+--- | --- | ---
+coda-infra-east | gke_o1labs-192920_us-east1_coda-infra-east | `us-east1` 
+coda-infra-east4 | gke_o1labs-192920_us-east4_coda-infra-east4 | `us-east4` 
+coda-infra-central1 | gke_o1labs-192920_us-central1_coda-infra-central1 | `us-central1` 
+mina-integration-west1 | gke_o1labs-192920_us-west1_mina-integration-west1 | `us-west1` 
+
+#### Obtain credentials for a Kubernetes context
+
+Once decided on a cluster/context to deploy, use the following command to retrieve the appropriate cluster credentials:
+
+`gcloud container clusters get-credentials <cluster-name> --region <cluster-region> --project o1labs-192920`
+
+#### Set active cluster/context within deploy environment
+
+`kubectl config use-context <cluster-context>`
+
+#### Configure testnet module `k8s_context`
+
+There is a testnet module variable which determines the *Kubernetes* context to deploy to. Reference the module's [variable definitions](https://github.com/MinaProtocol/coda-automation/blob/master/terraform/modules/kubernetes/testnet/variables.tf) for more details on how to properly configure.
+
+```variable "k8s_context" {
+  type = string
+
+  description = "K8s resource provider context"
+  default     = "gke_o1labs-192920_us-east1_coda-infra-east"
+}```
 
 ### Generate Keys and Genesis Ledger
 

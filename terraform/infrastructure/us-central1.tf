@@ -1,5 +1,3 @@
-# Testnets
-
 locals {
   central1_region = "us-central1"
   central1_k8s_context = "gke_o1labs-192920_us-central1_coda-infra-central1"
@@ -40,33 +38,18 @@ provider "google" {
   region  = local.central1_region
 }
 
+provider "kubernetes" {
+  alias   = "k8s_central1"
+  config_context = local.central1_k8s_context
+}
+
 data "google_compute_zones" "central1_available" {
   project = local.gcp_project
   region = local.central1_region
   status = "UP"
 }
 
-resource "kubernetes_storage_class" "central1_ssd" {
-  metadata {
-    name = "${local.central1_region}-ssd"
-  }
-  storage_provisioner = "kubernetes.io/gce-pd"
-  reclaim_policy      = "Delete"
-  parameters = {
-    type = "pd-ssd"
-  }
-}
-
-resource "kubernetes_storage_class" "central1_standard" {
-  metadata {
-    name = "${local.central1_region}-standard"
-  }
-  storage_provisioner = "kubernetes.io/gce-pd"
-  reclaim_policy      = "Delete"
-  parameters = {
-    type = "pd-standard"
-  }
-}
+### Testnets
 
 resource "google_container_cluster" "coda_cluster_central1" {
   provider = google.google_central1
@@ -100,7 +83,7 @@ resource "google_container_node_pool" "central1_primary_nodes" {
   node_count = 4
   autoscaling {
     min_node_count = 0
-    max_node_count = 10
+    max_node_count = 5
   }
   node_config {
     preemptible  = false
@@ -124,10 +107,10 @@ resource "google_container_node_pool" "central1_preemptible_nodes" {
   location   = local.central1_region
   cluster    = google_container_cluster.coda_cluster_central1.name
   
-  node_count = 4
+  node_count = 5
   autoscaling {
     min_node_count = 0
-    max_node_count = 10
+    max_node_count = 15
   }
   node_config {
     preemptible  = true
@@ -145,27 +128,7 @@ resource "google_container_node_pool" "central1_preemptible_nodes" {
   }
 }
 
-provider helm {
-  alias = "helm_central1"
-  kubernetes {
-    config_context = local.central1_k8s_context
-  }
-}
-
-resource "helm_release" "central1_prometheus" {
-  provider  = helm.helm_central1
-  name      = "central1-prometheus"
-  chart     = "stable/prometheus"
-  namespace = "default"
-  values = [
-    yamlencode(local.central1_prometheus_helm_values)
-  ]
-  wait       = true
-  depends_on = [google_container_cluster.coda_cluster_central1]
-  force_update  = true
-}
-
-# Buildkite
+### Buildkite
 
 resource "google_container_cluster" "buildkite_infra_central1" {
   provider = google.google_central1
@@ -214,4 +177,62 @@ resource "google_container_node_pool" "central1_compute_nodes" {
       "https://www.googleapis.com/auth/monitoring",
     ]
   }
+}
+
+## Data Persistence
+
+resource "kubernetes_storage_class" "central1_ssd" {
+  provider = kubernetes.k8s_central1
+
+  count = length(local.storage_reclaim_policies)
+
+  metadata {
+    name = "${local.central1_region}-ssd-${lower(local.storage_reclaim_policies[count.index])}"
+  }
+
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = local.storage_reclaim_policies[count.index]
+  volume_binding_mode = "WaitForFirstConsumer"
+  parameters = {
+    type = "pd-ssd"
+  }
+}
+
+resource "kubernetes_storage_class" "central1_standard" {
+  provider = kubernetes.k8s_central1
+
+  count = length(local.storage_reclaim_policies)
+
+  metadata {
+    name = "${local.central1_region}-standard-${lower(local.storage_reclaim_policies[count.index])}"
+  }
+
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = local.storage_reclaim_policies[count.index]
+  volume_binding_mode = "WaitForFirstConsumer"
+  parameters = {
+    type = "pd-standard"
+  }
+}
+
+## Monitoring
+
+provider helm {
+  alias = "helm_central1"
+  kubernetes {
+    config_context = local.central1_k8s_context
+  }
+}
+
+resource "helm_release" "central1_prometheus" {
+  provider  = helm.helm_central1
+  name      = "central1-prometheus"
+  chart     = "stable/prometheus"
+  namespace = "default"
+  values = [
+    yamlencode(local.central1_prometheus_helm_values)
+  ]
+  wait       = true
+  depends_on = [google_container_cluster.coda_cluster_central1]
+  force_update  = true
 }

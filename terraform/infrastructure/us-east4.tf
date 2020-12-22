@@ -1,5 +1,3 @@
-### Testnets
-
 locals {
   east4_k8s_context = "gke_o1labs-192920_us-east4_coda-infra-east4"
   east4_region = "us-east4"
@@ -41,33 +39,18 @@ provider "google" {
   region  = local.east4_region
 }
 
+provider "kubernetes" {
+  alias   = "k8s_east4"
+  config_context = local.east4_k8s_context
+}
+
 data "google_compute_zones" "east4_available" {
   project = "o1labs-192920"
   region = local.east4_region
   status = "UP"
 }
 
-resource "kubernetes_storage_class" "east4_ssd" {
-  metadata {
-    name = "${local.east4_region}-ssd"
-  }
-  storage_provisioner = "kubernetes.io/gce-pd"
-  reclaim_policy      = "Delete"
-  parameters = {
-    type = "pd-ssd"
-  }
-}
-
-resource "kubernetes_storage_class" "east4_standard" {
-  metadata {
-    name = "${local.east4_region}-standard"
-  }
-  storage_provisioner = "kubernetes.io/gce-pd"
-  reclaim_policy      = "Delete"
-  parameters = {
-    type = "pd-standard"
-  }
-}
+### Testnets
 
 resource "google_container_cluster" "coda_cluster_east4" {
   provider = google.google_east4
@@ -101,7 +84,7 @@ resource "google_container_node_pool" "east4_primary_nodes" {
   node_count = 4
   autoscaling {
     min_node_count = 0
-    max_node_count = 15
+    max_node_count = 7
   }
   node_config {
     preemptible  = false
@@ -124,10 +107,10 @@ resource "google_container_node_pool" "east4_preemptible_nodes" {
   name       = "mina-preemptible-east4"
   location   = local.east4_region
   cluster    = google_container_cluster.coda_cluster_east4.name
-  node_count = 4
+  node_count = 5
   autoscaling {
     min_node_count = 0
-    max_node_count = 15
+    max_node_count = 20
   }
   node_config {
     preemptible  = true
@@ -145,27 +128,7 @@ resource "google_container_node_pool" "east4_preemptible_nodes" {
   }
 }
 
-provider helm {
-  alias = "helm_east4"
-  kubernetes {
-    config_context = local.east4_k8s_context
-  }
-}
-
-resource "helm_release" "east4_prometheus" {
-  provider  = helm.helm_east4
-  name      = "east4-prometheus"
-  chart     = "stable/prometheus"
-  namespace = "default"
-  values = [
-    yamlencode(local.east4_prometheus_helm_values)
-  ]
-  wait       = true
-  depends_on = [google_container_cluster.coda_cluster_east4]
-  force_update  = true
-}
-
-## Buildkite
+### Buildkite
 
 resource "google_container_cluster" "buildkite_infra_east4" {
   provider = google.google_east4
@@ -214,6 +177,64 @@ resource "google_container_node_pool" "east4_compute_nodes" {
       "https://www.googleapis.com/auth/monitoring",
     ]
   }
+}
+
+## Data Persistence
+
+resource "kubernetes_storage_class" "east4_ssd" {
+  provider = kubernetes.k8s_east4
+
+  count = length(local.storage_reclaim_policies)
+
+  metadata {
+    name = "${local.east4_region}-ssd-${lower(local.storage_reclaim_policies[count.index])}"
+  }
+
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = local.storage_reclaim_policies[count.index]
+  volume_binding_mode = "WaitForFirstConsumer"
+  parameters = {
+    type = "pd-ssd"
+  }
+}
+
+resource "kubernetes_storage_class" "east4_standard" {
+  provider = kubernetes.k8s_east4
+
+  count = length(local.storage_reclaim_policies)
+
+  metadata {
+    name = "${local.east4_region}-standard-${lower(local.storage_reclaim_policies[count.index])}"
+  }
+
+  storage_provisioner = "kubernetes.io/gce-pd"
+  reclaim_policy      = local.storage_reclaim_policies[count.index]
+  volume_binding_mode = "WaitForFirstConsumer"
+  parameters = {
+    type = "pd-standard"
+  }
+}
+
+## Monitoring
+
+provider helm {
+  alias = "helm_east4"
+  kubernetes {
+    config_context = local.east4_k8s_context
+  }
+}
+
+resource "helm_release" "east4_prometheus" {
+  provider  = helm.helm_east4
+  name      = "east4-prometheus"
+  chart     = "stable/prometheus"
+  namespace = "default"
+  values = [
+    yamlencode(local.east4_prometheus_helm_values)
+  ]
+  wait       = true
+  depends_on = [google_container_cluster.coda_cluster_east4]
+  force_update  = true
 }
 
 # Utilities

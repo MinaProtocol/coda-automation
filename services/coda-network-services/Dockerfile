@@ -20,17 +20,20 @@ ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 COPY . /code
 
 COPY ./scripts /scripts
+
+# TODO: find better mechanism for sharing files across repo DIRs
+ADD https://raw.githubusercontent.com/MinaProtocol/coda-automation/master/scripts/random_restart.py /scripts/random_restart.py
+
 COPY ./entrypoints /entrypoint.d
+
+RUN chmod -R 777 /code/
+RUN chmod -R 777 /scripts/
 
 COPY ./requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 WORKDIR /code
-RUN chmod -R 777 /code/
-RUN chmod -R 777 /scripts/
 
-COPY entrypoint.sh /entrypoint
-RUN chmod 777 /entrypoint
-ENTRYPOINT ["/entrypoint"]
+ENTRYPOINT ["/scripts/entrypoint.sh"]
 
 CMD [ "bash", "main.sh" ]
