@@ -160,7 +160,7 @@ echo
 # ================================================================================
 
 # EXTRA FISH
-if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/online_fish_account_1.pub" ]]; then
+if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/extra_fish_account_1.pub" ]]; then
 echo "using existing fish keys"
 else
   output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_extra-fish-keyfiles"
@@ -188,17 +188,18 @@ generate_keyset_from_file "o1-keys.txt" "online-o1" "employee"
 
 # Bots
 
-if [ -f keys/keysets/bots ];
+if [ -d keys/testnet-keys/bots_keyfiles ];
 then
   echo "Bots keys already present, not generating new ones"
 else
-  output_dir="$(pwd)/keys/keysets/bots_keyfiles/"
-  generate_key_files 2 "bots" "${output_dir}"
-  mv ${output_dir}/bots_1.pub ${output_dir}/echo_service.pub
-  mv ${output_dir}/bots_1 ${output_dir}/echo_service
-  mv ${output_dir}/bots_2.pub ${output_dir}/faucet_service.pub
-  mv ${output_dir}/bots_2 ${output_dir}/faucet_service
-  build_keyset_from_testnet_keys "${output_dir}" bots
+  output_dir="$(pwd)/keys/testnet-keys/bots_keyfiles/"
+  generate_key_files 2 "bots_keyfiles" "${output_dir}"
+  mv ${output_dir}/bots_keyfiles_1.pub ${output_dir}/echo_service.pub
+  mv ${output_dir}/bots_keyfiles_1 ${output_dir}/echo_service
+  mv ${output_dir}/bots_keyfiles_2.pub ${output_dir}/faucet_service.pub
+  mv ${output_dir}/bots_keyfiles_2 ${output_dir}/faucet_service
+
+  build_keyset_from_testnet_keys "${output_dir}" "bots_keyfiles"
 fi
 
 # ================================================================================
@@ -277,9 +278,9 @@ add_another_to_prompt ${TESTNET}_offline-fish ${FISH_AMOUNT} ${TESTNET}_online-f
 add_another_to_prompt ${TESTNET}_online-fish ${FISH_AMOUNT} ${TESTNET}_online-fish
 add_another_to_prompt ${TESTNET}_online-o1 ${FISH_AMOUNT} ${TESTNET}_online-o1
 
-if [ -f keys/keysets/bots ];
+if [ -d keys/testnet-keys/bots_keyfiles ];
 then
-  add_another_to_prompt bots 50000 bots
+  add_another_to_prompt ${TESTNET}_bots_keyfiles 50000 ${TESTNET}_bots_keyfiles
 else
   echo "Bots keyset is missing, building ledger without them"
 fi

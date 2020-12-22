@@ -37,7 +37,7 @@ provider "google" {
 locals {
   testnet_name = "bug-net"
   coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.1.1-develop-until-adversarial-8126d91-bug-net-006dee8"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.1.1-develop-until-adversarial-8126d91"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.1.1-temporary-qa-staging-ci-wait-cf2b767"
   seed_region = "us-central1"
   seed_zone = "us-central1-b"
   seed_discovery_keypairs = [
@@ -106,8 +106,8 @@ module "testnet_central" {
         id                     = i + 1
         private_key_secret     = "online-fish-account-${i + 1}-key"
         enable_gossip_flooding = false
-        run_with_user_agent    = true
-        run_with_bots          = false
+        run_with_user_agent    = i != 0
+        run_with_bots          = i == 0
         enable_peer_exchange   = false
         isolated               = false
       }
