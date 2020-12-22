@@ -1,16 +1,14 @@
 provider kubernetes {
-    config_context  = var.k8s_context
+  alias = "bk_deploy"
+  config_path = "~/.kube/config"
+  config_context  = var.k8s_context
 }
 
 provider helm {
+  alias = "bk_deploy"
   kubernetes {
+    config_path = "~/.kube/config"
     config_context  = var.k8s_context
-  }
-}
-
-resource "kubernetes_namespace" "cluster_namespace" {
-  metadata {
-    name = var.cluster_name
   }
 }
 
@@ -208,8 +206,18 @@ locals {
   }
 }
 
+resource "kubernetes_namespace" "cluster_namespace" {
+  provider = kubernetes.bk_deploy
+
+  metadata {
+    name = var.cluster_name
+  }
+}
+
 resource "helm_release" "buildkite_agents" {
   for_each   = var.agent_topology
+
+  provider   = helm.bk_deploy
  
   name              = "${var.cluster_name}-buildkite-${each.key}"
   repository        = "buildkite"

@@ -53,12 +53,16 @@ locals {
 }
 
 provider helm {
+  alias = "bk_monitoring"
   kubernetes {
+    config_path = "~/.kube/config"
     config_context  = var.k8s_monitoring_ctx
   }
 }
 
 resource "helm_release" "buildkite_graphql_exporter" {
+  provider  = helm.bk_monitoring
+
   name      = "buildkite-coda-exporter"
   chart     = "../../../helm/buildkite-exporter"
   namespace = local.project_namespace
@@ -73,6 +77,8 @@ resource "helm_release" "buildkite_graphql_exporter" {
 }
 
 resource "helm_release" "buildkite_prometheus" {
+  provider  = helm.bk_monitoring
+
   name      = "${local.project_namespace}-prometheus"
   chart     = "stable/prometheus"
   namespace = local.project_namespace
