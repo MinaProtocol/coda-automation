@@ -31,14 +31,21 @@ variable "coda_image" {
   type = string
 
   description = "Mina daemon image to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/coda-daemon:0.1.0-beta1-develop"
+  default     = "gcr.io/o1labs-192920/coda-daemon:0.1.0-beta1-unforked-ci-net"
 }
 
 variable "coda_archive_image" {
   type = string
 
   description = "Mina archive node image to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/coda-archive:0.1.0-beta1-add-archive-healthchecks-tooling"
+  default     = "gcr.io/o1labs-192920/coda-archive:0.1.0-beta1-unforked-ci-net"
+}
+
+variable "bots_image" {
+  type = string
+
+  description = "Mina bots (faucet and echo services) to use in provisioning a ci-net"
+  default     = "gcr.io/o1labs-192920/bot:1.0.0-c15d8a33bbab27dc8f1e9d047171c7958a993a63"
 }
 
 variable "whale_count" {
@@ -73,7 +80,7 @@ module "ci_testnet" {
   coda_image            = var.coda_image
   coda_archive_image    = var.coda_archive_image
   coda_agent_image      = "codaprotocol/coda-user-agent:0.1.5"
-  coda_bots_image       = "codaprotocol/coda-bots:0.0.13-beta-1"
+  coda_bots_image       = var.bots_image
   coda_points_image     = "codaprotocol/coda-points-hack:32b.4"
 
   whale_count           = var.whale_count
@@ -82,6 +89,7 @@ module "ci_testnet" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
+  archive_node_count    = 2
   mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/2f36b15d48e956e5242c0abc134f1fa7711398dd/src/app/archive/create_schema.sql"
 
   additional_seed_peers = []

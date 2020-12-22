@@ -76,7 +76,7 @@ variable "additional_seed_peers" {
 
 variable "archive_node_count" {
   type    = number
-  default = 0
+  default = 1
 }
 
 # Seed Vars
