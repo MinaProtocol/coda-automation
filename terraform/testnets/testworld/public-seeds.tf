@@ -1,6 +1,6 @@
  # Defaults to the provider project
  data "google_project" "project" {
-   provider = google.google-us-east1
+   provider = google.google-us-central1
  }
  
  module "seed_network" {
