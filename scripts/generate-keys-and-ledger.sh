@@ -174,6 +174,23 @@ echo
 
 # ================================================================================
 
+# Bots
+
+if [ -f keys/keysets/bots ];
+then
+  echo "Bots keys already present, not generating new ones"
+else
+  output_dir="$(pwd)/keys/keysets/bots_keyfiles/"
+  generate_key_files 2 "bots" "${output_dir}"
+  mv ${output_dir}/bots_1.pub ${output_dir}/echo-service.pub
+  mv ${output_dir}/bots_1 ${output_dir}/echo-service
+  mv ${output_dir}/bots_2.pub ${output_dir}/faucet-service.pub
+  mv ${output_dir}/bots_2 ${output_dir}/faucet-service
+  build_keyset_from_testnet_keys "${output_dir}" bots
+fi
+
+# ================================================================================
+
 if [ ! -z $COMMUNITY_KEYFILE ]; then
   generate_keyset_from_file $COMMUNITY_KEYFILE "online-community" "community"
 else
