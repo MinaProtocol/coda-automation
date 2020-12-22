@@ -6,13 +6,13 @@ locals {
             rules = [
                 {
                     alert   = "BlockProductionStopped"
-                    expr    = "increase(Coda_Transition_frontier_max_blocklength_observed{testnet=\"$testnet\"}[15m]) < 1"
-                    "for"   = "15m" 
+                    expr    = "increase(Coda_Transition_frontier_max_blocklength_observed{testnet=\"$testnet\"}[60m]) < 1"
+                    "for"   = "60m" 
                     labels = {
                         severity = "critical"
                     }
                     annotations = {
-                        description = "Zero blocks have been produced on testnet {{ $labels.testnet }} for more than 15 minutes."
+                        description = "Zero blocks have been produced on testnet {{ $labels.testnet }} for more than 60 minutes."
                         summary     = "{{ $labels.testnet }} block production is critically low"
                     }
                 }
