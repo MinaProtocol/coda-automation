@@ -3,7 +3,7 @@ output "network_link" {
 }
 
 output "network_region" {
-  value = "us-east1"
+  value = local.network_region
 }
 
 output "subnet_link" {
