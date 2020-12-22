@@ -184,9 +184,22 @@ fi
 
 generate_keyset_from_file "o1-keys.txt" "online-o1" "employee"
 
-# SERVICES
-# echo "Generating 2 service keys..."
-# [[ -s "keys/keysets/${TESTNET}_online-service-keys" ]] || coda-network keyset create --count 2 --name ${TESTNET}_online-service-keys
+# ================================================================================
+
+# Bots
+
+if [ -f keys/keysets/bots ];
+then
+  echo "Bots keys already present, not generating new ones"
+else
+  output_dir="$(pwd)/keys/keysets/bots_keyfiles/"
+  generate_key_files 2 "bots" "${output_dir}"
+  mv ${output_dir}/bots_1.pub ${output_dir}/echo_service.pub
+  mv ${output_dir}/bots_1 ${output_dir}/echo_service
+  mv ${output_dir}/bots_2.pub ${output_dir}/faucet_service.pub
+  mv ${output_dir}/bots_2 ${output_dir}/faucet_service
+  build_keyset_from_testnet_keys "${output_dir}" bots
+fi
 
 # ================================================================================
 
