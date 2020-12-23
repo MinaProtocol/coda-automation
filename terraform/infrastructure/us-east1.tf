@@ -30,10 +30,10 @@ locals {
       ]
     }
     serverFiles = {
-      alerting_rules.yml = local.testnet_alerts
+      "alerting_rules.yml" = local.testnet_alerts
     }
     alertmanagerFiles = {
-      alertmanager.yml = {
+      "alertmanager.yml" = {
         receivers = local.pagerduty_receivers
         route = {
           group_by = "[testnet]"
