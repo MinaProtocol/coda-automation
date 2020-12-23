@@ -79,7 +79,7 @@ module "ci_testnet" {
 
   coda_image            = var.coda_image
   coda_archive_image    = var.coda_archive_image
-  coda_agent_image      = "codaprotocol/coda-user-agent:0.1.5"
+  coda_agent_image      = "codaprotocol/coda-user-agent:0.1.7"
   coda_bots_image       = var.bots_image
   coda_points_image     = "codaprotocol/coda-points-hack:32b.4"
 
@@ -90,7 +90,7 @@ module "ci_testnet" {
   coda_faucet_fee       = "100000000"
 
   archive_node_count    = 2
-  mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/2f36b15d48e956e5242c0abc134f1fa7711398dd/src/app/archive/create_schema.sql"
+  mina_archive_schema = "https://github.com/MinaProtocol/mina/blob/develop/src/app/archive/create_schema.sql"
 
   additional_seed_peers = []
 
@@ -126,8 +126,8 @@ module "ci_testnet" {
         id                     = i + 1
         private_key_secret     = "online-fish-account-${i + 1}-key"
         enable_gossip_flooding = false
-        run_with_user_agent    = false
-        run_with_bots          = false
+        run_with_user_agent    = true
+        run_with_bots          = true
         enable_peer_exchange   = true
         isolated               = false
       }
