@@ -20,6 +20,7 @@ from os.path import isfile, join
 from graphviz import Digraph
 from datetime import datetime
 import uuid
+from collections import Counter
 
 from kubernetes import client, config, stream
 from discord_webhook import DiscordWebhook
@@ -304,6 +305,8 @@ def main():
       discord_to_keys = {}
       online_discord_counts = {}
 
+    version_counts = dict(Counter([ v['git_commit'] for v in peer_table.values() ]))
+
     # --------------------
     # collect long-running data
 
@@ -383,6 +386,7 @@ def main():
       "responding_ips_by_window": responding_ips_by_window,
       "responding_discords_by_window": responding_discords_by_window,
       "online_discord_counts": online_discord_counts,
+      "version_counts": version_counts,
     }
 
     #import IPython; IPython.embed()
@@ -420,7 +424,7 @@ def main():
 
     make_block_tree_graph()
 
-    copy = [ 'namespace', 'queried_nodes', 'responding_nodes', 'epoch', 'epoch_slot', 'global_slot', 'blocks', 'block_fill_rate', 'has_forks', 'has_participants', "telemetry_handshake_errors", "telemetry_heartbeat_errors", "telemetry_transport_stopped_errors", "telemetry_libp2p_errors", "telemetry_other_errors" ]
+    copy = [ 'namespace', 'queried_nodes', 'responding_nodes', 'epoch', 'epoch_slot', 'global_slot', 'blocks', 'block_fill_rate', 'has_forks', 'has_participants', "telemetry_handshake_errors", "telemetry_heartbeat_errors", "telemetry_transport_stopped_errors", "telemetry_libp2p_errors", "telemetry_other_errors", "version_counts" ]
     json_report = {}
     for c in copy:
       json_report[c] = report[c]

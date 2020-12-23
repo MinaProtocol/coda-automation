@@ -49,8 +49,8 @@ upload_keys_by_folder $whale_keys
 upload_keys_by_folder $fish_keys
 
 #bots
-if [ -e keys/testnet-keys/bots/echo_service.pub ]; then
-  upload_keys_by_folder ${KEYS_PREFIX}keys/testnet-keys/bots
+if [ -e keys/testnet-keys/bots_keyfiles/echo_service.pub ]; then
+  upload_keys_by_folder ${KEYS_PREFIX}keys/testnet-keys/bots_keyfiles
 else
   echo '*** NOT UPLOADING BOT KEYS (required when running with bots sidecar)'
 fi
@@ -64,3 +64,6 @@ else
   echo '*** NOT UPLOADING DISCORD API KEY (required when running with bots sidecar)'
 fi
 
+if [ -e gcloud-keyfile.json ]; then
+  kubectl create secret generic gcloud-keyfile --cluster=$CLUSTER --namespace=$TESTNET --from-file=keyfile=gcloud-keyfile.json
+fi
