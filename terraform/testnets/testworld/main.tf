@@ -69,7 +69,8 @@ module "testnet_central" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
-  mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/2f36b15d48e956e5242c0abc134f1fa7711398dd/src/app/archive/create_schema.sql"
+  mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/10fcc9bc4b5aca13a00b80d92507ca21f0f20106/src/app/archive/create_schema.sql"
+
 
   additional_seed_peers = [
     "/dns4/seed-one.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
