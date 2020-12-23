@@ -113,6 +113,25 @@ locals {
         accessModes = var.archive_persistence_access_modes
         size = var.archive_persistence_size
       }
+      primary = {
+        affinity = {
+          nodeAffinity = {
+            requiredDuringSchedulingIgnoredDuringExecution = {
+              nodeSelectorTerms = [
+                {
+                  matchExpressions = [
+                    {
+                      key = "cloud.google.com/gke-preemptible"
+                      operator = "NotIn"
+                      values = ["true"]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
     }
   }
   
