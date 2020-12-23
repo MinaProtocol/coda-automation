@@ -60,6 +60,7 @@ locals {
       maxTx         = var.agent_max_tx
       txBatchSize   = var.agent_tx_batch_size
       sendEveryMins = var.agent_send_every_mins
+      ports         = { metrics: 8000 }
     }
 
     bots = {
