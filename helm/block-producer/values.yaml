@@ -15,7 +15,7 @@ coda:
     p2p: "10909"
 
 userAgent:
-  image: "codaprotocol/coda-user-agent:0.1.7"
+  image: ""
   minFee: ""
   maxFee: ""
   minTx: ""
@@ -23,7 +23,7 @@ userAgent:
   txBatchSize: ""
   sendEveryMins: ""
   ports:
-    metrics: 8000
+    metrics: 10000
 
 bots:
   image: ""

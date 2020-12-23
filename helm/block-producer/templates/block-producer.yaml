@@ -93,7 +93,7 @@ spec:
           {{ end -}}
           {{- if ne $.Values.userAgent.sendEveryMins "" -}}
           - name: AGENT_SEND_EVERY_MINS
-            value: {{ $.Values.userAgent.sendEveryMins }}
+            value: "1"
           {{ end -}}
           - name: CODA_PUBLIC_KEY
             valueFrom:
@@ -307,8 +307,5 @@ spec:
   - name: tcp-p2p
     port: {{ $.Values.coda.ports.p2p }}
     targetPort: external-port
-  - name: tcp-metrics
-    port: {{ $.Values.userAgent.ports.metrics }}
-    targetPort: metrics-port
 ---
 {{ end }}
