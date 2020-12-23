@@ -201,7 +201,7 @@ resource "helm_release" "block_producers" {
   name        = "${var.testnet_name}-block-producers"
   repository  = local.use_local_charts ? "" : local.mina_helm_repo
   chart       = local.use_local_charts ? "../../../helm/block-producer" : "block-producer"
-  version     = "0.3.2"
+  version     = "0.5.0"
   namespace   = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
     yamlencode(local.block_producer_vars)
