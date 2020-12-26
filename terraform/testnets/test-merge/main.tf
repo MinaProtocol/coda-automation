@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "terraform-test-merge.tfstate"
+    key     = "terraform-test-merge-B.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -35,7 +35,7 @@ provider "google" {
 }
 
 locals {
-  testnet_name = "test-merge"
+  testnet_name = "test-merge-B"
   coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.1.1-add-testworld-ledger-bbda99d-test-merge-b4b8f9e"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.1.1-temporary-qa-staging-ci-wait-cf2b767"
   seed_region = "us-east1"
