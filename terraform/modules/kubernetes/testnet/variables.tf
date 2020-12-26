@@ -271,3 +271,8 @@ variable "archive_persistence_size" {
   type    = string
   default = "8Gi"
 }
+
+variable "upload_blocks_to_gcloud" {
+  type    = bool
+  default = false
+}

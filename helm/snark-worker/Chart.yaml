@@ -1,21 +1,19 @@
 apiVersion: v2
 name: snark-worker
-description: A Helm chart for Kubernetes
-
-# A chart can be either an 'application' or a 'library' chart.
-#
-# Application charts are a collection of templates that can be packaged into versioned archives
-# to be deployed.
-#
-# Library charts provide useful utilities or functions for the chart developer. They're included as
-# a dependency of application charts to inject those utilities and functions into the rendering
-# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+description: A Helm chart for Mina Protocol's SNARK worker nodes
 type: application
-
-# This is the chart version. This version number should be incremented each time you make changes
-# to the chart and its templates, including the app version.
-version: 0.1.4
-
-# This is the version number of the application being deployed. This version number should be
-# incremented each time you make changes to the application.
+version: 0.3.3
 appVersion: 1.16.0
+dependencies:
+  - name: common-utilities
+    version: 0.0.4
+    repository: "https://coda-charts.storage.googleapis.com"
+icon: https://github.com/MinaProtocol/mina/blob/develop/frontend/website/public/static/img/coda-logo@3x.png
+keywords:
+- snarks
+- zero-knowledge
+- mina
+- testnet
+home: https://minaprotocol.com/
+sources:
+- https://github.com/MinaProtocol/mina/tree/develop/src/lib/snark_worker

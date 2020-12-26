@@ -11,6 +11,8 @@ def main():
 
   statuses = [ get_status(namespace, pod) for pod in pods ]
 
+  statuses = [ s for s in statuses if len(s) > 0 ]
+
   select = lambda status, prop: [ s for s in status.split('\n') if prop in s ][0].split(':')[1].strip()
 
   ports = [ select(status, 'Libp2p port') for status in statuses ]
