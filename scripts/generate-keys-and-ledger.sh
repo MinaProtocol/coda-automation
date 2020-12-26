@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Set defaults before parsing args
-TESTNET=turbo-pickles
+TESTNET=new-net
 COMMUNITY_KEYFILE=""
 RESET=false
 
@@ -72,7 +72,11 @@ function generate_key_files {
     docker run \
       -v "${output_dir}:/keys:z" \
       --entrypoint /bin/bash $CODA_DAEMON_IMAGE \
-      -c "CODA_PRIVKEY_PASS='${privkey_pass}' coda advanced generate-keypair -privkey-path /keys/${name_prefix}_${k}"
+      -c "CODA_PRIVKEY_PASS='${privkey_pass}' coda advanced generate-keypair -privkey-path /keys/${name_prefix}_account_${k}"
+    docker run \
+      --mount type=bind,source=${output_dir},target=/keys \
+      --entrypoint /bin/bash $CODA_DAEMON_IMAGE \
+      -c "CODA_LIBP2P_PASS='${privkey_pass}' coda advanced generate-libp2p-keypair -privkey-path /keys/${name_prefix}_libp2p_${k}"
   done
 }
 
@@ -80,7 +84,7 @@ function build_keyset_from_testnet_keys {
   output_dir=$1
   keyset_name=$2
 
-  for file in $output_dir/*.pub; do
+  for file in $output_dir/*_account_*.pub; do
     nickname=$(basename $file .pub)
     jq -n ".publicKey = \"$(cat $file)\" | .nickname = \"$nickname\""
   done | jq -n ".name = \"${TESTNET}_${keyset_name}\" | .entries |= [inputs]" > keys/keysets/${TESTNET}_${keyset_name}
@@ -122,8 +126,8 @@ else
   online_output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_online-whale-keyfiles"
   offline_output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_offline-whale-keyfiles"
 
-  generate_key_files $WHALE_COUNT "online_whale_account" $online_output_dir
-  generate_key_files $WHALE_COUNT "offline_whale_account" $offline_output_dir
+  generate_key_files $WHALE_COUNT "online_whale" $online_output_dir
+  generate_key_files $WHALE_COUNT "offline_whale" $offline_output_dir
 
   build_keyset_from_testnet_keys $online_output_dir "online-whales"
   build_keyset_from_testnet_keys $offline_output_dir "offline-whales"
@@ -142,8 +146,8 @@ else
   online_output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_online-fish-keyfiles"
   offline_output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_offline-fish-keyfiles"
 
-  generate_key_files $FISH_COUNT "online_fish_account" $online_output_dir
-  generate_key_files $FISH_COUNT "offline_fish_account" $offline_output_dir
+  generate_key_files $FISH_COUNT "online_fish" $online_output_dir
+  generate_key_files $FISH_COUNT "offline_fish" $offline_output_dir
 
   build_keyset_from_testnet_keys $online_output_dir "online-fish"
   build_keyset_from_testnet_keys $offline_output_dir "offline-fish"
@@ -163,7 +167,7 @@ if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/extra_fish_account_1.
 echo "using existing fish keys"
 else
   output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_extra-fish-keyfiles"
-  generate_key_files $EXTRA_COUNT "extra_fish_account" $output_dir
+  generate_key_files $EXTRA_COUNT "extra_fish" $output_dir
 
   build_keyset_from_testnet_keys $output_dir "extra-fish"
 fi
@@ -182,10 +186,10 @@ then
 else
   output_dir="$(pwd)/keys/keysets/bots_keyfiles/"
   generate_key_files 2 "bots" "${output_dir}"
-  mv ${output_dir}/bots_1.pub ${output_dir}/echo-service.pub
-  mv ${output_dir}/bots_1 ${output_dir}/echo-service
-  mv ${output_dir}/bots_2.pub ${output_dir}/faucet-service.pub
-  mv ${output_dir}/bots_2 ${output_dir}/faucet-service
+  mv ${output_dir}/bots_account_1.pub ${output_dir}/echo-service.pub
+  mv ${output_dir}/bots_account_1 ${output_dir}/echo-service
+  mv ${output_dir}/bots_account_2.pub ${output_dir}/faucet-service.pub
+  mv ${output_dir}/bots_account_2 ${output_dir}/faucet-service
   build_keyset_from_testnet_keys "${output_dir}" bots
 fi
 
