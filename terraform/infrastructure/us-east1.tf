@@ -29,6 +29,18 @@ locals {
         }
       ]
     }
+    serverFiles = {
+      "alerting_rules.yml" = local.testnet_alerts
+    }
+    alertmanagerFiles = {
+      "alertmanager.yml" = {
+        receivers = local.pagerduty_receivers
+        route = {
+          group_by = "[testnet]"
+          receiver = "pagerduty-primary"
+        }
+      }
+    }
   }
 }
 
