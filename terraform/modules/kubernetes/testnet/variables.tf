@@ -79,13 +79,12 @@ variable "archive_node_count" {
   default = 0
 }
 
-# empty string means that the deployment will use compile time constants
-variable "runtime_config" {
-  type    = string
-  default = ""
-}
-
 # Seed Vars
+
+variable "seed_port" {
+  type    = string
+  default = "10001"
+}
 
 variable "seed_region" {
   type    = string
@@ -106,6 +105,16 @@ variable "seed_discovery_keypairs" {
 }
 
 # Block Producer Vars
+
+variable "whale_count" {
+  type    = number
+  default = 1
+}
+
+variable "fish_count" {
+  type    = number
+  default = 1
+}
 
 variable "log_level" {
   type    = string

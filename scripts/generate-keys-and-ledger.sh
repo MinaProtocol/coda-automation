@@ -5,9 +5,16 @@ TESTNET=turbo-pickles
 COMMUNITY_KEYFILE=""
 RESET=false
 
-WHALE_COUNT=5
+WHALE_COUNT=1
 FISH_COUNT=1
-EXTRA_COUNT=1
+EXTRA_COUNT=1 # Extra community keys to be handed out manually
+
+CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
+
+WHALE_AMOUNT=2250000
+FISH_AMOUNT=20000
+O1_AMOUNT="${FISH_AMOUNT}"
+COMMUNITY_AMOUNT=66000
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -32,14 +39,6 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
-
-
-CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
-
-WHALE_AMOUNT=2250000
-FISH_AMOUNT=20000
-O1_AMOUNT="${FISH_AMOUNT}"
-COMMUNITY_AMOUNT=66000
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 cd "${SCRIPTPATH}/../"
@@ -71,7 +70,7 @@ function generate_key_files {
 
   for k in $(seq 1 $COUNT); do
     docker run \
-      --mount type=bind,source=${output_dir},target=/keys \
+      -v "${output_dir}:/keys:z" \
       --entrypoint /bin/bash $CODA_DAEMON_IMAGE \
       -c "CODA_PRIVKEY_PASS='${privkey_pass}' coda advanced generate-keypair -privkey-path /keys/${name_prefix}_${k}"
   done
@@ -160,7 +159,7 @@ echo
 # ================================================================================
 
 # EXTRA FISH
-if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/online_fish_account_1.pub" ]]; then
+if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/extra_fish_account_1.pub" ]]; then
 echo "using existing fish keys"
 else
   output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_extra-fish-keyfiles"
@@ -172,6 +171,23 @@ fi
 echo "Extra Fish Keyset:"
 cat keys/keysets/${TESTNET}_extra-fish
 echo
+
+# ================================================================================
+
+# Bots
+
+if [ -f keys/keysets/bots ];
+then
+  echo "Bots keys already present, not generating new ones"
+else
+  output_dir="$(pwd)/keys/keysets/bots_keyfiles/"
+  generate_key_files 2 "bots" "${output_dir}"
+  mv ${output_dir}/bots_1.pub ${output_dir}/echo-service.pub
+  mv ${output_dir}/bots_1 ${output_dir}/echo-service
+  mv ${output_dir}/bots_2.pub ${output_dir}/faucet-service.pub
+  mv ${output_dir}/bots_2 ${output_dir}/faucet-service
+  build_keyset_from_testnet_keys "${output_dir}" bots
+fi
 
 # ================================================================================
 

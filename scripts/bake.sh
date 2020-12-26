@@ -2,7 +2,7 @@
 
 # Set defaults before parsing args
 TESTNET=turbo-pickles
-DOCKER_TAG=0.0.16-beta7-develop
+DOCKER_TAG=0.1.1-41db206
 AUTOMATION_PATHSPEC=$(git log master -1 --pretty=format:%H)
 CONFIG_FILE=/root/daemon.json
 CLOUD=false
@@ -61,7 +61,7 @@ for i in $(seq 60); do
   sleep 30
 done
 
-cat bake/Dockerfile | docker build \
+cat bake/Dockerfile | docker build --no-cache \
   -t "${hub_baked_tag}" \
   --build-arg "BAKE_VERSION=${DOCKER_TAG}" \
   --build-arg "COMMIT_HASH=${AUTOMATION_PATHSPEC}" \
