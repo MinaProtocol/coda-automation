@@ -1,7 +1,12 @@
 provider helm {
   debug = true
   kubernetes {
-    config_context  = var.k8s_context
+    # config_context  = var.k8s_context
+    host                   = "https://${data.google_container_cluster.cluster.endpoint}"
+    client_certificate     = base64decode(data.google_container_cluster.cluster.master_auth[0].client_certificate)
+    client_key             = base64decode(data.google_container_cluster.cluster.master_auth[0].client_key)
+    cluster_ca_certificate = base64decode(data.google_container_cluster.cluster.master_auth[0].cluster_ca_certificate)
+    token                  = data.google_client_config.current.access_token
   }
 }
 
@@ -14,7 +19,7 @@ data "local_file" "genesis_ledger" {
 
 locals {
   mina_helm_repo = "https://coda-charts.storage.googleapis.com"
-  use_local_charts = false
+  use_local_charts = true
 
   seed_peers = [
     "/dns4/seed-node.${var.testnet_name}/tcp/${var.seed_port}/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
@@ -27,6 +32,7 @@ locals {
     seedPeers          = concat(var.additional_seed_peers, local.seed_peers)
     logLevel           = var.log_level
     logSnarkWorkGossip = var.log_snark_work_gossip
+    uploadBlocksToGCloud = var.upload_blocks_to_gcloud
   }
   
   coda_network_services_vars = {
@@ -74,6 +80,7 @@ locals {
       maxTx         = var.agent_max_tx
       txBatchSize   = var.agent_tx_batch_size
       sendEveryMins = var.agent_send_every_mins
+      ports         = { metrics: 8000 }
     }
 
     bots = {
