@@ -1,0 +1,13 @@
+{
+  "pk": "B62qqrfiBytgukvx7qa5CPmsXvQwXxTaYwbrqDpCDBs9Xb2mwBKYHdM",
+  "balance": "66000.000000000",
+  "delegate": "B62qqrfiBytgukvx7qa5CPmsXvQwXxTaYwbrqDpCDBs9Xb2mwBKYHdM",
+  "sk": null,
+  "timing": {
+    "initial_minimum_balance": "60000",
+    "cliff_time": "150",
+    "cliff_amount": "12000",
+    "vesting_period": "6",
+    "vesting_increment": "150"
+  }
+}
