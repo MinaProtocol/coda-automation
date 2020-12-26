@@ -9,7 +9,7 @@ WHALE_COUNT=1
 FISH_COUNT=1
 EXTRA_COUNT=1 # Extra community keys to be handed out manually
 
-CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.0.14-rosetta-scaffold-inversion-489d898"
+CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.1.1-feature-pasta-up-to-date-235a404"
 
 WHALE_AMOUNT=2250000
 FISH_AMOUNT=20000
@@ -40,7 +40,6 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-CODA_DAEMON_IMAGE="codaprotocol/coda-daemon:0.1.1-feature-pasta-up-to-date-235a404"
 
 WHALE_AMOUNT=2250000
 FISH_AMOUNT=20000
@@ -305,7 +304,7 @@ add_another_to_prompt ${TESTNET}_offline-fish ${FISH_AMOUNT} ${TESTNET}_online-f
 add_another_to_prompt ${TESTNET}_online-fish ${FISH_AMOUNT} ${TESTNET}_online-fish
 add_another_to_prompt ${TESTNET}_online-o1 ${FISH_AMOUNT} ${TESTNET}_online-o1
 
-if [ -d keys/testnet-keys/bots_keyfiles ];
+if [ -d keys/keysets/${TESTNET}_bots_keyfiles ];
 then
   add_another_to_prompt ${TESTNET}_bots_keyfiles 50000 ${TESTNET}_bots_keyfiles
 else
