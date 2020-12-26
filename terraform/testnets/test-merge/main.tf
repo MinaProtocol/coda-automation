@@ -36,7 +36,7 @@ provider "google" {
 
 locals {
   testnet_name = "test-merge"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.1.1-add-testworld-ledger-bbda99d-test-merge-f03604f"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.1.1-add-testworld-ledger-bbda99d-test-merge-b4b8f9e"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.1.1-temporary-qa-staging-ci-wait-cf2b767"
   seed_region = "us-east1"
   seed_zone = "us-east1-b"
