@@ -146,6 +146,7 @@ variable "block_producer_configs" {
       name = string,
       class = string,
       private_key_secret = string,
+      libp2p_secret = string,
       enable_gossip_flooding = bool,
       enable_peer_exchange = bool,
       isolated = bool,
