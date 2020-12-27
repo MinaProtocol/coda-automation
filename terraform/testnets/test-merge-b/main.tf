@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 0.12.0"
   backend "s3" {
-    key     = "terraform-test-merge-B.tfstate"
+    key     = "terraform-test-merge-b.tfstate"
     encrypt = true
     region  = "us-west-2"
     bucket  = "o1labs-terraform-state"
@@ -17,7 +17,7 @@ provider "google" {
   alias   = "google-us-east4"
   project = "o1labs-192920"
   region  = "us-east4"
-  zone    = "us-east4-c"
+  zone    = "us-east4-b"
 }
 
 provider "google" {
@@ -34,30 +34,39 @@ provider "google" {
   zone    = "us-central1-c"
 }
 
+
+variable "whale_count" {
+  type = number
+
+  description = "Number of online whales for the network to run"
+  default     = 5
+}
+
+variable "fish_count" {
+  type = number
+
+  description = "Number of online fish for the network to run"
+  default     = 2
+}
+
 locals {
-  testnet_name = "test-merge-B"
+  testnet_name = "test-merge-b"
   coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.1.1-add-testworld-ledger-bbda99d-test-merge-b4b8f9e"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.1.1-temporary-qa-staging-ci-wait-cf2b767"
-  seed_region = "us-east1"
-  seed_zone = "us-east1-b"
+  seed_region = "us-east4"
+  seed_zone = "us-east4-b"
   seed_discovery_keypairs = [
   "CAESQBEHe2zCcQDHcSaeIydGggamzmTapdCS8SP0hb5FWvYhe9XEygmlUGV4zNu2P8zAIba4X84Gm4usQFLamjRywA8=,CAESIHvVxMoJpVBleMzbtj/MwCG2uF/OBpuLrEBS2po0csAP,12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv",
   "CAESQO+8qvMqTaQEX9uh4NnNoyOy4Xwv3U80jAsWweQ1J37AVgx7kgs4pPVSBzlP7NDANP1qvSvEPOTh2atbMMUO8EQ=,CAESIFYMe5ILOKT1Ugc5T+zQwDT9ar0rxDzk4dmrWzDFDvBE,12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5" ]
-
-  runtime_config = <<EOT
-    ${file("./genesis_ledger.json")}
-  EOT
 }
 
 
 module "testnet_east" {
-  providers = { google = google.google-us-east1 }
+  providers = { google = google.google-us-east4 }
   source    = "../../modules/kubernetes/testnet"
 
-  gcloud_seeds = [ module.seed_one, module.seed_two ]
-
-  cluster_name          = "coda-infra-east"
-  cluster_region        = "us-east1"
+  cluster_name          = "coda-infra-east4"
+  cluster_region        = "us-east4"
   testnet_name          = local.testnet_name
 
   coda_image            = local.coda_image
@@ -71,12 +80,6 @@ module "testnet_east" {
 
   mina_archive_schema = "https://raw.githubusercontent.com/MinaProtocol/mina/10fcc9bc4b5aca13a00b80d92507ca21f0f20106/src/app/archive/create_schema.sql" 
 
-
-  additional_seed_peers = [
-    "/dns4/seed-one.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[0])[2]}",
-    "/dns4/seed-two.${local.testnet_name}.o1test.net/tcp/10001/p2p/${split(",", local.seed_discovery_keypairs[1])[2]}"
-  ]
-
   seed_zone = local.seed_zone
   seed_region = local.seed_region
 
@@ -86,13 +89,17 @@ module "testnet_east" {
   block_producer_key_pass = "naughty blue worm"
   block_producer_starting_host_port = 10501
 
+  whale_count           = var.whale_count
+  fish_count            = var.fish_count
+
   block_producer_configs = concat(
     [
-      for i in range(5): {
+      for i in range(var.whale_count): {
         name                   = "whale-block-producer-${i + 1}"
         class                  = "whale"
         id                     = i + 1
         private_key_secret     = "online-whale-account-${i + 1}-key"
+        libp2p_secret          = "online-whale-libp2p-${i + 1}-key"
         enable_gossip_flooding = false
         run_with_user_agent    = false
         run_with_bots          = false
@@ -101,11 +108,12 @@ module "testnet_east" {
       }
     ],
     [
-      for i in range(2): {
+      for i in range(var.fish_count): {
         name                   = "fish-block-producer-${i + 1}"
         class                  = "fish"
         id                     = i + 1
         private_key_secret     = "online-fish-account-${i + 1}-key"
+        libp2p_secret          = "online-fish-libp2p-${i + 1}-key"
         enable_gossip_flooding = false
         run_with_user_agent    = true
         run_with_bots          = false
