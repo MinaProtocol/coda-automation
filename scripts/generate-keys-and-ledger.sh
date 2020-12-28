@@ -47,7 +47,7 @@ PATH=$PATH:$(pwd)/bin
 
 if $RESET; then
   echo "resetting keys and genesis_ledger"
-  ls keys/keysets/* | grep -v "bots" | xargs -I % rm "%"
+  ls keys/keysets/* | grep -v "bots_keyfiles" | xargs -I % rm "%"
   rm -rf keys/genesis keys/keypairs keys/testnet-keys
   rm -rf terraform/testnets/${TESTNET}/*.json
 fi
@@ -188,11 +188,11 @@ generate_keyset_from_file "o1-keys.txt" "online-o1" "employee"
 
 # Bots
 
-if [ -d keys/testnet-keys/bots_keyfiles ];
+if [ -d keys/testnet-keys/${TESTNET}_bots_keyfiles ];
 then
   echo "Bots keys already present, not generating new ones"
 else
-  output_dir="$(pwd)/keys/testnet-keys/bots_keyfiles/"
+  output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_bots_keyfiles/"
   generate_key_files 2 "bots_keyfiles" "${output_dir}"
   mv ${output_dir}/bots_keyfiles_1.pub ${output_dir}/echo_service.pub
   mv ${output_dir}/bots_keyfiles_1 ${output_dir}/echo_service
@@ -278,7 +278,7 @@ add_another_to_prompt ${TESTNET}_offline-fish ${FISH_AMOUNT} ${TESTNET}_online-f
 add_another_to_prompt ${TESTNET}_online-fish ${FISH_AMOUNT} ${TESTNET}_online-fish
 add_another_to_prompt ${TESTNET}_online-o1 ${FISH_AMOUNT} ${TESTNET}_online-o1
 
-if [ -d keys/testnet-keys/bots_keyfiles ];
+if [ -d keys/testnet-keys/${TESTNET}_bots_keyfiles ];
 then
   add_another_to_prompt ${TESTNET}_bots_keyfiles 50000 ${TESTNET}_bots_keyfiles
 else

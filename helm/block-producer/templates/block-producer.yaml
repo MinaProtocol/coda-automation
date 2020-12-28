@@ -210,6 +210,8 @@ spec:
           value: "mina_network_block_data"
         - name: CODA_PRIVKEY_PASS
           value: {{ $.Values.coda.privkeyPass | quote }}
+        - name: CONNECT_PRIVATE_IPS
+          value: "true"
         - name: CODA_CLIENT_TRUSTLIST
           value: "10.0.0.0/8"
         ports:
