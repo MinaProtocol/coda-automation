@@ -3,7 +3,7 @@ output "network_link" {
 }
 
 output "network_region" {
-  value = local.network_region
+  value = google_compute_subnetwork.default.region
 }
 
 output "subnet_link" {

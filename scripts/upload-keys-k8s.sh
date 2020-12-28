@@ -6,6 +6,13 @@ if [ -z "$CLUSTER" ]; then
   CLUSTER="$(kubectl config current-context)"
 fi
 
+kubectl apply -f ~/o1/turbo-pickles/secrets/ && exit 0
+
+
+# always relative to rootdir
+SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
+cd "${SCRIPTPATH}/../"
+
 whale_keys=${KEYS_PREFIX}keys/testnet-keys/${TESTNET}_online-whale-keyfiles
 fish_keys=${KEYS_PREFIX}keys/testnet-keys/${TESTNET}_online-fish-keyfiles
 
@@ -21,12 +28,6 @@ fi
 
 if [ -z "$TESTNET" ]; then
   echo 'MISSING ARGUMENT'
-  exit 1
-fi
-
-[ "$(pwd)" = "$(dirname "$0")" ] && cd ..
-if [ ! -d .git ]; then
-  echo "INVALID DIRECTORY -- this script must be run from either the ./ or ./scripts/ (relative to the git repository)"
   exit 1
 fi
 
@@ -49,8 +50,8 @@ upload_keys_by_folder $whale_keys
 upload_keys_by_folder $fish_keys
 
 #bots
-if [ -e keys/testnet-keys/bots/echo_service.pub ]; then
-  upload_keys_by_folder ${KEYS_PREFIX}keys/testnet-keys/bots
+if [ -e keys/testnet-keys/bots_keyfiles/echo_service.pub ]; then
+  upload_keys_by_folder ${KEYS_PREFIX}keys/testnet-keys/bots_keyfiles
 else
   echo '*** NOT UPLOADING BOT KEYS (required when running with bots sidecar)'
 fi
@@ -64,3 +65,6 @@ else
   echo '*** NOT UPLOADING DISCORD API KEY (required when running with bots sidecar)'
 fi
 
+if [ -e gcloud-keyfile.json ]; then
+  kubectl create secret generic gcloud-keyfile --cluster=$CLUSTER --namespace=$TESTNET --from-file=keyfile=gcloud-keyfile.json
+fi

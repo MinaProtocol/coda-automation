@@ -2,6 +2,14 @@ ARG BAKE_VERSION
 
 FROM codaprotocol/coda-daemon:${BAKE_VERSION}
 
+RUN apt-get update && apt-get install -y gnupg2
+
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+
+RUN apt-get update && apt-get install -y google-cloud-sdk
+
 ARG COMMIT_HASH=master
 ARG TESTNET_NAME=turbo-pickles
 ARG CONFIG_FILE="/root/daemon.json"
@@ -14,6 +22,8 @@ RUN coda daemon -config-file ${CONFIG_FILE} -generate-genesis-proof true; \
   mv ~/.coda-config/genesis/genesis_* /var/lib/coda/
 
 RUN curl https://raw.githubusercontent.com/MinaProtocol/coda-automation/${COMMIT_HASH}/terraform/testnets/${TESTNET_NAME}/peers.txt -o /root/peers.txt
+
+#RUN curl https://raw.githubusercontent.com/MinaProtocol/mina/develop/dockerfiles/scripts/healthcheck-utilities.sh -o /healthcheck/utilities.sh
 
 RUN echo '#!/bin/bash -x\n\
 mkdir -p .coda-config\n\
