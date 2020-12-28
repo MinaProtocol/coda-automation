@@ -159,12 +159,14 @@ Once decided on a cluster/context to deploy, use the following command to retrie
 
 There is a testnet module variable which determines the *Kubernetes* context to deploy to. Reference the module's [variable definitions](https://github.com/MinaProtocol/coda-automation/blob/master/terraform/modules/kubernetes/testnet/variables.tf) for more details on how to properly configure.
 
-```variable "k8s_context" {
+```
+variable "k8s_context" {
   type = string
 
   description = "K8s resource provider context"
   default     = "gke_o1labs-192920_us-east1_coda-infra-east"
-}```
+}
+```
 
 ### Generate Keys and Genesis Ledger
 
