@@ -36,8 +36,8 @@ provider "google" {
 
 locals {
   testnet_name = "bug-net"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.1.1-add-testworld-ledger-bbda99d-bug-net-607e718"
-  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.1.1-temporary-qa-staging-ci-wait-cf2b767"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.2.0-efc44df-bug-net-9fd245e"
+  coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.2.0-efc44df"
   seed_region = "us-central1"
   seed_zone = "us-central1-b"
   seed_discovery_keypairs = [
