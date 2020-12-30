@@ -1,3 +1,5 @@
+/dns4/seed-one.testworld.o1test.net/tcp/10001/p2p/12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv/
+/dns4/seed-two.testworld.o1test.net/tcp/10001/p2p/12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5/
 /ip4/35.193.91.26/tcp/10516/p2p/12D3KooWCxeBptbZVTRYY6mooP9R6Gkt7zCTVKeCReaZe8rJiBRY
 /ip4/34.121.187.223/tcp/10517/p2p/12D3KooWDxoo26D3xQqeU8Y3Q5AKqik6kuT6uGQLjWDXMy2fs9Qi
 /ip4/35.222.164.254/tcp/10518/p2p/12D3KooWR7MKdkFp3H9iUNSBpcvuWraaecGPNdiQS7FpuGUTG9Fy
