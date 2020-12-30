@@ -57,8 +57,8 @@ mkdir -p ./keys/keysets
 mkdir -p ./keys/keypairs
 rm -rf ./keys/genesis && mkdir ./keys/genesis
 
-set -eo pipefail
-set -e
+#set -eo pipefail
+#set -e
 
 privkey_pass="naughty blue worm"
 
@@ -76,6 +76,24 @@ function generate_key_files {
       -c "CODA_PRIVKEY_PASS='${privkey_pass}' coda advanced generate-keypair -privkey-path /keys/${name_prefix}_${k}"
   done
 }
+
+function generate_key_files_pw {
+
+  COUNT=$1
+  name_prefix=$2
+  output_dir="$3"
+  mkdir -p $output_dir
+
+  for k in $(seq 1 $COUNT); do
+    pw=$(cat /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+    docker run \
+      --mount type=bind,source=${output_dir},target=/keys \
+      --entrypoint /bin/bash $CODA_DAEMON_IMAGE \
+      -c "CODA_PRIVKEY_PASS='${pw}' coda advanced generate-keypair -privkey-path /keys/${name_prefix}_${k}"
+    echo $pw > ${output_dir}/${name_prefix}_pw_${k}.txt
+  done
+}
+
 
 function build_keyset_from_testnet_keys {
   output_dir=$1
@@ -164,7 +182,7 @@ if [[ -s "keys/testnet-keys/${TESTNET}_extra-fish-keyfiles/extra_fish_account_1.
 echo "using existing fish keys"
 else
   output_dir="$(pwd)/keys/testnet-keys/${TESTNET}_extra-fish-keyfiles"
-  generate_key_files $EXTRA_COUNT "extra_fish_account" $output_dir
+  generate_key_files_pw $EXTRA_COUNT "extra_fish_account" $output_dir
 
   build_keyset_from_testnet_keys $output_dir "extra-fish"
 fi
