@@ -22,43 +22,46 @@ provider "google" {
 
 variable "testnet_name" {
   type = string
-
-  description = "Name identifier of testnet to provision"
   default     = "ci-net"
 }
 
-variable "coda_image" {
+variable "daemon_image" {
   type = string
-
-  description = "Mina daemon image to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/coda-daemon:0.1.0-beta1-unforked-ci-net"
+  default     = "gcr.io/o1labs-192920/coda-daemon:0.2.0-develop"
 }
 
-variable "coda_archive_image" {
+variable "archive_image" {
   type = string
+  default     = "gcr.io/o1labs-192920/coda-archive:0.2.0-develop"
+}
 
-  description = "Mina archive node image to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/coda-archive:0.1.0-beta1-unforked-ci-net"
+variable "agent_image" {
+  type = string
+  default     = "codaprotocol/coda-user-agent:0.1.8"
 }
 
 variable "bots_image" {
   type = string
-
-  description = "Mina bots (faucet and echo services) to use in provisioning a ci-net"
-  default     = "gcr.io/o1labs-192920/bot:1.0.0-c15d8a33bbab27dc8f1e9d047171c7958a993a63"
+  default     = "codaprotocol/bot:1.0.0"
 }
 
 variable "whale_count" {
   type = number
-
-  description = "Number of online whales for the network to run"
   default     = 2
 }
 
 variable "fish_count" {
   type = number
+  default     = 2
+}
 
-  description = "Number of online fish for the network to run"
+variable "archive_count" {
+  type = number
+  default     = 2
+}
+
+variable "snark_worker_count" {
+  type = number
   default     = 2
 }
 
@@ -77,9 +80,9 @@ module "ci_testnet" {
   cluster_region        = "us-east4"
   testnet_name          = var.testnet_name
 
-  coda_image            = var.coda_image
-  coda_archive_image    = var.coda_archive_image
-  coda_agent_image      = "codaprotocol/coda-user-agent:0.1.7"
+  coda_image            = var.daemon_image
+  coda_archive_image    = var.archive_image
+  coda_agent_image      = var.agent_image
   coda_bots_image       = var.bots_image
   coda_points_image     = "codaprotocol/coda-points-hack:32b.4"
 
@@ -89,7 +92,7 @@ module "ci_testnet" {
   coda_faucet_amount    = "10000000000"
   coda_faucet_fee       = "100000000"
 
-  archive_node_count    = 2
+  archive_node_count    = var.archive_count
   mina_archive_schema = "https://github.com/MinaProtocol/mina/blob/develop/src/app/archive/create_schema.sql"
 
   additional_seed_peers = []
@@ -127,14 +130,14 @@ module "ci_testnet" {
         private_key_secret     = "online-fish-account-${i + 1}-key"
         enable_gossip_flooding = false
         run_with_user_agent    = true
-        run_with_bots          = true
+        run_with_bots          = false
         enable_peer_exchange   = true
         isolated               = false
       }
     ]
   )
 
-  snark_worker_replicas = 1
+  snark_worker_replicas = var.snark_worker_count
   snark_worker_fee      = "0.025"
   snark_worker_public_key = "B62qk4nuKn2U5kb4dnZiUwXeRNtP1LncekdAKddnd1Ze8cWZnjWpmMU"
   snark_worker_host_port = 10401
