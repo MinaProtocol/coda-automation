@@ -34,10 +34,10 @@ locals {
     }
     alertmanagerFiles = {
       "alertmanager.yml" = {
-        receivers = local.pagerduty_receivers
+        "receivers" = local.pagerduty_receivers
         route = {
-          group_by = "[testnet]"
-          receiver = "pagerduty-primary"
+          group_by = ["testnet"]
+          receiver = "pagerduty-testnet-primary"
         }
       }
     }
