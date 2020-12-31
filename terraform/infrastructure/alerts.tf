@@ -2,7 +2,7 @@ locals {
   testnet_alerts = {
     groups = [
         {
-            name = "Block Production Rate"
+            name = "Critical Alerts"
             rules = [
                 {
                     alert   = "BlockProductionStopped"
@@ -14,6 +14,18 @@ locals {
                     annotations = {
                         description = "Zero blocks have been produced on testnet {{ $labels.testnet }} for more than 1 hour."
                         summary     = "{{ $labels.testnet }} block production is critically low"
+                    }
+                },
+                {
+                    alert   = "LowPeerCount"
+                    expr    = "avg by (testnet) (max_over_time(Coda_Network_peers[1h])) < 1"
+                    for   = "1h"
+                    labels = {
+                        severity = "critical"
+                    }
+                    annotations = {
+                        description = "Critically low peer count on testnet {{ $labels.testnet }} for more than 1 hour."
+                        summary     = "{{ $labels.testnet }} avg. peer count is critically low"
                     }
                 }
             ]
