@@ -6,8 +6,8 @@ locals {
             rules = [
                 {
                     alert   = "BlockProductionStopped"
-                    expr    = "increase(Coda_Transition_frontier_max_blocklength_observed{testnet=\"$testnet\"}[1h]) < 1"
-                    "for"   = "1h"
+                    expr    = "avg by (testnet) (increase(Coda_Transition_frontier_max_blocklength_observed[5m])) < 1"
+                    for   = "1h"
                     labels = {
                         severity = "critical"
                     }
@@ -25,7 +25,7 @@ locals {
         name = "pagerduty-testnet-primary"
         pagerduty_configs = [
             {
-                service-key = data.aws_secretsmanager_secret_version.pagerduty_testnet_primary_key_id.secret_string
+                service_key = "${data.aws_secretsmanager_secret_version.pagerduty_testnet_primary_key_id.secret_string}"
             }
         ]
     }
