@@ -1,4 +1,7 @@
 locals {
+    production_filter = "testnet=~\"testworld|mainnet|qanet\""
+}
+locals {
   testnet_alerts = {
     groups = [
         {
@@ -6,7 +9,7 @@ locals {
             rules = [
                 {
                     alert   = "BlockProductionStopped"
-                    expr    = "avg by (testnet) (increase(Coda_Transition_frontier_max_blocklength_observed[5m])) < 1"
+                    expr    = "avg by (testnet) (increase(Coda_Transition_frontier_max_blocklength_observed{${local.production_filter}}[5m])) < 1"
                     for   = "1h"
                     labels = {
                         severity = "critical"
@@ -18,7 +21,7 @@ locals {
                 },
                 {
                     alert   = "LowPeerCount"
-                    expr    = "avg by (testnet) (max_over_time(Coda_Network_peers[1h])) < 1"
+                    expr    = "avg by (testnet) (max_over_time(Coda_Network_peers{${local.production_filter}}[1h])) < 1"
                     for   = "1h"
                     labels = {
                         severity = "critical"
