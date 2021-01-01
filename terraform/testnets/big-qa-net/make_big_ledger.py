@@ -9,8 +9,8 @@ def main():
   def make_extra_account(i):
     letters = 'abcdefghijklmnopqrstuvwxyz'
     postfix = ''#''.join([ letters[j] for j in number_to_base(i, len(letters)) ])
-    pk = "B62qmNhxRDDiHG9evttEUGEBT4tbJy9r3V2LkXqL2JEX83Atwz5nhbVx"
-    pk = pk[:-len(postfix)] + postfix
+    pk = "B62qmNhxRDDiHG9evttEUGEBT4tbJyr3V2LkXqL2JEX83Atwz5nhbVx"
+    pk = pk[:len(pk) - len(postfix)] + postfix
     return {
           "pk": pk,
           "balance": "1.000000000",
