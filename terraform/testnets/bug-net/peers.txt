@@ -1,3 +1,5 @@
+/dns4/seed-one.bug-net.o1test.net/tcp/10001/p2p/12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv/
+/dns4/seed-two.bug-net.o1test.net/tcp/10001/p2p/12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5/
 /ip4/35.239.231.120/tcp/10511/p2p/12D3KooWQPnnYLqio76arp19DUcx7kvTBN8xDNcb2CMXsdmYVnq1
 /ip4/34.122.207.227/tcp/10512/p2p/12D3KooWBrHWoe7cxu2KB1LdjYXav2WyAdH5s5HwtyAXvaaLYygW
 /ip4/35.223.211.248/tcp/10513/p2p/12D3KooWJUFBbRPxv5mXhyjcAFdppoHeaqFP9s6hYEFdy416jQGb
