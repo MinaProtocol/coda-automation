@@ -11,7 +11,7 @@ def main():
 
   statuses = [ get_status(namespace, pod) for pod in pods ]
 
-  statuses = [ s for s in statuses if len(s) > 0 ]
+  statuses = [ s for s in statuses if len(s) > 0 and not s.startswith('Error') ]
 
   select = lambda status, prop: [ s for s in status.split('\n') if prop in s ][0].split(':')[1].strip()
 
