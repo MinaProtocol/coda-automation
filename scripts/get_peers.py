@@ -20,6 +20,10 @@ def main():
   peerIDs = [ select(status, 'Libp2p PeerID') for status in statuses ]
 
   peers = [ '/ip4/' + ip + '/tcp/' + port + '/p2p/' + peer_id for (ip,port,peer_id) in zip(ips, ports, peerIDs) ]
+  peers = [
+            '/dns4/seed-one.' + namespace + '.o1test.net/tcp/10001/p2p/12D3KooWJ9mNdbUXUpUNeMnejRumKzmQF15YeWwAPAhTAWB6dhiv/',
+            '/dns4/seed-two.' + namespace + '.o1test.net/tcp/10001/p2p/12D3KooWFcGGeUmbmCNq51NBdGvCWjiyefdNZbDXADMK5CDwNRm5/'
+          ] + peers
 
   with open('terraform/testnets/' + namespace + '/peers.txt', 'w') as f:
     f.write('\n'.join(peers))
