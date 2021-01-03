@@ -9,9 +9,16 @@ def main():
   def set_account(a):
     if a['balance'] == '66000.000000000':
       a['balance'] = '1.000000000'
-      del a['timing']
+      a['timing']['initial_minimum_balance'] = '1.000000000'
+      a['timing']["cliff_time"] = "150"
+      a['timing']["cliff_amount"] = "1"
+      a['timing']["vesting_period"] = "6"
+      a['timing']["vesting_increment"] = "1"
 
-  import IPython; IPython.embed()
+
+  [ set_account(a) for a in ledger['ledger']['accounts'] ]
+
+  #import IPython; IPython.embed()
 
   #def make_extra_account(i):
   #  letters = 'abcdefghijklmnopqrstuvwxyz'
