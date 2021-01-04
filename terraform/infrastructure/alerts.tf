@@ -30,7 +30,7 @@ resource "docker_container" "lint_rules_config" {
   command = [
       "rules",
       "lint",
-      "--rules-files=/alert_rules.yml"
+      "--rules-files=/config/alert_rules.yml"
   ]
 
   upload = {
