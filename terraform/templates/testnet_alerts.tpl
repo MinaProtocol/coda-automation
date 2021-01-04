@@ -7,6 +7,7 @@ groups:
       summary: {{ $labels.testnet }} block production is critically low
     expr: avg by (testnet) (increase(Coda_Transition_frontier_max_blocklength_observed ${rule_filter} [${alerting_timeframe}])) < 1
     labels:
+      testnet: {{ $labels.testnet }}
       severity: critical
 
   - alert: LowPeerCount
@@ -15,6 +16,7 @@ groups:
       summary: {{ $labels.testnet }} avg. peer count is critically low
     expr: avg by (testnet) (max_over_time(Coda_Network_peers ${rule_filter} [${alerting_timeframe}])) < 1
     labels:
+      testnet: {{ $labels.testnet }}
       severity: critical
 
 - name: Warnings
@@ -25,6 +27,7 @@ groups:
       summary: '{{ $labels.testnet }} block gossip latency is high'
     expr: avg by (testnet) (max_over_time(Coda_Block_latency_gossip_time ${rule_filter} [${alerting_timeframe}])) > 200
     labels:
+      testnet: {{ $labels.testnet }}
       severity: warning
 
   - alert: ZeroSnarkFeesObserved
@@ -33,4 +36,5 @@ groups:
       summary: '{{ $labels.testnet }} SNARK work fees of zero Mina observed.'
     expr: max by (testnet) (Coda_Snark_work_snark_fee_bucket  ${rule_filter} [${alerting_timeframe}] == 0)
     labels:
+      testnet: {{ $labels.testnet }}
       severity: warning
