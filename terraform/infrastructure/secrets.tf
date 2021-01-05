@@ -20,7 +20,6 @@ data "aws_secretsmanager_secret_version" "alertmanager_api_auth" {
   secret_id = "${data.aws_secretsmanager_secret.alertmanager_api_auth_metadata.id}"
 }
 
-
 # Pagerduty
 
 data "aws_secretsmanager_secret" "pagerduty_testnet_primary_key_metadata" {
