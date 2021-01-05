@@ -1,6 +1,7 @@
 # $: rule_filter - filter for subset of testnets to include in rule alert search space
 # $: alerting_timeframe - range of time to inspect for alert rule violations
 
+namespace: testnet-alerts
 groups:
 - name: Critical Alerts
   rules:
