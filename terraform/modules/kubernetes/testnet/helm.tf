@@ -5,16 +5,23 @@ provider helm {
   }
 }
 
+data "local_file" "genesis_ledger" {
+  filename = "genesis_ledger.json"
+  depends_on = [
+    null_resource.block_producer_key_generation
+  ]
+}
+
 locals {
   mina_helm_repo = "https://coda-charts.storage.googleapis.com"
   use_local_charts = false
 
   seed_peers = [
-    "/dns4/seed-node.${var.testnet_name}/tcp/10001/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
+    "/dns4/seed-node.${var.testnet_name}/tcp/${var.seed_port}/p2p/${split(",", var.seed_discovery_keypairs[0])[2]}"
   ]
 
   coda_vars = {
-    runtimeConfig      = var.runtime_config
+    runtimeConfig      = data.local_file.genesis_ledger.content
     image              = var.coda_image
     privkeyPass        = var.block_producer_key_pass
     seedPeers          = concat(var.additional_seed_peers, local.seed_peers)
@@ -33,7 +40,20 @@ locals {
 
   seed_vars = {
     testnetName = var.testnet_name
-    coda        = local.coda_vars
+    coda        = {
+      runtimeConfig      = data.local_file.genesis_ledger.content
+      image              = var.coda_image
+      privkeyPass        = var.block_producer_key_pass
+      seedPeers          = var.additional_seed_peers
+      logLevel           = var.log_level
+      logSnarkWorkGossip = var.log_snark_work_gossip
+      ports = {
+        client  = "8301"
+        graphql = "3085"
+        metrics = "8081"
+        p2p     = var.seed_port
+      }
+    }
     seed        = {
       active = true
       discovery_keypair = var.seed_discovery_keypairs[0]
@@ -73,6 +93,7 @@ locals {
         runWithBots          = config.run_with_bots
         enableGossipFlooding = config.enable_gossip_flooding
         privateKeySecret     = config.private_key_secret
+        libp2pSecret         = config.libp2p_secret
         enablePeerExchange   = config.enable_peer_exchange
         isolated             = config.isolated
       }
@@ -165,8 +186,12 @@ resource "helm_release" "seed" {
   values = [
     yamlencode(local.seed_vars)
   ]
-  wait        = true
-  depends_on  = [kubernetes_role_binding.helm_release, var.gcloud_seeds]
+  wait        = false
+  timeout     = 600
+  depends_on  = [
+    kubernetes_role_binding.helm_release,
+    null_resource.block_producer_uploads,
+  ]
 }
 
 
@@ -176,12 +201,13 @@ resource "helm_release" "block_producers" {
   name        = "${var.testnet_name}-block-producers"
   repository  = local.use_local_charts ? "" : local.mina_helm_repo
   chart       = local.use_local_charts ? "../../../helm/block-producer" : "block-producer"
-  version     = "0.3.2"
+  version     = "0.5.0"
   namespace   = kubernetes_namespace.testnet_namespace.metadata[0].name
   values = [
     yamlencode(local.block_producer_vars)
   ]
   wait        = false
+  timeout     = 600
   depends_on  = [helm_release.seed]
 }
 
@@ -197,6 +223,7 @@ resource "helm_release" "snark_workers" {
     yamlencode(local.snark_worker_vars)
   ]
   wait        = false
+  timeout     = 600
   depends_on  = [helm_release.seed]
 }
 
@@ -215,5 +242,6 @@ resource "helm_release" "archive_node" {
   ]
 
   wait = false
+  timeout     = 600
   depends_on = [helm_release.seed]
 }
