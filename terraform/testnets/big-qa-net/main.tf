@@ -36,7 +36,7 @@ provider "google" {
 
 locals {
   testnet_name = "big-qa-net"
-  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.2.5-d44a133-d44a133-testworld-3d7a0be"
+  coda_image = "gcr.io/o1labs-192920/coda-daemon-baked:0.2.5-d44a133-d44a133-big-qa-net-40d47f8"
   coda_archive_image = "gcr.io/o1labs-192920/coda-archive:0.2.5-d44a133"
   seed_region = "us-east4"
   seed_zone = "us-east4-b"
