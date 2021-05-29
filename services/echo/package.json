@@ -20,7 +20,7 @@
     "node-fetch": "^2.6.0",
     "subscriptions-transport-ws": "^0.9.16",
     "winston": "^3.2.1",
-    "ws": "^7.1.0"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "prettier": "^1.18.2"
